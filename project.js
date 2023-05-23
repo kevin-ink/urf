@@ -1,4 +1,4 @@
-import { defs, tiny } from "./examples/common.js";
+import {defs, tiny} from './examples/common.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -26,20 +26,87 @@ export class Project extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
         }
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+        // Used for difficulty 
+        this.difficulty = "easy";
+        if (this.difficulty == "easy"){
+            this.view_dist = 12;
+        }
+        else if (this.difficulty == "medium"){
+            this.view_dist = 20;
+        }
+        else {
+            this.view_dist = 36;
+        }
+
+        // Number of Targets 
+        this.target_num = 3;
+        this.target_locations = [];
+        for (let i = 0; i < this.target_num; i++){
+            this.target_locations.push(this.generate_location());
+        }
+
+        // Change the z-coordinate
+        // Easy => 12, Medium => 20, Hard => 36
+        this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.easy = Mat4.look_at(vec3(0, 0, 12), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.medium = Mat4.look_at(vec3(0, 0, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.hard = Mat4.look_at(vec3(0, 0, 36), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("View solar system", ["Control", "0"], () => this.attached = () => null);
+        this.key_triggered_button("Easy", ["Control", "0"], () => this.attached = () => this.easy);
         this.new_line();
-        this.key_triggered_button("Attach to planet 1", ["Control", "1"], () => this.attached = () => this.planet_1);
-        this.key_triggered_button("Attach to planet 2", ["Control", "2"], () => this.attached = () => this.planet_2);
+        this.key_triggered_button("Medium", ["Control", "1"], () => this.attached = () => this.medium);
+        this.key_triggered_button("Hard", ["Control", "2"], () => this.attached = () => this.hard);
         this.new_line();
-        this.key_triggered_button("Attach to planet 3", ["Control", "3"], () => this.attached = () => this.planet_3);
-        this.key_triggered_button("Attach to planet 4", ["Control", "4"], () => this.attached = () => this.planet_4);
-        this.new_line();
-        this.key_triggered_button("Attach to moon", ["Control", "m"], () => this.attached = () => this.moon);
+    }
+
+
+    // Check if any of the targets are too close to each other
+    target_collision(ranX, ranY) {
+        for (let coord of this.target_locations){
+            let x = coord[0], y = coord[1];
+            let dist = Math.sqrt((ranX-x)**2 + (ranY-y)**2);
+            if (dist < 3){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // Returns one random location that does not conflict with other targets
+    // For Easy: X => [-6,6] Y => [-3, 3]
+    // For Medium: X => [-12, 12] Y => [-6, 6]
+    // For Hard: X => [-24, 24] Y => [-12, 12]
+    generate_location() {
+        let factor = 1;
+        if (this.difficulty == "medium") {
+            factor = 2;
+        }
+        else if (this.difficulty == "hard"){
+            factor = 3;
+        }
+
+        let xMin = -6*factor, xMax = 6*factor;
+        let yMin = -3*factor, yMax = 3*factor;
+        
+        // Generate random coordinates
+        let ranX, ranY, ranZ = Math.round((Math.random()*4 + -2) * 10) /10;
+        do {
+            ranX = Math.round((Math.random() * (xMax-xMin) + xMin)* 10) / 10;
+            ranY = Math.round((Math.random() * (yMax-yMin) + yMin)* 10) /10;
+        }
+        while (this.target_collision(ranX, ranY));
+        return vec3(ranX, ranY, ranZ);
+    }
+
+    draw_targets(context, program_state){
+        let model_transform = Mat4.identity();
+        for (let coord of this.target_locations){
+            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0], coord[1], coord[2])), this.materials.test2);
+        }
     }
 
     display(context, program_state) {
@@ -61,8 +128,18 @@ export class Project extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         
+        this.draw_targets(context, program_state);
+
         
-        let model_transform = Mat4.identity();
+        // Difficulty Selection Tester
+        let desired;
+
+        if (this.attached && this.attached() !== null) {
+            desired = this.attached();
+        } else {
+            desired = this.initial_camera_location;
+        }
+        program_state.set_camera(desired);
 
     }
 }
