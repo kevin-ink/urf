@@ -39,11 +39,22 @@ export class Project extends Scene {
         }
 
         // Number of Targets 
-        this.target_num = 3;
+        this.target_num = 5;
         this.target_locations = [];
         for (let i = 0; i < this.target_num; i++){
             this.target_locations.push(this.generate_location());
         }
+
+        // Strafing 
+        this.strafe = false;
+        /*
+        !!! Notes on Strafing !!!
+        If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
+        Must create another collision detection function so that movement is detected 
+        since we want strafing to be random and different we must implement another function to generate random strafes
+        this means we must store the periodicity of each target 
+
+        */
 
         // Change the z-coordinate
         // Easy => 12, Medium => 20, Hard => 36
@@ -68,7 +79,7 @@ export class Project extends Scene {
         for (let coord of this.target_locations){
             let x = coord[0], y = coord[1];
             let dist = Math.sqrt((ranX-x)**2 + (ranY-y)**2);
-            if (dist < 3){
+            if (dist < 4){
                 return true;
             }
         }
@@ -102,10 +113,14 @@ export class Project extends Scene {
         return vec3(ranX, ranY, ranZ);
     }
 
-    draw_targets(context, program_state){
+    draw_targets(context, program_state, t){
         let model_transform = Mat4.identity();
+        let d = 0;
+        if (this.strafe){
+            d = Math.sin(t);
+        }
         for (let coord of this.target_locations){
-            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0], coord[1], coord[2])), this.materials.test2);
+            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])), this.materials.test2);
         }
     }
 
@@ -128,7 +143,7 @@ export class Project extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         
-        this.draw_targets(context, program_state);
+        this.draw_targets(context, program_state, t);
 
         
         // Difficulty Selection Tester
