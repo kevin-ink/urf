@@ -39,14 +39,14 @@ export class Project extends Scene {
         }
 
         // Number of Targets 
-        this.target_num = 5;
-        this.target_locations = [];
+        this.target_num = 3;
+        this.target_locations = new Set();
         for (let i = 0; i < this.target_num; i++){
-            this.target_locations.push(this.generate_location());
+            this.target_locations.add(this.generate_location());
         }
 
         // Strafing 
-        this.strafe = true;
+        this.strafe = false;
         /*
         !!! Notes on Strafing !!!
         If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
@@ -124,6 +124,47 @@ export class Project extends Scene {
         }
     }
 
+    // Determine if a target was hit
+    hit_target(coord, pos_world){
+        let t_x = coord[0], t_y = coord[1];
+        let h_x = pos_world[0], h_y = coord[1];
+        let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
+        if (d <= 1){
+            return true;
+        }
+        return false;
+    }
+
+    // Mouse Picking 
+    my_mouse_down(e, pos, context, program_state) {
+        let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
+        let pos_ndc_far  = vec4(pos[0], pos[1],  1.0, 1.0);
+        let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
+        let P = program_state.projection_transform;
+        let V = program_state.camera_inverse;
+        let pos_world_near = Mat4.inverse(P.times(V)).times(pos_ndc_near);
+        let pos_world_far  = Mat4.inverse(P.times(V)).times(pos_ndc_far);
+        let center_world_near  = Mat4.inverse(P.times(V)).times(center_ndc_near);
+        pos_world_near.scale_by(1 / pos_world_near[3]);
+        pos_world_far.scale_by(1 / pos_world_far[3]);
+        center_world_near.scale_by(1 / center_world_near[3]);
+
+
+        console.log(pos_world_far);
+
+        /* To determine if the mouse click hit any object
+           just calculate the distance between the x and y coordinates of the 
+        */
+        for (const coord of this.target_locations){
+            if (this.hit_target(coord, center_ndc_near)){
+                this.target_locations.delete(coord);
+                this.target_locations.add(this.generate_location());
+                break;
+            }
+        }
+    }
+
+
     display(context, program_state) {
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
@@ -131,6 +172,22 @@ export class Project extends Scene {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             // Define the global camera and projection matrices, which are stored in program_state.
             program_state.set_camera(this.initial_camera_location);
+
+            let canvas = context.canvas;
+            const mouse_position = (e, rect = canvas.getBoundingClientRect()) =>
+                vec((e.clientX - (rect.left + rect.right) / 2) / ((rect.right - rect.left) / 2),
+                    (e.clientY - (rect.bottom + rect.top) / 2) / ((rect.top - rect.bottom) / 2));
+
+            canvas.addEventListener("mousedown", e => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect()
+                console.log("e.clientX: " + e.clientX);
+                console.log("e.clientX - rect.left: " + (e.clientX - rect.left));
+                console.log("e.clientY: " + e.clientY);
+                console.log("e.clientY - rect.top: " + (e.clientY - rect.top));
+                console.log("mouse_position(e): " + mouse_position(e));
+                this.my_mouse_down(e, mouse_position(e), context, program_state);
+            });
         }
 
         program_state.projection_transform = Mat4.perspective(
