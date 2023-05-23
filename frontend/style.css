@@ -1,0 +1,201 @@
+@font-face {
+    font-family: 'Roboto';
+    src: url('../assets/fonts/Roboto-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../assets/fonts/Roboto-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../assets/fonts/Roboto-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../assets/fonts/Roboto-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+:root {
+    --angle: 0deg;
+}
+
+#main-canvas {
+    display: none;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+}
+
+.animated {
+    animation: 10s rotate linear infinite;
+}
+
+#main {
+    background-image: linear-gradient(var(--angle), #c9d6ff, #e2e2e2);
+    height: auto;
+    padding: 2%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#main.darken {
+    background-image: linear-gradient(var(--angle), #aa4b6b, #3b8d99);
+}
+
+h1 {
+    font-size: 4rem;
+    width: 40%;
+    justify-content: center;
+    margin-left: 8%;
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    background: linear-gradient(var(--angle), #0575e6, #021b79);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 0.2rem #021b79);
+}
+
+#menu {
+    width: 80%;
+    margin-left: 2%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+button {
+    font-family: "Roboto", sans-serif;
+    color: black;
+    background: transparent;
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: -1px -1px 1px rgba(255, 255, 255, .1), 1px 1px 1px rgba(0, 0, 0, .5);
+    border-width: 0;
+}
+
+button.cue {
+    background-image: linear-gradient(#0575e6 0 0);
+    background-size: 200% .08em;
+    background-position: 200% 100%;
+    background-repeat: no-repeat;
+}
+
+button.cue:hover {
+    transition: background-position .3s, font-size .3s;
+    background-position: 100% 100%;
+    font-size: 3.5rem;
+    cursor: pointer;
+}
+
+
+button#start-btn:hover {
+    transition: background-size .3s .3s, background-position .3s;
+    background-size: 200% 100%;
+    background-position: 100% 100%;
+}
+
+button.move {
+    position: relative;
+    transition: transform 1s;
+}
+
+.popup {
+    width: 50%;
+    height: 65%;
+    top: 30%;
+    left: 25%;
+    position: absolute;
+    background: linear-gradient(var(--angle), #c9d6ff,#e2e2e2);
+    border-color: white;
+    border-radius: 12px;
+    border-width: 1rem;
+}
+
+#start-btn {
+    height: 10%;
+}
+
+/*
+// Animista classes
+*/
+
+.scale-in-ver-top {
+    -webkit-animation: scale-in-ver-top 1s cubic-bezier(.25, .46, .45, .94) 1s both;
+    animation: scale-in-ver-top 1s cubic-bezier(.25, .46, .45, .94) 1s both
+}
+
+/*  
+//  Keyframes and property
+*/
+
+@keyframes rotate {
+    to {
+      --angle: 360deg;
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@-webkit-keyframes scale-in-ver-top {
+    0% {
+        -webkit-transform: scaleY(0);
+        transform: scaleY(0);
+        -webkit-transform-origin: 100% 0;
+        transform-origin: 100% 0;
+        opacity: 1
+    }
+
+    100% {
+        -webkit-transform: scaleY(1);
+        transform: scaleY(1);
+        -webkit-transform-origin: 100% 0;
+        transform-origin: 100% 0;
+        opacity: 1
+    }
+}
+
+@keyframes scale-in-ver-top {
+    0% {
+        -webkit-transform: scaleY(0);
+        transform: scaleY(0);
+        -webkit-transform-origin: 100% 0;
+        transform-origin: 100% 0;
+        opacity: 1
+    }
+
+    100% {
+        -webkit-transform: scaleY(1);
+        transform: scaleY(1);
+        -webkit-transform-origin: 100% 0;
+        transform-origin: 100% 0;
+        opacity: 1
+    }
+}

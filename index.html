@@ -1,46 +1,45 @@
-<!-- Graphics Example Code.  
-    index.html - The web page document containing the canvas (drawing surface).  It launches your JavaScript files.
--->
 <!DOCTYPE html>
 <html lang="En">
-<head>
-    <meta charset="UTF-8"/>
-    <link href="assets/fav.ico" rel="icon">
+  <head>
+    <meta charset="UTF-8" />
+    <link href="assets/icons/fav.ico" rel="icon" />
     <title>URF</title>
-    <link rel="stylesheet" href="style.css"/>
+    <!-- animate.css for animations -->
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+      rel="animation stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" 
     />
-</head>
-<body>
-<!-- Begin typing your web page here. -->
-<!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls.-->
-<div class="canvas-widget" id="main-canvas"></div>
-<div id="main">
-    <h1 id="title">ULTRA RAPID FIRE</h1>
-    <div id="menu">
-        <button id="opt-btn">
-            OPTIONS
-        </button>
-        <button id="htp-btn">
-            HOW TO PLAY
-        </button>
+    <link rel="main stylesheet" href="frontend/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls.-->
+    <!-- Main-Canvas is turned off by default -->
+    <div class="canvas-widget" id="main-canvas"></div>
+    <div id="main">
+      <h1 id="title">ULTRA RAPID FIRE</h1>
+      <div id="menu">
+        <button id="opt-btn">OPTIONS</button>
+        <button id="htp-btn">HOW TO PLAY</button>
+      </div>
+      <button id="start-btn">PLAY</button>
     </div>
-    <button id="start-btn">
-        PLAY
-    </button>
-</div>
-<script type=module>
-    // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
-    // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
-    const element_to_replace = document.querySelector("#main-canvas");
-    import {Main_Scene, Additional_Scenes, Canvas_Widget} from './main-scene.js';
-    // Import the file that defines a scene.
-    const scenes = [Main_Scene, ...Additional_Scenes].map(scene => new scene());
-    // This line creates your scene.
-    new Canvas_Widget(element_to_replace, scenes);
-</script>
-<script src="ui.js"></script>
-</body>
+    <script type="module">
+      // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
+      // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
+      const element_to_replace = document.querySelector("#main-canvas");
+      import {
+        Main_Scene,
+        Additional_Scenes,
+        Canvas_Widget,
+      } from "./main-scene.js";
+      // Import the file that defines a scene.
+      const scenes = [Main_Scene, ...Additional_Scenes].map(
+        (scene) => new scene()
+      );
+      // This line creates your scene.
+      new Canvas_Widget(element_to_replace, scenes);
+    </script>
+    <script src="frontend/ui.js"></script>
+  </body>
 </html>
