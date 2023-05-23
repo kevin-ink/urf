@@ -24,7 +24,7 @@ function expand(e) {
             other.classList.add("move");
             other.style.transform = `translateY(-30vh)`;
             other.style.transform +=
-                other.id === "opt-btn" ? `translateX(30vw)` : `translateX(-30vw)`;
+                other.id === "opt-btn" ? `translateX(32vw)` : `translateX(-32vw)`;
         }
         else 
         {

@@ -66,11 +66,10 @@ body {
 }
 
 h1 {
-
     font-size: 4rem;
     width: 50vw;
     justify-content: center;
-    margin-left: 8%;
+    margin-left: 12vw;
     font-family: "Roboto", sans-serif;
     font-weight: bold;
     background: linear-gradient(var(--angle), #0575e6, #021b79);
