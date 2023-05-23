@@ -66,8 +66,9 @@ body {
 }
 
 h1 {
+
     font-size: 4rem;
-    width: 40%;
+    width: 50vw;
     justify-content: center;
     margin-left: 8%;
     font-family: "Roboto", sans-serif;
