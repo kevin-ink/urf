@@ -46,7 +46,7 @@ export class Project extends Scene {
         }
 
         // Strafing 
-        this.strafe = false;
+        this.strafe = true;
         /*
         !!! Notes on Strafing !!!
         If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
