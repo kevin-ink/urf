@@ -72,7 +72,7 @@ h1 {
     animation: 10s rotate linear infinite;
 }
 
-.menu {
+#menu {
     width: 80%;
     margin-left: 4rem;
     display: flex;
@@ -101,7 +101,13 @@ button:hover {
     cursor: pointer;
 }
 
-.start-game {
+button.popup {
+    position: relative;
+    transition: transform 1s;
+}
+
+
+#start-btn {
     height: 10%;
 }
 
