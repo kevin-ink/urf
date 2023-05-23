@@ -1,4 +1,4 @@
-import { defs, tiny } from "./examples/common.js";
+import {defs, tiny} from './examples/common.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -26,21 +26,155 @@ export class Project extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
         }
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+        // Used for difficulty 
+        this.difficulty = "medium";
+        if (this.difficulty == "easy"){
+            this.view_dist = 12;
+        }
+        else if (this.difficulty == "medium"){
+            this.view_dist = 20;
+        }
+        else {
+            this.view_dist = 36;
+        }
+
+        // Number of Targets 
+        this.target_num = 3;
+        this.target_locations = new Set();
+        for (let i = 0; i < this.target_num; i++){
+            this.target_locations.add(this.generate_location());
+        }
+
+        // Strafing 
+        this.strafe = false;
+        /*
+        !!! Notes on Strafing !!!
+        If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
+        Must create another collision detection function so that movement is detected 
+        since we want strafing to be random and different we must implement another function to generate random strafes
+        this means we must store the periodicity of each target 
+
+        */
+
+        // Change the z-coordinate
+        // Easy => 12, Medium => 20, Hard => 36
+        this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.easy = Mat4.look_at(vec3(0, 0, 12), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.medium = Mat4.look_at(vec3(0, 0, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.hard = Mat4.look_at(vec3(0, 0, 36), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("View solar system", ["Control", "0"], () => this.attached = () => null);
+        this.key_triggered_button("Easy", ["Control", "0"], () => this.attached = () => this.easy);
         this.new_line();
-        this.key_triggered_button("Attach to planet 1", ["Control", "1"], () => this.attached = () => this.planet_1);
-        this.key_triggered_button("Attach to planet 2", ["Control", "2"], () => this.attached = () => this.planet_2);
+        this.key_triggered_button("Medium", ["Control", "1"], () => this.attached = () => this.medium);
+        this.key_triggered_button("Hard", ["Control", "2"], () => this.attached = () => this.hard);
         this.new_line();
-        this.key_triggered_button("Attach to planet 3", ["Control", "3"], () => this.attached = () => this.planet_3);
-        this.key_triggered_button("Attach to planet 4", ["Control", "4"], () => this.attached = () => this.planet_4);
-        this.new_line();
-        this.key_triggered_button("Attach to moon", ["Control", "m"], () => this.attached = () => this.moon);
     }
+
+
+    // Check if any of the targets are too close to each other
+    target_collision(ranX, ranY) {
+        for (let coord of this.target_locations){
+            let x = coord[0], y = coord[1];
+            let dist = Math.sqrt((ranX-x)**2 + (ranY-y)**2);
+            if (dist < 4){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // Returns one random location that does not conflict with other targets
+    // For Easy: X => [-6,6] Y => [-3, 3]
+    // For Medium: X => [-12, 12] Y => [-6, 6]
+    // For Hard: X => [-24, 24] Y => [-12, 12]
+    generate_location() {
+        let factor = 1;
+        if (this.difficulty == "medium") {
+            factor = 2;
+        }
+        else if (this.difficulty == "hard"){
+            factor = 3;
+        }
+
+        let xMin = -6*factor, xMax = 6*factor;
+        let yMin = -3*factor, yMax = 3*factor;
+        
+        // Generate random coordinates
+        let ranX, ranY, ranZ = Math.random()*4 + -2;
+        do {
+            ranX = Math.random() * (xMax-xMin) + xMin
+            ranY = Math.random() * (yMax-yMin) + yMin
+        }
+        while (this.target_collision(ranX, ranY));
+        return vec3(ranX, ranY, ranZ);
+    }
+
+    draw_targets(context, program_state, t){
+        let model_transform = Mat4.identity();
+        let d = 0;
+        if (this.strafe){
+            d = Math.sin(t);
+        }
+        for (let coord of this.target_locations){
+            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])), this.materials.test2);
+        }
+    }
+
+    // Determine if a target was hit
+    hit_target(coord, pos_world){
+        let t_x = coord[0], t_y = coord[1];
+        let h_x = pos_world[0], h_y = coord[1];
+        let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
+        if (d <= 1){
+            return true;
+        }
+        return false;
+    }
+
+    interpolation(p1, p2){
+        return p1/(p1-p2);
+    }
+
+    // Mouse Picking 
+    my_mouse_down(e, pos, context, program_state) {
+        let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
+        let pos_ndc_far  = vec4(pos[0], pos[1],  1.0, 1.0);
+        let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
+        let P = program_state.projection_transform;
+        let V = program_state.camera_inverse;
+        let pos_world_near = Mat4.inverse(P.times(V)).times(pos_ndc_near);
+        let pos_world_far  = Mat4.inverse(P.times(V)).times(pos_ndc_far);
+        let center_world_near  = Mat4.inverse(P.times(V)).times(center_ndc_near);
+        pos_world_near.scale_by(1 / pos_world_near[3]);
+        pos_world_far.scale_by(1 / pos_world_far[3]);
+        center_world_near.scale_by(1 / center_world_near[3]);
+
+        // Interpolation for near and far to get z = 0
+        // 0 = (1-t)zfar + (t)znear
+        // use t to find the values for x and y at z = 0
+        let t = this.interpolation(pos_world_near[2], pos_world_far[2]);
+        let x = (1-t)*pos_world_near[0]+t*pos_world_far[0];
+        let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
+        let world_coord = vec4(x, y, 0.0, 1.0);
+
+        console.log(world_coord);
+
+        /* To determine if the mouse click hit any object
+           just calculate the distance between the x and y coordinates of the 
+        */
+        for (const coord of this.target_locations){
+            if (this.hit_target(coord, world_coord)){
+                this.target_locations.delete(coord);
+                this.target_locations.add(this.generate_location());
+                break;
+            }
+        }
+    }
+
 
     display(context, program_state) {
         // display():  Called once per frame of animation.
@@ -49,6 +183,17 @@ export class Project extends Scene {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             // Define the global camera and projection matrices, which are stored in program_state.
             program_state.set_camera(this.initial_camera_location);
+
+            let canvas = context.canvas;
+            const mouse_position = (e, rect = canvas.getBoundingClientRect()) =>
+                vec((e.clientX - (rect.left + rect.right) / 2) / ((rect.right - rect.left) / 2),
+                    (e.clientY - (rect.bottom + rect.top) / 2) / ((rect.top - rect.bottom) / 2));
+
+            canvas.addEventListener("mousedown", e => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect()
+                this.my_mouse_down(e, mouse_position(e), context, program_state);
+            });
         }
 
         program_state.projection_transform = Mat4.perspective(
@@ -61,8 +206,18 @@ export class Project extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         
+        this.draw_targets(context, program_state, t);
+
         
-        let model_transform = Mat4.identity();
+        // Difficulty Selection Tester
+        let desired;
+
+        if (this.attached && this.attached() !== null) {
+            desired = this.attached();
+        } else {
+            desired = this.initial_camera_location;
+        }
+        program_state.set_camera(desired);
 
     }
 }
