@@ -7,11 +7,26 @@
     <meta charset="UTF-8"/>
     <link href="assets/fav.ico" rel="icon">
     <title>URF</title>
+    <link rel="stylesheet" href="style.css"/>
 </head>
-<body style="background: White">
+<body>
 <!-- Begin typing your web page here. -->
 <!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls.-->
 <div class="canvas-widget" id="main-canvas"></div>
+<div id="main">
+    <h1 id="title">ULTRA RAPID FIRE</h1>
+    <div class="menu">
+        <button>
+            OPTIONS
+        </button>
+        <button>
+            PLACEHOLDER
+        </button>
+    </div>
+    <button class="start-game">
+        PLAY
+    </button>
+</div>
 <script type=module>
     // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
     // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
@@ -22,6 +37,6 @@
     // This line creates your scene.
     new Canvas_Widget(element_to_replace, scenes);
 </script>
-
+<script src="ui.js"></script>
 </body>
 </html>
