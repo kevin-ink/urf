@@ -27,7 +27,7 @@ export class Project extends Scene {
         }
 
         // Used for difficulty 
-        this.difficulty = "easy";
+        this.difficulty = "medium";
         if (this.difficulty == "easy"){
             this.view_dist = 12;
         }
@@ -104,10 +104,10 @@ export class Project extends Scene {
         let yMin = -3*factor, yMax = 3*factor;
         
         // Generate random coordinates
-        let ranX, ranY, ranZ = Math.round((Math.random()*4 + -2) * 10) /10;
+        let ranX, ranY, ranZ = Math.random()*4 + -2;
         do {
-            ranX = Math.round((Math.random() * (xMax-xMin) + xMin)* 10) / 10;
-            ranY = Math.round((Math.random() * (yMax-yMin) + yMin)* 10) /10;
+            ranX = Math.random() * (xMax-xMin) + xMin
+            ranY = Math.random() * (yMax-yMin) + yMin
         }
         while (this.target_collision(ranX, ranY));
         return vec3(ranX, ranY, ranZ);
@@ -135,6 +135,10 @@ export class Project extends Scene {
         return false;
     }
 
+    interpolation(p1, p2){
+        return p1/(p1-p2);
+    }
+
     // Mouse Picking 
     my_mouse_down(e, pos, context, program_state) {
         let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
@@ -149,14 +153,21 @@ export class Project extends Scene {
         pos_world_far.scale_by(1 / pos_world_far[3]);
         center_world_near.scale_by(1 / center_world_near[3]);
 
+        // Interpolation for near and far to get z = 0
+        // 0 = (1-t)zfar + (t)znear
+        // use t to find the values for x and y at z = 0
+        let t = this.interpolation(pos_world_near[2], pos_world_far[2]);
+        let x = (1-t)*pos_world_near[0]+t*pos_world_far[0];
+        let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
+        let world_coord = vec4(x, y, 0.0, 1.0);
 
-        console.log(pos_world_far);
+        console.log(world_coord);
 
         /* To determine if the mouse click hit any object
            just calculate the distance between the x and y coordinates of the 
         */
         for (const coord of this.target_locations){
-            if (this.hit_target(coord, center_ndc_near)){
+            if (this.hit_target(coord, world_coord)){
                 this.target_locations.delete(coord);
                 this.target_locations.add(this.generate_location());
                 break;
@@ -181,11 +192,6 @@ export class Project extends Scene {
             canvas.addEventListener("mousedown", e => {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect()
-                console.log("e.clientX: " + e.clientX);
-                console.log("e.clientX - rect.left: " + (e.clientX - rect.left));
-                console.log("e.clientY: " + e.clientY);
-                console.log("e.clientY - rect.top: " + (e.clientY - rect.top));
-                console.log("mouse_position(e): " + mouse_position(e));
                 this.my_mouse_down(e, mouse_position(e), context, program_state);
             });
         }
