@@ -61,7 +61,7 @@ body {
 h1 {
     font-size: 64px;
     width: 50%;
-    padding-left: 8rem;
+    padding-left: 5rem;
     font-family: "Roboto", sans-serif;
     font-weight: bold;
     background: linear-gradient(var(--angle), #0575e6, #021b79);
@@ -70,6 +70,14 @@ h1 {
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 0.2rem #021b79);
     animation: 10s rotate linear infinite;
+}
+
+.menu {
+    width: 80%;
+    margin-left: 4rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 button {
@@ -87,18 +95,10 @@ button {
 }
 
 button:hover {
-    transition: background-position .2s, font-size .3s;
+    transition: background-position .3s, font-size .3s;
     background-position: 100% 100%;
     font-size: 52px;
     cursor: pointer;
-}
-
-.menu {
-    width: 80%;
-    margin-left: 8rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
 }
 
 .start-game {
