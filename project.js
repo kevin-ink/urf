@@ -1,4 +1,4 @@
-import {defs, tiny} from './examples/common.js';
+import { defs, tiny } from "./examples/common.js";
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -16,6 +16,11 @@ export class Project extends Scene {
             sphere: new defs.Subdivision_Sphere(4),
             circle: new defs.Regular_2D_Polygon(1, 15),
 
+            // shapes for environment
+            background_sky: new defs.Square(),
+            floor: new defs.Cube(),
+            walls: new defs.Cube(),
+
         };
 
         // *** Materials
@@ -24,8 +29,17 @@ export class Project extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
+            background_sky: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 1, color: hex_color("#99b6f2")}),
+            floor: new Material(new defs.Phong_Shader(),
+                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3")}),
+            walls: new Material(new defs.Phong_Shader(),
+                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3")}),
+            back_wall: new Material(new defs.Phong_Shader(),
+                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3")}), 
+                   
         }
-
+        
         // Used for difficulty 
         this.difficulty = "medium";
         if (this.difficulty == "easy"){
@@ -73,7 +87,6 @@ export class Project extends Scene {
         this.new_line();
     }
 
-
     // Check if any of the targets are too close to each other
     target_collision(ranX, ranY) {
         for (let coord of this.target_locations){
@@ -85,7 +98,6 @@ export class Project extends Scene {
         }
         return false;
     }
-
 
     // Returns one random location that does not conflict with other targets
     // For Easy: X => [-6,6] Y => [-3, 3]
@@ -107,10 +119,38 @@ export class Project extends Scene {
         let ranX, ranY, ranZ = Math.random()*4 + -2;
         do {
             ranX = Math.random() * (xMax-xMin) + xMin
-            ranY = Math.random() * (yMax-yMin) + yMin
+            ranY = Math.random() * (yMax-yMin) + yMin // MAKE SURE yMin ABOVE THE FLOOR
         }
         while (this.target_collision(ranX, ranY));
         return vec3(ranX, ranY, ranZ);
+    }
+
+    draw_floor(context, program_state){
+        let floor_transform = Mat4.identity();
+        floor_transform = floor_transform.times(Mat4.scale(15, 1, context.width))
+                                         .times(Mat4.translation(0, -this.view_dist/4, 0));
+        this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
+    }
+
+    draw_walls(context, program_state){
+        let left_wall_transform = Mat4.identity();
+
+        left_wall_transform = left_wall_transform.times(Mat4.scale(4, 4, context.width))
+                                                 .times(Mat4.rotation(1.1, 0, 1, 0))
+                                                 .times(Mat4.translation(-2.5, 0, -2));
+        this.shapes.walls.draw(context, program_state, left_wall_transform, this.materials.walls);
+
+        let right_wall_transform = Mat4.identity();
+
+        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 4, context.width))
+                                                   .times(Mat4.translation(68, 0, 0))
+                                                   .times(Mat4.rotation(1.5, 0, 1, 0));
+         this.shapes.walls.draw(context, program_state, right_wall_transform, this.materials.walls);
+
+        let back_wall_transform = Mat4.identity();
+        back_wall_transform = back_wall_transform.times(Mat4.scale(13.5, 4, 1))
+                                                 .times(Mat4.translation(0, 0, -0.9));
+        this.shapes.walls.draw(context, program_state, back_wall_transform, this.materials.back_wall);
     }
 
     draw_targets(context, program_state, t){
@@ -175,7 +215,6 @@ export class Project extends Scene {
         }
     }
 
-
     display(context, program_state) {
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
@@ -193,8 +232,8 @@ export class Project extends Scene {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect()
                 this.my_mouse_down(e, mouse_position(e), context, program_state);
-            });
-        }
+        });
+    }
 
         program_state.projection_transform = Mat4.perspective(
             Math.PI / 4, context.width / context.height, .1, 1000);
@@ -205,9 +244,18 @@ export class Project extends Scene {
         program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+    
+        let model_transform = Mat4.identity();
+
+        // SCUFF BACKGROUND
+        let background_sky_transform = model_transform;
+        background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 0));
+        this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.background_sky);
+                                        
+        this.draw_floor(context, program_state);
+        this.draw_walls(context, program_state);
         
         this.draw_targets(context, program_state, t);
-
         
         // Difficulty Selection Tester
         let desired;
@@ -218,7 +266,7 @@ export class Project extends Scene {
             desired = this.initial_camera_location;
         }
         program_state.set_camera(desired);
-
+   
     }
 }
 
@@ -366,5 +414,4 @@ class Gouraud_Shader extends Shader {
         this.send_gpu_state(context, gpu_addresses, gpu_state, model_transform);
     }
 }
-
 
