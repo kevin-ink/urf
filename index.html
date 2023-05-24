@@ -15,8 +15,24 @@
   <body>
     <!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls.-->
     <!-- Main-Canvas is turned off by default -->
+    <div id="top-bar">
+
+    </div>
     <div class="canvas-widget" id="main-canvas"></div>
     <div id="main">
+      <div id="opt-popup" style="display: none;">
+        <button class="close-btn">X</button>
+      </div>
+      <div id="htp-popup" style="display: none;">
+        <button class="close-btn">X</button>
+        <p>
+          Click on the objects that appear on your screen as accurately and fast as possible.
+          A report will be given to you at the end of your game session that includes a score
+          based on analysis of your mouse aim. You can customize your game session by going
+          to the <em>Options</em> menu before you start the game. You can start the game by clicking on
+          the <em>Play</em> button.
+        </p>
+      </div>
       <h1 id="title">ULTRA RAPID FIRE</h1>
       <div id="menu">
         <button id="opt-btn">OPTIONS</button>

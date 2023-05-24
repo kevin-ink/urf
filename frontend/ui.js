@@ -1,6 +1,9 @@
 // ticking "_"
 const h1 = document.getElementById("title");
 const main = document.getElementById("main");
+const canvas = document.getElementById("main-canvas");
+const topBar = document.getElementById("top-bar");
+topBar.style.display = "none";
 main.classList.add("animated");
 h1.classList.add("animated");
 if (h1) 
@@ -13,8 +16,17 @@ if (h1)
     }, 500);
 }
 
-// expands the interface for the selected button
-function expand(e) {
+function expand(id) 
+{
+    const popup = id === 'opt-btn' ? document.getElementById("opt-popup") : document.getElementById("htp-popup");
+    popup.classList.add("popup");
+    popup.classList.add("scale-in-ver-top");
+    popup.style.display = "block";
+}
+
+// rearranges the interface after selecting a button
+function rearrange(e) 
+{
     const btns = document.querySelectorAll("button");
     btns.forEach((other) => {
         other.disabled = true;
@@ -24,21 +36,29 @@ function expand(e) {
             other.classList.add("move");
             other.style.transform = `translateY(-30vh)`;
             other.style.transform +=
-                other.id === "opt-btn" ? `translateX(30vw)` : `translateX(-30vw)`;
+                other.id === "opt-btn" ? `translateX(29vw)` : `translateX(-29vw)`;
         }
-        else 
+        else if (!other.classList.contains("close-btn"))
         {
             other.classList.add("animate__fadeOutDown", "animate__animated");
         }
     });
-    const popup = document.createElement("div");
-    popup.classList.add("popup");
-    popup.classList.add("scale-in-ver-top");
+    expand(e.target.id);
     h1.classList.remove("animated");
     h1.classList.add("animate__fadeOutDown", "animate__animated");
+    h1.addEventListener("animationend", () => h1.style.visibility = "hidden");
     main.classList.add("darken");
-    main.appendChild(popup);
-    
+}
+
+function startGame() 
+{
+    // TO BE IMPLEMENTED
+    main.classList.add("puff-out-center");
+    main.addEventListener("animationend", () => {
+        main.style.display = "none";
+    })
+    canvas.style.display = "block";
+    canvas.classList.add("puff-in-center");
 }
 
 // get all buttons and make them clickable
@@ -46,8 +66,13 @@ const btns = document.querySelectorAll("button");
 if (btns.length !== 0) {
     btns.forEach((btn) => {
         btn.classList.add("cue");
-        if (btn.id !== "start-btn") {
-          btn.addEventListener("click", expand);
+        if (btn.id !== "start-btn") 
+        {
+            btn.addEventListener("click", rearrange);
+        }
+        else
+        {
+            btn.addEventListener("click", startGame);
         }
     });
 }
