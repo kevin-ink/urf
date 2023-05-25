@@ -41,15 +41,16 @@ export class Project extends Scene {
         }
         
         // Used for difficulty 
+        // Set the radius size of targets
         this.difficulty = "medium";
         if (this.difficulty == "easy"){
-            this.view_dist = 12;
+            this.target_r = 1.5;
         }
         else if (this.difficulty == "medium"){
-            this.view_dist = 20;
+            this.target_r = 1;
         }
         else {
-            this.view_dist = 36;
+            this.target_r = 0.5;
         }
 
         // Number of Targets 
@@ -70,59 +71,22 @@ export class Project extends Scene {
 
         */
 
-        // Change the z-coordinate
-        // Easy => 12, Medium => 20, Hard => 36
+        this.view_dist = 20;
+
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.easy = Mat4.look_at(vec3(0, 0, 12), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.medium = Mat4.look_at(vec3(0, 0, 20), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.hard = Mat4.look_at(vec3(0, 0, 36), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("Easy", ["Control", "0"], () => this.attached = () => this.easy);
+        this.key_triggered_button("Easy", ["Control", "e"], () => null);
+        this.key_triggered_button("Medium", ["Control", "m"], () => null);
+        this.key_triggered_button("Hard", ["Control", "h"], () => null);
         this.new_line();
-        this.key_triggered_button("Medium", ["Control", "1"], () => this.attached = () => this.medium);
-        this.key_triggered_button("Hard", ["Control", "2"], () => this.attached = () => this.hard);
+        this.key_triggered_button("1", ["Control", "1"], () => null);
+        this.key_triggered_button("3", ["Control", "3"], () => null);
+        this.key_triggered_button("5", ["Control", "5"], () => null);
         this.new_line();
-    }
-
-    // Check if any of the targets are too close to each other
-    target_collision(ranX, ranY) {
-        for (let coord of this.target_locations){
-            let x = coord[0], y = coord[1];
-            let dist = Math.sqrt((ranX-x)**2 + (ranY-y)**2);
-            if (dist < 4){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Returns one random location that does not conflict with other targets
-    // For Easy: X => [-6,6] Y => [-3, 3]
-    // For Medium: X => [-12, 12] Y => [-6, 6]
-    // For Hard: X => [-24, 24] Y => [-12, 12]
-    generate_location() {
-        let factor = 1;
-        if (this.difficulty == "medium") {
-            factor = 2;
-        }
-        else if (this.difficulty == "hard"){
-            factor = 3;
-        }
-
-        let xMin = -6*factor, xMax = 6*factor;
-        let yMin = -3*factor, yMax = 3*factor;
-        
-        // Generate random coordinates
-        let ranX, ranY, ranZ = Math.random()*4 + -2;
-        do {
-            ranX = Math.random() * (xMax-xMin) + xMin
-            ranY = Math.random() * (yMax-yMin) + yMin // MAKE SURE yMin ABOVE THE FLOOR
-        }
-        while (this.target_collision(ranX, ranY));
-        return vec3(ranX, ranY, ranZ);
+        this.key_triggered_button("Strafe", ["Control", "s"], () => null);
     }
 
     draw_floor(context, program_state){
@@ -153,14 +117,44 @@ export class Project extends Scene {
         this.shapes.walls.draw(context, program_state, back_wall_transform, this.materials.back_wall);
     }
 
+    // Check if any of the targets are too close to each other
+    target_collision(ranX, ranY) {
+        for (let coord of this.target_locations){
+            let x = coord[0], y = coord[1];
+            let dist = Math.sqrt((ranX-x)**2 + (ranY-y)**2);
+            if (dist < 2*this.target_r + 2){ // 2 times the radius + 2
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Returns one random location that does not conflict with other targets
+    generate_location() {
+        let xMin = -12, xMax = 12;
+        let yMin = -2, yMax = 6;
+        
+        // Generate random coordinates
+        let ranX, ranY, ranZ = 1;
+        // Math.random()*4 + -2;
+        do {
+            ranX = Math.random() * (xMax-xMin) + xMin;
+            ranY = Math.random() * (yMax-yMin) + yMin;
+        }
+        while (this.target_collision(ranX, ranY));
+        return vec3(ranX, ranY, ranZ);
+    }
+
+
     draw_targets(context, program_state, t){
         let model_transform = Mat4.identity();
+        let r = this.target_r;
         let d = 0;
         if (this.strafe){
             d = Math.sin(t);
         }
         for (let coord of this.target_locations){
-            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])), this.materials.test);
+            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])).times(Mat4.scale(r, r, r)), this.materials.test);
         }
     }
 
@@ -169,7 +163,7 @@ export class Project extends Scene {
         let t_x = coord[0], t_y = coord[1];
         let h_x = pos_world[0], h_y = coord[1];
         let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
-        if (d <= 1){
+        if (d <= this.target_r){
             return true;
         }
         return false;
@@ -248,7 +242,7 @@ export class Project extends Scene {
         let model_transform = Mat4.identity();
 
         // SCUFF BACKGROUND
-        let background_sky_transform = model_transform;
+            let background_sky_transform = model_transform;
         background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 1))
                                                             .times(Mat4.translation(0,0,-4));
         this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.background_sky);
@@ -257,16 +251,6 @@ export class Project extends Scene {
         this.draw_walls(context, program_state);
         
         this.draw_targets(context, program_state, t);
-        
-        // Difficulty Selection Tester
-        let desired;
-
-        if (this.attached && this.attached() !== null) {
-            desired = this.attached();
-        } else {
-            desired = this.initial_camera_location;
-        }
-        program_state.set_camera(desired);
    
     }
 }
