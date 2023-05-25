@@ -45,11 +45,19 @@ export class Project extends Scene {
 
         /* !!! Why does sound sometimes not play when they are stored here? !!! */
 
-        // this.heavy_shot = new Audio('assets/sounds/gun.mp3');
-        // this.laser = new Audio('assets/sounds/laser.mp3');
-        // this.water_drop = new Audio('assets/sounds/bloop.mp3');
-        // this.quite_shot = new Audio('assets/sounds/quite_gun.mp3');
-        // this.shatter = new Audio('assets/sounds/shatter.mp3');
+        this.gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
+        this.heavy_shot = new Audio('assets/sounds/gun.mp3');
+        this.laser = new Audio('assets/sounds/laser.mp3');
+        this.water_drop = new Audio('assets/sounds/bloop.mp3');
+        this.quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+        this.shatter = new Audio('assets/sounds/shatter.mp3');
+        this.first_hit = new Audio('assets/sounds/first_kill.mp3');
+        this.second_hit = new Audio('assets/sounds/second_kill.mp3');
+        this.third_hit = new Audio('assets/sounds/third_kill.mp3');
+        this.fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
+        this.fifth_hit = new Audio('assets/sounds/fifth_kill.mp3');
+        this.spectrum = new Audio('assets/sounds/spectrum_valorant.mp3');
+        this.terrible = new Audio('assets/sounds/terrible_voiceline.mp3');
         
         // Used for difficulty 
         // Set the radius size of targets
@@ -82,6 +90,7 @@ export class Project extends Scene {
 
         // How many hits in a row to coordinate sound effect
         this.cont_hits = 0;
+        this.cont_misses = 0;
 
         // Point system
         this.points = 0;
@@ -108,6 +117,8 @@ export class Project extends Scene {
         this.new_line();
         this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
         this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
+        this.new_line();
+        this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
         this.control_panel.innerHTML = this.points;
         this.control_panel.innerHTML += ' ' + this.accuracy;
     }
@@ -206,18 +217,18 @@ export class Project extends Scene {
     // Mouse Picking 
     my_mouse_down(e, pos, context, program_state) {
         // Putting sounds here makes it faster? 
-        let heavy_shot = new Audio('assets/sounds/gun.mp3');
-        let laser = new Audio('assets/sounds/laser.mp3');
-        let water_drop = new Audio('assets/sounds/bloop.mp3');
-        let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
-        let shatter = new Audio('assets/sounds/shatter.mp3');
-        let first_hit = new Audio('assets/sounds/first_kill.mp3');
-        let second_hit = new Audio('assets/sounds/second_kill.mp3');
-        let third_hit = new Audio('assets/sounds/third_kill.mp3');
-        let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
-        let fifth_hit = new Audio('assets/sounds/fifth_kill.mp3');
+        // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
+        // let heavy_shot = new Audio('assets/sounds/gun.mp3');
+        // let laser = new Audio('assets/sounds/laser.mp3');
+        // let water_drop = new Audio('assets/sounds/bloop.mp3');
+        // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+        // let shatter = new Audio('assets/sounds/shatter.mp3');
+        // let first_hit = new Audio('assets/sounds/first_kill.mp3');
+        // let second_hit = new Audio('assets/sounds/second_kill.mp3');
+        // let third_hit = new Audio('assets/sounds/third_kill.mp3');
+        // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-
+        let missed = true;
 
         let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
         let pos_ndc_far  = vec4(pos[0], pos[1],  1.0, 1.0);
@@ -234,8 +245,9 @@ export class Project extends Scene {
         /* To determine if the mouse click hit any object
            just calculate the distance between the x and y coordinates of the 
         */
-        // heavy_shot.play();
-        quite_shot.play();
+        // gun_with_ammo.play();
+        this.heavy_shot.play();
+        // quite_shot.play();
         // laser.play();
         this.total_shots++;
         for (const coord of this.target_locations){
@@ -245,35 +257,51 @@ export class Project extends Scene {
             let x = (1-t)*pos_world_near[0]+t*pos_world_far[0];
             let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
             let world_coord = vec4(x, y, z, 1.0);
-            console.log(world_coord);
+            console.log(world_coord); // each target has its own coordinates
             if (this.hit_target(coord, world_coord)){
+                missed = false;
                 this.cont_hits++;
+                this.cont_misses = 0;
+                console.log(this.cont_hits);
                 // Valorant kill sounds with different sound for more hits
                 switch(this.cont_hits){
                     case 1:
-                        first_hit.play();
+                        this.first_hit.play();
+                        console.log("first");
+                        console.log(this.cont_hits);
                         break;
                     case 2:
-                        second_hit.play();
+                        this.second_hit.play();
+                        console.log("second");
                         break;
                     case 3:
-                        third_hit.play();
+                        this.third_hit.play();
+                        console.log("third");
                         break;
                     case 4:
-                        fourth_hit.play();
+                        this.fourth_hit.play();
+                        console.log("fourth");
                         break;
                     default:
-                        fifth_hit.play();
+                        this.fifth_hit.play();
+                        console.log("ace");
+                        this.cont_hits = 0;
                         break;
                 }
                 this.points += 1000;
                 this.hits++;
                 this.target_locations.delete(coord);
                 this.target_locations.add(this.generate_location());
+
                 break;
             }
-            else {
-                this.cont_hits = 0;
+        }
+        if (missed){
+            this.cont_hits = 0;
+            this.cont_misses++;
+            // easter egg :)
+            if (this.cont_misses == 4){
+                this.terrible.play();
             }
         }
         this.accuracy = this.hits/this.total_shots;
