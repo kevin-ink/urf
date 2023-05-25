@@ -55,10 +55,8 @@ export class Project extends Scene {
 
         // Number of Targets 
         this.target_num = 3;
-        this.target_locations = new Set();
-        for (let i = 0; i < this.target_num; i++){
-            this.target_locations.add(this.generate_location());
-        }
+        // generate a set of locations for all targets
+        this.generate_target_locations();
 
         // Strafing 
         this.strafe = false;
@@ -71,6 +69,14 @@ export class Project extends Scene {
 
         */
 
+        // Point system
+        this.points = 0;
+
+        // Accuracy
+        this.hits = 0;
+        this.total_shots = 0;
+        this.accuracy = 1;
+
         this.view_dist = 20;
 
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
@@ -78,15 +84,17 @@ export class Project extends Scene {
 
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("Easy", ["Control", "e"], () => null);
-        this.key_triggered_button("Medium", ["Control", "m"], () => null);
-        this.key_triggered_button("Hard", ["Control", "h"], () => null);
+        this.control_panel.innerHTML = this.points;
+        this.control_panel.innerHTML += ' ' + this.accuracy;
+        this.key_triggered_button("Easy", ["Control", "e"], () => {this.target_r = 1.5;}); // include generate_target_locations if want to repopulate after changing
+        this.key_triggered_button("Medium", ["Control", "m"], () => {this.target_r = 1;});
+        this.key_triggered_button("Hard", ["Control", "h"], () => {this.target_r = 0.5;});
         this.new_line();
-        this.key_triggered_button("1", ["Control", "1"], () => null);
-        this.key_triggered_button("3", ["Control", "3"], () => null);
-        this.key_triggered_button("5", ["Control", "5"], () => null);
+        this.key_triggered_button("1", ["Control", "1"], () => {this.target_num = 1; this.generate_target_locations();});
+        this.key_triggered_button("3", ["Control", "3"], () => {this.target_num = 3; this.generate_target_locations();});
+        this.key_triggered_button("5", ["Control", "5"], () => {this.target_num = 5; this.generate_target_locations();});
         this.new_line();
-        this.key_triggered_button("Strafe", ["Control", "s"], () => null);
+        this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
     }
 
     draw_floor(context, program_state){
@@ -135,14 +143,20 @@ export class Project extends Scene {
         let yMin = -2, yMax = 6;
         
         // Generate random coordinates
-        let ranX, ranY, ranZ = 1;
-        // Math.random()*4 + -2;
+        let ranX, ranY, ranZ = Math.random()*6 + -2;
         do {
             ranX = Math.random() * (xMax-xMin) + xMin;
             ranY = Math.random() * (yMax-yMin) + yMin;
         }
         while (this.target_collision(ranX, ranY));
         return vec3(ranX, ranY, ranZ);
+    }
+
+    generate_target_locations(){
+        this.target_locations = new Set();
+        for (let i = 0; i < this.target_num; i++){
+            this.target_locations.add(this.generate_location());
+        }
     }
 
 
@@ -167,6 +181,8 @@ export class Project extends Scene {
             console.log(d);
             console.log(t_y);
             console.log(h_y);
+            this.points += 1000;
+            this.hits++;
             return true;
         }
         return false;
@@ -192,7 +208,7 @@ export class Project extends Scene {
         /* To determine if the mouse click hit any object
            just calculate the distance between the x and y coordinates of the 
         */
-
+        this.total_shots++;
         for (const coord of this.target_locations){
             // Interpolation for near and far to get to the t of the z-coordinate of the target 
             let z = coord[2], z1 = pos_world_near[2], z2 = pos_world_far[2];
@@ -207,6 +223,9 @@ export class Project extends Scene {
                 break;
             }
         }
+        this.accuracy = this.hits/this.total_shots;
+        this.accuracy = Math.round(this.accuracy*100)/100
+        this.make_control_panel();
     }
 
     display(context, program_state) {
