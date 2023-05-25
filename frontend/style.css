@@ -87,7 +87,7 @@ h1 {
     justify-content: space-between;
 }
 
-button {
+button:not(.arrow) {
     font-family: "Roboto", sans-serif;
     color: black;
     background: transparent;
@@ -95,7 +95,6 @@ button {
     font-weight: bold;
     text-shadow: -1px -1px 1px rgba(255, 255, 255, .1), 1px 1px 1px rgba(0, 0, 0, .5);
     border-width: 0;
-
     position: relative;
     transition: transform 0.5s;
 }
@@ -121,9 +120,10 @@ button#start-btn:hover {
     background-position: 100% 100%;
 }
 
-p {
+.popup > p {
     margin: 0;
     padding: 0;
+    text-indent: 2rem;
 }
 
 .popup {
@@ -132,12 +132,12 @@ p {
     margin-top: 1rem;
     font-size: 2rem;
     font-weight: bold;
-    text-indent: 2rem;
     color: black;
     font-family: 'Roboto', sans-serif;
     width: 50%;
     padding: 1%;
-    height: 60%;
+    padding-bottom: 2%;
+    height: auto;
     top: 30%;
     left: 25%;
     position: absolute;
@@ -150,11 +150,40 @@ p {
     justify-content: space-between;
 }
 
+.popup div {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-right: 2%;
+    margin-left: 2%;
+}
+
+.popup div div {
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.popup div h3 {
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.popup div div p {
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
 button.close-btn {
-    width: auto;
-    height: auto;
-    margin-left: 85%;
-    margin-bottom: 5%;
+    width: 3rem;
+    height: 5rem;
+    margin-left: 90%;
+    margin-bottom: 0;
     cursor: pointer;
     background-image: linear-gradient(#0575e6 0 0);
     background-size: 200% .08em;
@@ -166,11 +195,14 @@ button.close-btn:hover {
     transition: background-position .2s;
     background-position: 100% 100%;
     cursor: pointer;
+    font-size: 4rem;
 }
 
 #start-btn {
     height: 10%;
 }
+
+
 
 /*
 // Animista classes
