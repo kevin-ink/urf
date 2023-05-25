@@ -21,15 +21,17 @@ const Canvas_Widget = widgets.Canvas_Widget =
             this.element = element;
 
             const defaults = {
-                show_canvas: true, make_controls: true, show_explanation: true,
-                make_editor: false, make_code_nav: true
+                show_canvas: true, make_controls: false, show_explanation: false,
+                make_editor: false, make_code_nav: false
             };
             if (initial_scenes && initial_scenes[0])
                 Object.assign(options, initial_scenes[0].widget_options);
             Object.assign(this, defaults, options)
 
-            const rules = [".canvas-widget { width: 1080px; background: White; margin:auto }",
-                ".canvas-widget canvas { width: 1080px; height: 600px; margin-bottom:-3px }"];
+            const rules = [
+              ".canvas-widget { width: 100vw; background: white; margin:0 }",
+              ".canvas-widget canvas { width: 100vw; height: 90vh; margin-top: 10vh }",
+            ];
 
             if (document.styleSheets.length == 0) document.head.appendChild(document.createElement("style"));
             for (const r of rules) document.styleSheets[document.styleSheets.length - 1].insertRule(r, 0)
