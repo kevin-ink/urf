@@ -160,18 +160,18 @@ export class Project extends Scene {
 
     // Determine if a target was hit
     hit_target(coord, pos_world){
-        let t_x = coord[0], t_y = coord[1];
-        let h_x = pos_world[0], h_y = coord[1];
+        let t_x = coord[0], t_y = coord[1]; // Target coodinates
+        let h_x = pos_world[0], h_y = pos_world[1]; // Mouse click coordinates
         let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
-        if (d <= this.target_r){
+        if (d <= this.target_r){ // If the mouse click is within radius length of target
+            console.log(d);
+            console.log(t_y);
+            console.log(h_y);
             return true;
         }
         return false;
     }
 
-    interpolation(p1, p2){
-        return p1/(p1-p2);
-    }
 
     // Mouse Picking 
     my_mouse_down(e, pos, context, program_state) {
@@ -187,20 +187,20 @@ export class Project extends Scene {
         pos_world_far.scale_by(1 / pos_world_far[3]);
         center_world_near.scale_by(1 / center_world_near[3]);
 
-        // Interpolation for near and far to get z = 0
-        // 0 = (1-t)zfar + (t)znear
-        // use t to find the values for x and y at z = 0
-        let t = this.interpolation(pos_world_near[2], pos_world_far[2]);
-        let x = (1-t)*pos_world_near[0]+t*pos_world_far[0];
-        let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
-        let world_coord = vec4(x, y, 0.0, 1.0);
 
-        console.log(world_coord);
 
         /* To determine if the mouse click hit any object
            just calculate the distance between the x and y coordinates of the 
         */
+
         for (const coord of this.target_locations){
+            // Interpolation for near and far to get to the t of the z-coordinate of the target 
+            let z = coord[2], z1 = pos_world_near[2], z2 = pos_world_far[2];
+            let t = (z-z1)/(z2-z1);
+            let x = (1-t)*pos_world_near[0]+t*pos_world_far[0];
+            let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
+            let world_coord = vec4(x, y, z, 1.0);
+            console.log(world_coord);
             if (this.hit_target(coord, world_coord)){
                 this.target_locations.delete(coord);
                 this.target_locations.add(this.generate_location());
