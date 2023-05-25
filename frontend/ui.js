@@ -1,21 +1,27 @@
-// setup
-const h1 = document.getElementById("title");
-const main = document.getElementById("main");
-const canvas = document.getElementById("main-canvas");
-const topBar = document.getElementById("top-bar");
-let origTransform;
-topBar.style.display = "none";
-main.classList.add("animated");
-h1.classList.add("animated");
+//
+// FUNCTIONS
+//
 
-// ticking "_"
-if (h1) {
-  const change_ = setInterval(() => {
-    h1.textContent =
-      h1.textContent == "ULTRA RAPID FIRE_"
-        ? "ULTRA RAPID FIRE "
-        : "ULTRA RAPID FIRE_";
-  }, 500);
+function changeOpt(e) {
+  const opt = e.target.parentNode.parentNode.querySelector("h3").id;
+  const p = e.target.parentNode.querySelector("p");
+  let it = indexes[opt];
+  const arr = options[opt]
+  it = e.target.classList.contains("left") ? (it - 1 + arr.length) % arr.length : (it + 1) % arr.length;
+  indexes[opt] = it;
+  let newOpt = arr[it];
+  config[opt] = newOpt;
+  if (typeof newOpt === 'string')
+  {
+    newOpt = newOpt.toUpperCase();
+
+  }
+  else if (typeof newOpt === 'boolean')
+  {
+    newOpt = newOpt === false ? "OFF" : "ON";
+  }
+  p.textContent = newOpt;
+  console.log(config);
 }
 
 // expands menu for options and how to play
@@ -33,11 +39,10 @@ function expand(id) {
       p.classList.add("animate__animated", "animate__fadeIn");
     }
     if (d) {
-        d.forEach((div) => 
-        {
-            div.style.visibility = "visible";
-            div.classList.add("animate__animated", "animate__fadeIn");
-        })
+      d.forEach((div) => {
+        div.style.visibility = "visible";
+        div.classList.add("animate__animated", "animate__fadeIn");
+      });
     }
   });
   popup.style.display = "flex";
@@ -61,11 +66,15 @@ function rearrange(e) {
     // take care of all other buttons
     btns.forEach((iter) => {
       iter.classList.remove("cue");
-      if (iter !== btn && !iter.classList.contains("close-btn") && !iter.classList.contains("arrow")) {
+      if (
+        iter !== btn &&
+        !iter.classList.contains("close-btn") &&
+        !iter.classList.contains("arrow")
+      ) {
         iter.classList.remove("animate__fadeInUp");
         iter.classList.add("animate__fadeOutDown");
       }
-      iter.disabled = iter.classList.contains("close-btn") ? false : true;
+      iter.disabled = iter.classList.contains("close-btn") || iter.classList.contains("arrow") ? false : true;
     });
 
     // expand menu of selected button
@@ -89,9 +98,9 @@ function rearrange(e) {
       p.style.visibility = "hidden";
     }
     if (d) {
-        d.forEach((div) => {
+      d.forEach((div) => {
         div.style.visibility = "hidden";
-        })
+      });
     }
     popup.classList.add("scale-out-ver-top");
     popup.addEventListener(
@@ -113,7 +122,11 @@ function rearrange(e) {
           () => {
             btns.forEach((iter) => {
               iter.classList.add("cue");
-              if (iter !== btnToMove && !iter.classList.contains("close-btn") && !iter.classList.contains("arrow")) {
+              if (
+                iter !== btnToMove &&
+                !iter.classList.contains("close-btn") &&
+                !iter.classList.contains("arrow")
+              ) {
                 iter.classList.add("animate__fadeInUp", "animate__faster");
                 iter.addEventListener(
                   "animationend",
@@ -167,6 +180,53 @@ function startGame() {
   canvas.classList.add("puff-in-center");
 }
 
+//
+// SETUP
+//
+const h1 = document.getElementById("title");
+const main = document.getElementById("main");
+const canvas = document.getElementById("main-canvas");
+const topBar = document.getElementById("top-bar");
+let origTransform;
+
+// export this for use in game canvas
+export let config = {
+  // default values
+  difficulty: "easy",
+  strafe: "off",
+  scatter: 1,
+  timer: 30,
+};
+
+const options = 
+{
+  difficulty: ["easy","medium","hard"],
+  strafe: [true, false],
+  scatter: [1, 3, 5],
+  timer: [30, 60, 90, 120],
+};
+
+const indexes = {}
+const opts = document.querySelectorAll("h3");
+opts.forEach((opt) => {
+  indexes[opt.id] = 0;
+});
+
+// ticking "_"
+if (h1) {
+  const change_ = setInterval(() => {
+    h1.textContent =
+      h1.textContent == "ULTRA RAPID FIRE_"
+        ? "ULTRA RAPID FIRE "
+        : "ULTRA RAPID FIRE_";
+  }, 500);
+}
+
+// hide topBar and start animating (gradient) of header and main
+topBar.style.display = "none";
+main.classList.add("animated");
+h1.classList.add("animated");
+
 // get all buttons and make them clickable
 const btns = document.querySelectorAll("button");
 if (btns.length !== 0) {
@@ -174,146 +234,17 @@ if (btns.length !== 0) {
     btn.classList.add("animate__animated");
     btn.classList.add("cue");
     // btn.addEventListener("click", playSound);
-    if (btn.id !== "start-btn") {
-      btn.addEventListener("click", rearrange);
-    } else {
+    if (btn.id === "start-btn") {
       btn.addEventListener("click", startGame);
+    } else if (btn.classList.contains("arrow")) {
+      btn.addEventListener("click", changeOpt);
+      btn.classList.remove("animate__animated");
+    } else {
+      btn.addEventListener("click", rearrange);
     }
   });
 }
 
 //
-// Spaghettier code below for debugging/reference purposes
+// END OF SETUP
 //
-// btns.forEach((iter) =>
-// {
-//     iter.disabled = true;
-//     iter.classList.remove("cue");
-
-//     if (iter === btn) // clicked button
-//     {
-//         if (iter.id === "opt-btn" || iter.id === "htp-btn") // button is options or how to play
-//         {
-//             xTranslate = iter.id === "opt-btn" ? 29 : -29;
-//             yTranslate = -30;
-//             iter.style.transform = `translateY(${yTranslate}vh)` + `translateX(${xTranslate}vw)`;
-
-//             // fade out header and change background color
-//             h1.classList.add("animate__fadeOutUp", "animate__animated");
-//             h1.addEventListener("animationend", () => h1.style.visibility = 'hidden', {once : true});
-//             h1.classList.remove("animated");
-//             main.classList.add("darken");
-
-//             btns.forEach((iter))
-
-//             expand(btn);
-//         }
-//         else // button is a close button
-//         {
-//             const popup = iter.parentNode;
-//             const p = popup.querySelector('p');
-//             p.style.visibility = 'hidden';
-//             popup.classList.add("scale-out-ver-top");
-//             popup.addEventListener("animationend", () =>
-//             {
-//                 popup.style.display = "none";
-//                 main.classList.remove("darken");
-//                 // change background color and get back headers
-//                 h1.style.visibility = 'visible';
-//                 h1.classList.remove("animate__fadeOutUp");
-//                 h1.classList.add("animate__fadeInDown");
-//                 h1.addEventListener("animationend", () => h1.classList.add("animated"), {once : true});
-//                 iter = iter.parentNode.id === "opt-popup" ? document.getElementById("opt-btn") : document.getElementById("htp-btn");
-//                 xTranslate = iter.parentNode.id === "opt-popup" ? 29 : -29;
-//                 yTranslate = -30;
-//                 iter.style.transform = `translateY(${yTranslate}vh)` + `translateX(${xTranslate}vw)`;
-//                 iter.addEventListener("animationend", () =>{
-//                     btns.forEach((it) => {
-//                         iter.classList.remove("animate__fadeOutDown");
-//                         iter.classList.add("animate__fadeInUp");
-//                         iter.classList.disabled = false;
-//                     })
-//                 }, {once : true})
-//             }, {once : true})
-//         }
-//     }
-//     else if (!iter.classList.contains("close-btn")) // not close button
-//     {
-//         if (btn.classList.contains("close-btn")) { // if clicked button is close button
-//             iter.classList.remove("animate__fadeOutDown");
-//             iter.classList.add("animate__fadeInUp");
-//             iter.classList.disabled = false;
-//         }
-//         else
-//         {
-//             iter.classList.add("animate__fadeOutDown");
-//             iter.classList.remove("animate__fadeInUp");
-//         }
-//     }
-//     else // if close button, make sure close button is not disabled
-//     {
-//         iter.disabled = false;
-//     }
-// })
-/*
-    // iterate through all buttons 
-    btns.forEach((iter) => {
-        // disable buttons and cue while rearranging
-        
-        iter.classList.remove("cue");
-
-        // move clicked button
-        if (iter === btn) {
-            let xTranslate; const yTranslate = iter.classList.contains("close-btn") ? 30 : -30;
-            if (iter.id === "opt-btn" || iter.parentNode.id === 'htp-popup')
-            {
-                xTranslate = 29;
-            }
-            else 
-            {
-                xTranslate = -29;
-            }
-            if (iter.classList.contains("close-btn")) {iter.classList.add("close-transform")};
-            iter.style.transform = `translateY(${yTranslate}vh)` + `translateX(${xTranslate}vw)`;
-            if (undo) 
-            {
-                iter.addEventListener("animationend", () => iter.classList.add("cue"));
-            }
-        }
-        else // all other buttons will be faded away
-        {
-            if (undo) {
-                iter.classList.remove("animate__fadeOutDown");
-                iter.classList.add("animate__fadeInDown");
-                iter.classList.add("cue");
-                iter.disabled = false;
-            }
-            else
-            {
-                if (!iter.classList.contains("close-btn")) {
-                    iter.classList.remove("animate__fadeInDown");
-                    iter.classList.add("animate__fadeOutDown");
-                }
-                else
-                {
-                    iter.disabled = false;
-                }
-            }
-        }
-    });
-    if (btn.classList.contains("close-btn")) 
-    {
-        closePopup(btn);
-        h1.classList.remove("animate__fadeOutDown");
-        h1.classList.add("animate__fadeInDown");
-        h1.addEventListener("animationend", () => h1.classList.add("animated"));
-        main.classList.remove("darken");
-    }
-    else 
-    {
-        expand(btn.id);
-        h1.classList.remove("animated");
-        h1.classList.add("animate__fadeOutDown");
-        main.classList.add("darken");
-    }
-    */
