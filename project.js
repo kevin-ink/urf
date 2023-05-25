@@ -20,7 +20,7 @@ export class Project extends Scene {
             background_sky: new defs.Square(),
             floor: new defs.Cube(),
             walls: new defs.Cube(),
-
+            rectangle: new defs.Cube(),
         };
 
         // *** Materials
@@ -37,6 +37,8 @@ export class Project extends Scene {
                 {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#e3dfd3")}),
             back_wall: new Material(new defs.Phong_Shader(),
                 {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#e3dfd3")}), 
+            gun: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#000000')}),
                    
         }
 
@@ -341,8 +343,22 @@ export class Project extends Scene {
     
         let model_transform = Mat4.identity();
 
-        // SCUFF BACKGROUND
-            let background_sky_transform = model_transform;
+        // Scuffed "gun"
+        let gun_transform = model_transform;
+        gun_transform = gun_transform.times(Mat4.translation(0.5,-1,18))
+                                      .times(Mat4.rotation(Math.PI/24, 0,1,0))
+                                      .times(Mat4.rotation(Math.PI/12, 1, 0, 0))
+                                      .times(Mat4.scale(0.08, 0.08, 1));
+        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
+        gun_transform = gun_transform.times(Mat4.translation(0, -3, -0.8))
+                                        .times(Mat4.scale(0.05,0.3,0.08))
+                                        .times(Mat4.scale(1/0.08,1/0.08,1));
+        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
+
+
+
+        
+        let background_sky_transform = model_transform;
         background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 1))
                                                             .times(Mat4.translation(0,0,-4));
         this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.background_sky);
