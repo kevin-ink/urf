@@ -152,16 +152,16 @@ button#start-btn:hover {
 
 .popup div {
     padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     margin-right: 2%;
     margin-left: 2%;
 }
 
 .popup div div {
-    width: 40%;
+    width: 45%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -170,19 +170,19 @@ button#start-btn:hover {
 .popup div h3 {
     padding: 0;
     margin: 0;
-    text-align: center;
+    height: auto;
 }
 
 .popup div div p {
     padding: 0;
     margin: 0;
-    text-align: center;
 }
 
 button.close-btn {
     width: 3rem;
-    height: 5rem;
+    height: 6rem;
     margin-left: 90%;
+    font-size: 3rem;
     margin-bottom: 0;
     cursor: pointer;
     background-image: linear-gradient(#0575e6 0 0);
@@ -195,7 +195,6 @@ button.close-btn:hover {
     transition: background-position .2s;
     background-position: 100% 100%;
     cursor: pointer;
-    font-size: 4rem;
 }
 
 #start-btn {
@@ -204,7 +203,21 @@ button.close-btn:hover {
     padding-left: 1rem;
 }
 
+.arrow {
+    font-size: 4rem;
+    border-width: 0;
+    margin: 0; 
+    padding: 0;
+    padding-bottom: 6%;
+    background-color: transparent;
+    color: black;
+    cursor: pointer;
+}
 
+.arrow:hover {
+    color: #021b79;
+    filter: drop-shadow(0 0 0.2rem #021b79);
+}
 
 /*
 // Animista classes
