@@ -200,6 +200,8 @@ button.close-btn:hover {
 
 #start-btn {
     height: 10%;
+    padding-right: 1rem;
+    padding-left: 1rem;
 }
 
 

@@ -39,6 +39,17 @@ export class Project extends Scene {
                 {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#e3dfd3")}), 
                    
         }
+
+
+        // Sound effects
+
+        /* !!! Why does sound sometimes not play when they are stored here? !!! */
+
+        // this.heavy_shot = new Audio('assets/sounds/gun.mp3');
+        // this.laser = new Audio('assets/sounds/laser.mp3');
+        // this.water_drop = new Audio('assets/sounds/bloop.mp3');
+        // this.quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+        // this.shatter = new Audio('assets/sounds/shatter.mp3');
         
         // Used for difficulty 
         // Set the radius size of targets
@@ -69,6 +80,9 @@ export class Project extends Scene {
 
         */
 
+        // How many hits in a row to coordinate sound effect
+        this.cont_hits = 0;
+
         // Point system
         this.points = 0;
 
@@ -84,8 +98,6 @@ export class Project extends Scene {
 
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.control_panel.innerHTML = this.points;
-        this.control_panel.innerHTML += ' ' + this.accuracy;
         this.key_triggered_button("Easy", ["Control", "e"], () => {this.target_r = 1.5;}); // include generate_target_locations if want to repopulate after changing
         this.key_triggered_button("Medium", ["Control", "m"], () => {this.target_r = 1;});
         this.key_triggered_button("Hard", ["Control", "h"], () => {this.target_r = 0.5;});
@@ -95,6 +107,9 @@ export class Project extends Scene {
         this.key_triggered_button("5", ["Control", "5"], () => {this.target_num = 5; this.generate_target_locations();});
         this.new_line();
         this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
+        this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
+        this.control_panel.innerHTML = this.points;
+        this.control_panel.innerHTML += ' ' + this.accuracy;
     }
 
     draw_floor(context, program_state){
@@ -139,11 +154,15 @@ export class Project extends Scene {
 
     // Returns one random location that does not conflict with other targets
     generate_location() {
-        let xMin = -12, xMax = 12;
-        let yMin = -2, yMax = 6;
+        let factor = 0;
+        if (this.target_r == 1.5){
+            factor = 1;
+        }
+        let xMin = -12+factor, xMax = 12-factor;
+        let yMin = -2, yMax = 6-factor;
         
         // Generate random coordinates
-        let ranX, ranY, ranZ = Math.random()*6 + -2;
+        let ranX, ranY, ranZ = Math.random()*5 + -2;
         do {
             ranX = Math.random() * (xMax-xMin) + xMin;
             ranY = Math.random() * (yMax-yMin) + yMin;
@@ -178,11 +197,6 @@ export class Project extends Scene {
         let h_x = pos_world[0], h_y = pos_world[1]; // Mouse click coordinates
         let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
         if (d <= this.target_r){ // If the mouse click is within radius length of target
-            console.log(d);
-            console.log(t_y);
-            console.log(h_y);
-            this.points += 1000;
-            this.hits++;
             return true;
         }
         return false;
@@ -191,6 +205,20 @@ export class Project extends Scene {
 
     // Mouse Picking 
     my_mouse_down(e, pos, context, program_state) {
+        // Putting sounds here makes it faster? 
+        let heavy_shot = new Audio('assets/sounds/gun.mp3');
+        let laser = new Audio('assets/sounds/laser.mp3');
+        let water_drop = new Audio('assets/sounds/bloop.mp3');
+        let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+        let shatter = new Audio('assets/sounds/shatter.mp3');
+        let first_hit = new Audio('assets/sounds/first_kill.mp3');
+        let second_hit = new Audio('assets/sounds/second_kill.mp3');
+        let third_hit = new Audio('assets/sounds/third_kill.mp3');
+        let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
+        let fifth_hit = new Audio('assets/sounds/fifth_kill.mp3');
+
+
+
         let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
         let pos_ndc_far  = vec4(pos[0], pos[1],  1.0, 1.0);
         let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
@@ -203,11 +231,12 @@ export class Project extends Scene {
         pos_world_far.scale_by(1 / pos_world_far[3]);
         center_world_near.scale_by(1 / center_world_near[3]);
 
-
-
         /* To determine if the mouse click hit any object
            just calculate the distance between the x and y coordinates of the 
         */
+        // heavy_shot.play();
+        quite_shot.play();
+        // laser.play();
         this.total_shots++;
         for (const coord of this.target_locations){
             // Interpolation for near and far to get to the t of the z-coordinate of the target 
@@ -218,9 +247,33 @@ export class Project extends Scene {
             let world_coord = vec4(x, y, z, 1.0);
             console.log(world_coord);
             if (this.hit_target(coord, world_coord)){
+                this.cont_hits++;
+                // Valorant kill sounds with different sound for more hits
+                switch(this.cont_hits){
+                    case 1:
+                        first_hit.play();
+                        break;
+                    case 2:
+                        second_hit.play();
+                        break;
+                    case 3:
+                        third_hit.play();
+                        break;
+                    case 4:
+                        fourth_hit.play();
+                        break;
+                    default:
+                        fifth_hit.play();
+                        break;
+                }
+                this.points += 1000;
+                this.hits++;
                 this.target_locations.delete(coord);
                 this.target_locations.add(this.generate_location());
                 break;
+            }
+            else {
+                this.cont_hits = 0;
             }
         }
         this.accuracy = this.hits/this.total_shots;
@@ -245,8 +298,8 @@ export class Project extends Scene {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect()
                 this.my_mouse_down(e, mouse_position(e), context, program_state);
-        });
-    }
+            });
+        }
 
         program_state.projection_transform = Mat4.perspective(
             Math.PI / 4, context.width / context.height, .1, 1000);
