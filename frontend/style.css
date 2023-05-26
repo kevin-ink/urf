@@ -227,7 +227,6 @@ button.close-btn:hover {
     display: flex;
     flex-direction: row;
     box-sizing: border-box;
-    padding-top: 0.5%;
     padding-bottom: 0.5%;
     height: 10vh;
     width: 100vw;
@@ -240,7 +239,6 @@ button.close-btn:hover {
 }
 
 .accuracy, .timer, .points {
-    font-size: 3rem;
     width: 30%;
     height: auto;
     display: inline-block;
@@ -248,6 +246,7 @@ button.close-btn:hover {
     text-align: center;
     font-weight: bold;
     filter: drop-shadow(0 0 0.2rem #021b79);
+    font-size: 2rem;
 }
 
 .timer {
@@ -255,6 +254,7 @@ button.close-btn:hover {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-size: 4rem;
 }
 
 .accuracy {
@@ -262,6 +262,7 @@ button.close-btn:hover {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    
 }
 
 .points > p {

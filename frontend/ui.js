@@ -1,3 +1,9 @@
+import {
+  Main_Scene,
+  Additional_Scenes,
+  Canvas_Widget,
+} from "./main-scene.js";
+
 //
 // FUNCTIONS
 //
@@ -180,6 +186,14 @@ function startGame() {
   canvas.classList.add("puff-in-center");
   topBar.style.display = "block";
   topBar.classList.add("puff-in-center");
+  // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
+  // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
+  const element_to_replace = document.querySelector("#main-canvas");
+  // Import the file that defines a scene.
+  const scenes = [Main_Scene, ...Additional_Scenes].map(
+    (scene) => new scene()
+  );
+  new Canvas_Widget(element_to_replace, scenes);
 }
 
 //
@@ -225,7 +239,6 @@ if (h1) {
 }
 
 // hide topBar and start animating (gradient) of header and main
-topBar.style.display = "none";
 main.classList.add("animated");
 h1.classList.add("animated");
 topBar.classList.add("animated");
