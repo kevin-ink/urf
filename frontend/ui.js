@@ -204,7 +204,7 @@ let origTransform;
 export let config = {
   // default values
   difficulty: "easy",
-  strafe: "off",
+  strafe: false,
   scatter: 1,
   timer: 30,
 };
