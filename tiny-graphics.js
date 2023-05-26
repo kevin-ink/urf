@@ -1322,7 +1322,7 @@ const Webgl_Manager = tiny.Webgl_Manager =
                 })(window);
         }
 
-        set_size(dimensions = [window.innerWidth, window.innerHeight * 0.9]) {
+        set_size(dimensions = [window.innerWidth, window.innerHeight * .9]) {
             // set_size():  Allows you to re-size the canvas anytime.  To work, it must change the
             // size in CSS, wait for style to re-flow, and then change the size again within canvas
             // attributes.  Both are needed because the attributes on a canvas ave a special effect
