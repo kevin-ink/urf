@@ -66,7 +66,7 @@ export class Project extends Scene {
         
         // Used for difficulty 
         // Set the radius size of targets
-        this.difficulty = "medium";
+        this.difficulty = config["difficulty"];
         if (this.difficulty == "easy"){
             this.target_r = 1.5;
         }
@@ -78,12 +78,14 @@ export class Project extends Scene {
         }
 
         // Number of Targets 
-        this.target_num = 3;
+        this.target_num = config["scatter"];
         // generate a set of locations for all targets
         this.generate_target_locations();
 
         // Strafing 
-        this.strafe = false;
+        this.strafe = config["strafe"];
+        console.log(this.strafe);
+        
         /*
         !!! Notes on Strafing !!!
         If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
@@ -325,16 +327,16 @@ export class Project extends Scene {
     display(context, program_state) {
 
         // sphagetti fix
-        if (config["difficulty"] == "easy"){
-            this.target_r = 1.5;
-        }
-        else if (config["difficulty"] == "medium"){
-            this.target_r = 1.0;
-        }
-        else {
-            this.target_r = 0.5;
-        }
-        this.target_num = config["scatter"];
+        // if (config["difficulty"] == "easy"){
+        //     this.target_r = 1.5;
+        // }
+        // else if (config["difficulty"] == "medium"){
+        //     this.target_r = 1.0;
+        // }
+        // else {
+        //     this.target_r = 0.5;
+        // }
+        // this.target_num = config["scatter"];
 
 
         // display():  Called once per frame of animation.
