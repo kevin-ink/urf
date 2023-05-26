@@ -238,7 +238,7 @@ button.close-btn:hover {
     border-image: linear-gradient(var(--angle), #0575e6, #021b79);
 }
 
-.accuracy, .timer, .points {
+#accuracy, #timer, #points {
     width: 30%;
     height: auto;
     display: inline-block;
@@ -249,7 +249,7 @@ button.close-btn:hover {
     font-size: 2rem;
 }
 
-.timer {
+#timer {
     background: linear-gradient(var(--angle), #aa4b6b, #3b8d99);
     -webkit-background-clip: text;
     background-clip: text;
@@ -257,7 +257,7 @@ button.close-btn:hover {
     font-size: 4rem;
 }
 
-.accuracy {
+#accuracy {
     background: linear-gradient(var(--angle), #0575e6, #021b79);
     -webkit-background-clip: text;
     background-clip: text;
@@ -265,7 +265,7 @@ button.close-btn:hover {
     
 }
 
-.points > p {
+#points > p {
     margin: 0;
     padding: 0;
     font-size: 1rem;

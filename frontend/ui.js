@@ -6,9 +6,9 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 export function updateBar(points, accuracy)
 {
-  let div = document.getElementById("score");
+  let div = document.getElementById("points");
   div.textContent = points;
-  div = document.getElementById("accuracy");
+  div = document.getElementById("accuracy");  
   div.textContent = accuracy + "%";
 }
 
