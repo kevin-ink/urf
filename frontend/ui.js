@@ -1,3 +1,5 @@
+import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
+
 //
 // FUNCTIONS
 //
@@ -6,18 +8,16 @@ function changeOpt(e) {
   const opt = e.target.parentNode.parentNode.querySelector("h3").id;
   const p = e.target.parentNode.querySelector("p");
   let it = indexes[opt];
-  const arr = options[opt]
-  it = e.target.classList.contains("left") ? (it - 1 + arr.length) % arr.length : (it + 1) % arr.length;
+  const arr = options[opt];
+  it = e.target.classList.contains("left")
+    ? (it - 1 + arr.length) % arr.length
+    : (it + 1) % arr.length;
   indexes[opt] = it;
   let newOpt = arr[it];
   config[opt] = newOpt;
-  if (typeof newOpt === 'string')
-  {
+  if (typeof newOpt === "string") {
     newOpt = newOpt.toUpperCase();
-
-  }
-  else if (typeof newOpt === 'boolean')
-  {
+  } else if (typeof newOpt === "boolean") {
     newOpt = newOpt === false ? "OFF" : "ON";
   }
   p.textContent = newOpt;
@@ -74,7 +74,10 @@ function rearrange(e) {
         iter.classList.remove("animate__fadeInUp");
         iter.classList.add("animate__fadeOutDown");
       }
-      iter.disabled = iter.classList.contains("close-btn") || iter.classList.contains("arrow") ? false : true;
+      iter.disabled =
+        iter.classList.contains("close-btn") || iter.classList.contains("arrow")
+          ? false
+          : true;
     });
 
     // expand menu of selected button
@@ -180,6 +183,12 @@ function startGame() {
   canvas.classList.add("puff-in-center");
   topBar.style.display = "block";
   topBar.classList.add("puff-in-center");
+  // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
+  // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
+  const element_to_replace = document.querySelector("#main-canvas");
+  // Import the file that defines a scene.
+  const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
+  new Canvas_Widget(element_to_replace, scenes);
 }
 
 //
@@ -200,15 +209,14 @@ export let config = {
   timer: 30,
 };
 
-const options = 
-{
-  difficulty: ["easy","medium","hard"],
-  strafe: [true, false],
+const options = {
+  difficulty: ["easy", "medium", "hard"],
+  strafe: [false, true],
   scatter: [1, 3, 5],
   timer: [30, 60, 90, 120],
 };
 
-const indexes = {}
+const indexes = {};
 const opts = document.querySelectorAll("h3");
 opts.forEach((opt) => {
   indexes[opt.id] = 0;
@@ -225,7 +233,6 @@ if (h1) {
 }
 
 // hide topBar and start animating (gradient) of header and main
-topBar.style.display = "none";
 main.classList.add("animated");
 h1.classList.add("animated");
 topBar.classList.add("animated");
