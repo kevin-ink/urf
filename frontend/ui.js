@@ -178,6 +178,8 @@ function startGame() {
   });
   canvas.style.display = "block";
   canvas.classList.add("puff-in-center");
+  topBar.style.display = "block";
+  topBar.classList.add("puff-in-center");
 }
 
 //
@@ -226,6 +228,7 @@ if (h1) {
 topBar.style.display = "none";
 main.classList.add("animated");
 h1.classList.add("animated");
+topBar.classList.add("animated");
 
 // get all buttons and make them clickable
 const btns = document.querySelectorAll("button");

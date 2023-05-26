@@ -44,6 +44,7 @@ body, html {
 
 body {
     display: flex;
+    background: white;
 }
 
 .animated {
@@ -217,6 +218,60 @@ button.close-btn:hover {
 .arrow:hover {
     color: #021b79;
     filter: drop-shadow(0 0 0.2rem #021b79);
+}
+
+#top-bar {
+    position: absolute;
+    padding-right: 10%;
+    padding-left: 10%;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    height: 10vh;
+    width: 100vw;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-style: solid;
+    background-image: linear-gradient(var(--angle), #c9d6ff,#e2e2e2);
+    border-image: linear-gradient(var(--angle), #0575e6, #021b79);
+}
+
+.accuracy, .timer, .points {
+    font-size: 3rem;
+    width: 30%;
+    height: auto;
+    display: inline-block;
+    font-family: "Roboto", sans-serif;
+    text-align: center;
+    font-weight: bold;
+    filter: drop-shadow(0 0 0.2rem #021b79);
+}
+
+.timer {
+    background: linear-gradient(var(--angle), #aa4b6b, #3b8d99);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.accuracy {
+    background: linear-gradient(var(--angle), #0575e6, #021b79);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.points > p {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    color: grey;
+    align-items: end;
+    display: inline-block;
+    filter: none;
 }
 
 /*
