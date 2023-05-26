@@ -4,6 +4,14 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 // FUNCTIONS
 //
 
+export function updateBar(points, accuracy)
+{
+  let div = document.getElementById("score");
+  div.textContent = points;
+  div = document.getElementById("accuracy");
+  div.textContent = accuracy + "%";
+}
+
 function changeOpt(e) {
   const opt = e.target.parentNode.parentNode.querySelector("h3").id;
   const p = e.target.parentNode.querySelector("p");
