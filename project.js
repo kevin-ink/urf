@@ -1,4 +1,4 @@
-import { defs, tiny } from "./examples/common.js";
+import { defs, tiny } from './examples/common.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -36,8 +36,9 @@ export class Project extends Scene {
             walls: new Material(new defs.Phong_Shader(),
                 {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3")}),
             back_wall: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3")}), 
-                   
+                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3"), specularity: 0.2}), 
+            //background_sky_texture: new Material(new defs.Textured_Phong(),
+            //    {ambient: .5, diffusivity: .5, texture: new Texture('assets/sky.png')}),
         }
         
         // Used for difficulty 
