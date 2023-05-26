@@ -1,5 +1,5 @@
 import { defs, tiny } from "./examples/common.js";
-import { config } from './frontend/ui.js';
+import { config, updateBar} from './frontend/ui.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -126,8 +126,6 @@ export class Project extends Scene {
         this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
         this.new_line();
         this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
-        this.control_panel.innerHTML = this.points;
-        this.control_panel.innerHTML += ' ' + this.accuracy;
     }
 
     draw_floor(context, program_state){
@@ -320,23 +318,11 @@ export class Project extends Scene {
             }
         }
         this.accuracy = this.hits/this.total_shots;
-        this.accuracy = Math.round(this.accuracy*100)/100
-        this.make_control_panel();
+        this.accuracy = Math.round(this.accuracy*10000)/100
+        updateBar(this.points, this.accuracy);
     }
 
     display(context, program_state) {
-
-        // sphagetti fix
-        // if (config["difficulty"] == "easy"){
-        //     this.target_r = 1.5;
-        // }
-        // else if (config["difficulty"] == "medium"){
-        //     this.target_r = 1.0;
-        // }
-        // else {
-        //     this.target_r = 0.5;
-        // }
-        // this.target_num = config["scatter"];
 
 
         // display():  Called once per frame of animation.
