@@ -21,6 +21,7 @@ export class Project extends Scene {
             floor: new defs.Cube(),
             walls: new defs.Cube(),
             rectangle: new defs.Cube(),
+            cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
         };
 
         // *** Materials
@@ -32,13 +33,13 @@ export class Project extends Scene {
             background_sky: new Material(new defs.Phong_Shader(),
                 {ambient: 0.5, diffusivity: 0.8, specularity: 0, color: hex_color("#99b6f2")}),
             floor: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#e3dfd3")}),
+                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
             walls: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#e3dfd3")}),
+                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
             back_wall: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#e3dfd3")}), 
+                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}), 
             gun: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#000000')}),
+                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
                    
         }
 
@@ -48,7 +49,8 @@ export class Project extends Scene {
         /* !!! Why does sound sometimes not play when they are stored here? !!! */
 
         this.gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
-        this.heavy_shot = new Audio('assets/sounds/gun.mp3');
+        this.shot_odd = new Audio('assets/sounds/gun.mp3');
+        this.shot_even = new Audio('assets/sounds/gun.mp3');
         this.laser = new Audio('assets/sounds/laser.mp3');
         this.water_drop = new Audio('assets/sounds/bloop.mp3');
         this.quite_shot = new Audio('assets/sounds/quite_gun.mp3');
@@ -248,9 +250,17 @@ export class Project extends Scene {
            just calculate the distance between the x and y coordinates of the 
         */
         // gun_with_ammo.play();
-        this.heavy_shot.play();
         // quite_shot.play();
         // laser.play();
+        // Two of the same sounds to allow overlap
+        if (this.hits % 2 == 1){
+            this.shot_odd.play();
+        }
+        else {
+            this.shot_even.play();
+        }
+        
+
         this.total_shots++;
         for (const coord of this.target_locations){
             // Interpolation for near and far to get to the t of the z-coordinate of the target 
@@ -345,16 +355,23 @@ export class Project extends Scene {
 
         // Scuffed "gun"
         let gun_transform = model_transform;
-        gun_transform = gun_transform.times(Mat4.translation(0.5,-1,18))
+        // connect mouse clicking to recoil if possible
+        let recoil = 0;
+        // 0.2*Math.sin(3*Math.PI*t);
+        gun_transform = gun_transform.times(Mat4.translation(0.5,-0.9,18+recoil))
                                       .times(Mat4.rotation(Math.PI/24, 0,1,0))
                                       .times(Mat4.rotation(Math.PI/12, 1, 0, 0))
                                       .times(Mat4.scale(0.08, 0.08, 1));
+
         this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
-        gun_transform = gun_transform.times(Mat4.translation(0, -3, -0.8))
+        gun_transform = gun_transform.times(Mat4.translation(0, -3, -0.7))
                                         .times(Mat4.scale(0.05,0.3,0.08))
                                         .times(Mat4.scale(1/0.08,1/0.08,1));
         this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
-
+        gun_transform = gun_transform.times(Mat4.translation(0,0.7,-5.5))
+                                        .times(Mat4.scale(0.05, 0.05,0.5))
+                                        .times(Mat4.scale(1/0.05,1/0.3,1/0.08));
+        this.shapes.cylinder.draw(context, program_state, gun_transform, this.materials.gun);
 
 
         
