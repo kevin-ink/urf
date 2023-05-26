@@ -323,6 +323,20 @@ export class Project extends Scene {
     }
 
     display(context, program_state) {
+
+        // sphagetti fix
+        if (config["difficulty"] == "easy"){
+            this.target_r = 1.5;
+        }
+        else if (config["difficulty"] == "medium"){
+            this.target_r = 1.0;
+        }
+        else {
+            this.target_r = 0.5;
+        }
+        this.target_num = config["scatter"];
+
+
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
         if (!context.scratchpad.controls) {
