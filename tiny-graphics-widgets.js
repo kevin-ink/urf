@@ -34,7 +34,7 @@ const Canvas_Widget = widgets.Canvas_Widget =
             ];
 
             if (document.styleSheets.length == 0) document.head.appendChild(document.createElement("style"));
-            for (const r of rules) document.styleSheets[document.styleSheets.length - 1].insertRule(r, 0)
+            for (const r of rules) document.styleSheets[1].insertRule(r, 0)
 
             // Fill in the document elements:
             if (this.show_explanation) {
