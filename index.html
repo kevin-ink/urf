@@ -1,27 +1,87 @@
-<!-- Graphics Example Code.  
-    index.html - The web page document containing the canvas (drawing surface).  It launches your JavaScript files.
--->
 <!DOCTYPE html>
 <html lang="En">
-<head>
-    <meta charset="UTF-8"/>
-    <link href="assets/fav.ico" rel="icon">
+  <head>
+    <meta charset="UTF-8" />
+    <link href="assets/icons/fav.ico" rel="icon" />
     <title>URF</title>
-</head>
-<body style="background: White">
-<!-- Begin typing your web page here. -->
-<!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls.-->
-<div class="canvas-widget" id="main-canvas"></div>
-<script type=module>
-    // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
-    // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
-    const element_to_replace = document.querySelector("#main-canvas");
-    import {Main_Scene, Additional_Scenes, Canvas_Widget} from './main-scene.js';
-    // Import the file that defines a scene.
-    const scenes = [Main_Scene, ...Additional_Scenes].map(scene => new scene());
-    // This line creates your scene.
-    new Canvas_Widget(element_to_replace, scenes);
-</script>
-
-</body>
+    <!-- animate.css for animations -->
+    <link
+      rel="animation stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link rel="main stylesheet" href="frontend/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls.-->
+    <!-- Main-Canvas is turned off by default -->
+    <div id="top-bar" style="display: none">
+      <div id="points">0<p>pts</p></div>
+      <div id="time">URF</div>
+      <div id="accuracy">100%</div>
+    </div>
+    <div class="canvas-widget" id="main-canvas"></div>
+    <div id="main">
+      <div
+        id="opt-popup"
+        class="popup"
+        style="display: none; height: 60%; padding-bottom: 5%"
+      >
+        <button class="close-btn">X</button>
+        <div style="visibility: hidden">
+          <h3 id="difficulty">DIFFICULTY</h3>
+          <div>
+            <button class="arrow left">«</button>
+            <p>EASY</p>
+            <button class="arrow right">»</button>
+          </div>
+        </div>
+        <div style="visibility: hidden">
+          <h3 id="strafe">STRAFE</h3>
+          <div>
+            <button class="arrow left">«</button>
+            <p>OFF</p>
+            <button class="arrow right">»</button>
+          </div>
+        </div>
+        <div style="visibility: hidden">
+          <h3 id="scatter">SCATTER</h3>
+          <div>
+            <button class="arrow left">«</button>
+            <p>1</p>
+            <button class="arrow right">»</button>
+          </div>
+        </div>
+        <div style="visibility: hidden">
+          <h3 id="timer">TIMER</h3>
+          <div>
+            <button class="arrow left">«</button>
+            <p>30</p>
+            <button class="arrow right">»</button>
+          </div>
+        </div>
+      </div>
+      <div id="htp-popup" class="popup" style="display: none">
+        <button class="close-btn">X</button>
+        <p style="visibility: hidden">
+          Click on the objects that appear on your screen as accurately and fast
+          as possible. A report will be given to you at the end of your game
+          session that includes a score based on analysis of your mouse aim. You
+          can customize your game session by going to the <em>Options</em> menu
+          before you start the game. You can start the game by clicking on the
+          <em>Play</em> button. <br><br>
+          <p style="font-size: 1rem; font-weight: 300;">CREDITS: This tiny graphics project is made by Kevin Li,
+            Michelle Li, and Leo Liu.</p>
+        </p>
+      </div>
+      <h1 id="title">ULTRA RAPID FIRE</h1>
+      <div id="menu">
+        <button id="opt-btn">OPTIONS</button>
+        <button id="htp-btn">HOW TO PLAY</button>
+      </div>
+      <button id="start-btn">PLAY</button>
+    </div>
+    <script type="module" src="frontend/ui.js"></script>
+    <script type="module" src="frontend/topbar.js"></script>
+  </body>
 </html>

@@ -1,4 +1,5 @@
-import { defs, tiny } from './examples/common.js';
+import { defs, tiny } from "./examples/common.js";
+import { config, updateBar} from './frontend/ui.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -20,48 +21,71 @@ export class Project extends Scene {
             background_sky: new defs.Square(),
             floor: new defs.Cube(),
             walls: new defs.Cube(),
-
+            rectangle: new defs.Cube(),
+            cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
         };
 
         // *** Materials
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
-                {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
+                {ambient: .4, diffusivity: .6, specularity: 0.6, color: hex_color("#DF182D")}),
             test2: new Material(new Gouraud_Shader(),
-                {ambient: .4, diffusivity: .6, color: hex_color("#992828")}),
+                {ambient: .4, diffusivity: .6, color: hex_color("#70B2E7")}),
             background_sky: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: 1, color: hex_color("#99b6f2")}),
+                {ambient: 0.5, diffusivity: 0.8, specularity: 0, color: hex_color("#99b6f2")}),
             floor: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3")}),
+                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
             walls: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3")}),
+                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
             back_wall: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, color: hex_color("#e3dfd3"), specularity: 0.2}), 
-            //background_sky_texture: new Material(new defs.Textured_Phong(),
-            //    {ambient: .5, diffusivity: .5, texture: new Texture('assets/sky.png')}),
+                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}), 
+            gun: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
+                   
         }
+
+
+        // Sound effects
+
+        /* !!! Why does sound sometimes not play when they are stored here? !!! */
+
+        this.gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
+        this.shot_odd = new Audio('assets/sounds/gun.mp3');
+        this.shot_even = new Audio('assets/sounds/gun.mp3');
+        this.laser = new Audio('assets/sounds/laser.mp3');
+        this.water_drop = new Audio('assets/sounds/bloop.mp3');
+        this.quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+        this.shatter = new Audio('assets/sounds/shatter.mp3');
+        this.first_hit = new Audio('assets/sounds/first_kill.mp3');
+        this.second_hit = new Audio('assets/sounds/second_kill.mp3');
+        this.third_hit = new Audio('assets/sounds/third_kill.mp3');
+        this.fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
+        this.fifth_hit = new Audio('assets/sounds/fifth_kill.mp3');
+        this.spectrum = new Audio('assets/sounds/spectrum_valorant.mp3');
+        this.terrible = new Audio('assets/sounds/terrible_voiceline.mp3');
         
         // Used for difficulty 
-        this.difficulty = "medium";
+        // Set the radius size of targets
+        this.difficulty = config["difficulty"];
         if (this.difficulty == "easy"){
-            this.view_dist = 12;
+            this.target_r = 1.5;
         }
         else if (this.difficulty == "medium"){
-            this.view_dist = 20;
+            this.target_r = 1;
         }
         else {
-            this.view_dist = 36;
+            this.target_r = 0.5;
         }
 
         // Number of Targets 
-        this.target_num = 3;
-        this.target_locations = new Set();
-        for (let i = 0; i < this.target_num; i++){
-            this.target_locations.add(this.generate_location());
-        }
+        this.target_num = config["scatter"];
+        // generate a set of locations for all targets
+        this.generate_target_locations();
 
         // Strafing 
-        this.strafe = false;
+        this.strafe = config["strafe"];
+        console.log(this.strafe);
+        
         /*
         !!! Notes on Strafing !!!
         If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
@@ -71,59 +95,37 @@ export class Project extends Scene {
 
         */
 
-        // Change the z-coordinate
-        // Easy => 12, Medium => 20, Hard => 36
+        // How many hits in a row to coordinate sound effect
+        this.cont_hits = 0;
+        this.cont_misses = 0;
+
+        // Point system
+        this.points = 0;
+
+        // Accuracy
+        this.hits = 0;
+        this.total_shots = 0;
+        this.accuracy = 1;
+
+        this.view_dist = 20;
+
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.easy = Mat4.look_at(vec3(0, 0, 12), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.medium = Mat4.look_at(vec3(0, 0, 20), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.hard = Mat4.look_at(vec3(0, 0, 36), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("Easy", ["Control", "0"], () => this.attached = () => this.easy);
+        this.key_triggered_button("Easy", ["Control", "e"], () => {this.target_r = 1.5;}); // include generate_target_locations if want to repopulate after changing
+        this.key_triggered_button("Medium", ["Control", "m"], () => {this.target_r = 1;});
+        this.key_triggered_button("Hard", ["Control", "h"], () => {this.target_r = 0.5;});
         this.new_line();
-        this.key_triggered_button("Medium", ["Control", "1"], () => this.attached = () => this.medium);
-        this.key_triggered_button("Hard", ["Control", "2"], () => this.attached = () => this.hard);
+        this.key_triggered_button("1", ["Control", "1"], () => {this.target_num = 1; this.generate_target_locations();});
+        this.key_triggered_button("3", ["Control", "3"], () => {this.target_num = 3; this.generate_target_locations();});
+        this.key_triggered_button("5", ["Control", "5"], () => {this.target_num = 5; this.generate_target_locations();});
         this.new_line();
-    }
-
-    // Check if any of the targets are too close to each other
-    target_collision(ranX, ranY) {
-        for (let coord of this.target_locations){
-            let x = coord[0], y = coord[1];
-            let dist = Math.sqrt((ranX-x)**2 + (ranY-y)**2);
-            if (dist < 4){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Returns one random location that does not conflict with other targets
-    // For Easy: X => [-6,6] Y => [-3, 3]
-    // For Medium: X => [-12, 12] Y => [-6, 6]
-    // For Hard: X => [-24, 24] Y => [-12, 12]
-    generate_location() {
-        let factor = 1;
-        if (this.difficulty == "medium") {
-            factor = 2;
-        }
-        else if (this.difficulty == "hard"){
-            factor = 3;
-        }
-
-        let xMin = -6*factor, xMax = 6*factor;
-        let yMin = -3*factor, yMax = 3*factor;
-        
-        // Generate random coordinates
-        let ranX, ranY, ranZ = Math.random()*4 + -2;
-        do {
-            ranX = Math.random() * (xMax-xMin) + xMin
-            ranY = Math.random() * (yMax-yMin) + yMin // MAKE SURE yMin ABOVE THE FLOOR
-        }
-        while (this.target_collision(ranX, ranY));
-        return vec3(ranX, ranY, ranZ);
+        this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
+        this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
+        this.new_line();
+        this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
     }
 
     draw_floor(context, program_state){
@@ -136,52 +138,103 @@ export class Project extends Scene {
     draw_walls(context, program_state){
         let left_wall_transform = Mat4.identity();
 
-        left_wall_transform = left_wall_transform.times(Mat4.scale(4, 4, context.width))
+        left_wall_transform = left_wall_transform.times(Mat4.scale(4, 5, context.width))
                                                  .times(Mat4.rotation(1.1, 0, 1, 0))
                                                  .times(Mat4.translation(-2.5, 0, -2));
         this.shapes.walls.draw(context, program_state, left_wall_transform, this.materials.walls);
 
         let right_wall_transform = Mat4.identity();
 
-        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 4, context.width))
+        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 5, context.width))
                                                    .times(Mat4.translation(68, 0, 0))
                                                    .times(Mat4.rotation(1.5, 0, 1, 0));
          this.shapes.walls.draw(context, program_state, right_wall_transform, this.materials.walls);
 
         let back_wall_transform = Mat4.identity();
-        back_wall_transform = back_wall_transform.times(Mat4.scale(13.5, 4, 1))
-                                                 .times(Mat4.translation(0, 0, -0.9));
+        back_wall_transform = back_wall_transform.times(Mat4.scale(13.5, 5, 1))
+                                                 .times(Mat4.translation(0, 0, -3));
         this.shapes.walls.draw(context, program_state, back_wall_transform, this.materials.back_wall);
     }
 
+    // Check if any of the targets are too close to each other
+    target_collision(ranX, ranY) {
+        for (let coord of this.target_locations){
+            let x = coord[0], y = coord[1];
+            let dist = Math.sqrt((ranX-x)**2 + (ranY-y)**2);
+            if (dist < 2*this.target_r + 2){ // 2 times the radius + 2
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Returns one random location that does not conflict with other targets
+    generate_location() {
+        let factor = 0;
+        if (this.target_r == 1.5){
+            factor = 1;
+        }
+        let xMin = -12+factor, xMax = 12-factor;
+        let yMin = -2, yMax = 6-factor;
+        
+        // Generate random coordinates
+        let ranX, ranY, ranZ = Math.random()*5 + -2;
+        do {
+            ranX = Math.random() * (xMax-xMin) + xMin;
+            ranY = Math.random() * (yMax-yMin) + yMin;
+        }
+        while (this.target_collision(ranX, ranY));
+        return vec3(ranX, ranY, ranZ);
+    }
+
+    generate_target_locations(){
+        this.target_locations = new Set();
+        for (let i = 0; i < this.target_num; i++){
+            this.target_locations.add(this.generate_location());
+        }
+    }
+
+
     draw_targets(context, program_state, t){
         let model_transform = Mat4.identity();
+        let r = this.target_r;
         let d = 0;
         if (this.strafe){
             d = Math.sin(t);
         }
         for (let coord of this.target_locations){
-            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])), this.materials.test2);
+            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])).times(Mat4.scale(r, r, r)), this.materials.test);
         }
     }
 
     // Determine if a target was hit
     hit_target(coord, pos_world){
-        let t_x = coord[0], t_y = coord[1];
-        let h_x = pos_world[0], h_y = coord[1];
+        let t_x = coord[0], t_y = coord[1]; // Target coodinates
+        let h_x = pos_world[0], h_y = pos_world[1]; // Mouse click coordinates
         let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
-        if (d <= 1){
+        if (d <= this.target_r){ // If the mouse click is within radius length of target
             return true;
         }
         return false;
     }
 
-    interpolation(p1, p2){
-        return p1/(p1-p2);
-    }
 
     // Mouse Picking 
     my_mouse_down(e, pos, context, program_state) {
+        // Putting sounds here makes it faster? 
+        // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
+        // let heavy_shot = new Audio('assets/sounds/gun.mp3');
+        // let laser = new Audio('assets/sounds/laser.mp3');
+        // let water_drop = new Audio('assets/sounds/bloop.mp3');
+        // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+        // let shatter = new Audio('assets/sounds/shatter.mp3');
+        // let first_hit = new Audio('assets/sounds/first_kill.mp3');
+        // let second_hit = new Audio('assets/sounds/second_kill.mp3');
+        // let third_hit = new Audio('assets/sounds/third_kill.mp3');
+        // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
+
+        let missed = true;
+
         let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
         let pos_ndc_far  = vec4(pos[0], pos[1],  1.0, 1.0);
         let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
@@ -194,29 +247,84 @@ export class Project extends Scene {
         pos_world_far.scale_by(1 / pos_world_far[3]);
         center_world_near.scale_by(1 / center_world_near[3]);
 
-        // Interpolation for near and far to get z = 0
-        // 0 = (1-t)zfar + (t)znear
-        // use t to find the values for x and y at z = 0
-        let t = this.interpolation(pos_world_near[2], pos_world_far[2]);
-        let x = (1-t)*pos_world_near[0]+t*pos_world_far[0];
-        let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
-        let world_coord = vec4(x, y, 0.0, 1.0);
-
-        console.log(world_coord);
-
         /* To determine if the mouse click hit any object
            just calculate the distance between the x and y coordinates of the 
         */
+        // gun_with_ammo.play();
+        // quite_shot.play();
+        // laser.play();
+        // Two of the same sounds to allow overlap
+        if (this.hits % 2 == 1){
+            this.shot_odd.play();
+        }
+        else {
+            this.shot_even.play();
+        }
+        
+
+        this.total_shots++;
         for (const coord of this.target_locations){
+            // Interpolation for near and far to get to the t of the z-coordinate of the target 
+            let z = coord[2], z1 = pos_world_near[2], z2 = pos_world_far[2];
+            let t = (z-z1)/(z2-z1);
+            let x = (1-t)*pos_world_near[0]+t*pos_world_far[0];
+            let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
+            let world_coord = vec4(x, y, z, 1.0);
+            console.log(world_coord); // each target has its own coordinates
             if (this.hit_target(coord, world_coord)){
+                missed = false;
+                this.cont_hits++;
+                this.cont_misses = 0;
+                console.log(this.cont_hits);
+                // Valorant kill sounds with different sound for more hits
+                switch(this.cont_hits){
+                    case 1:
+                        this.first_hit.play();
+                        console.log("first");
+                        console.log(this.cont_hits);
+                        break;
+                    case 2:
+                        this.second_hit.play();
+                        console.log("second");
+                        break;
+                    case 3:
+                        this.third_hit.play();
+                        console.log("third");
+                        break;
+                    case 4:
+                        this.fourth_hit.play();
+                        console.log("fourth");
+                        break;
+                    default:
+                        this.fifth_hit.play();
+                        console.log("ace");
+                        this.cont_hits = 0;
+                        break;
+                }
+                this.points += 1000;
+                this.hits++;
                 this.target_locations.delete(coord);
                 this.target_locations.add(this.generate_location());
+
                 break;
             }
         }
+        if (missed){
+            this.cont_hits = 0;
+            this.cont_misses++;
+            // easter egg :)
+            if (this.cont_misses == 4){
+                this.terrible.play();
+            }
+        }
+        this.accuracy = this.hits/this.total_shots;
+        this.accuracy = Math.round(this.accuracy*10000)/100
+        updateBar(this.points, this.accuracy);
     }
 
     display(context, program_state) {
+
+
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
         if (!context.scratchpad.controls) {
@@ -233,14 +341,14 @@ export class Project extends Scene {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect()
                 this.my_mouse_down(e, mouse_position(e), context, program_state);
-        });
-    }
+            });
+        }
 
         program_state.projection_transform = Mat4.perspective(
             Math.PI / 4, context.width / context.height, .1, 1000);
 
 
-        const light_position = vec4(0, 5, 5, 1);
+        const light_position = vec4(0, 8, 8, 1);
         // The parameters of the Light are: position, color, size
         program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
 
@@ -248,25 +356,37 @@ export class Project extends Scene {
     
         let model_transform = Mat4.identity();
 
-        // SCUFF BACKGROUND
+        // Scuffed "gun"
+        let gun_transform = model_transform;
+        // connect mouse clicking to recoil if possible
+        let recoil = 0;
+        // 0.2*Math.sin(3*Math.PI*t);
+        gun_transform = gun_transform.times(Mat4.translation(0.5,-0.9,18+recoil))
+                                      .times(Mat4.rotation(Math.PI/24, 0,1,0))
+                                      .times(Mat4.rotation(Math.PI/12, 1, 0, 0))
+                                      .times(Mat4.scale(0.08, 0.08, 1));
+
+        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
+        gun_transform = gun_transform.times(Mat4.translation(0, -3, -0.7))
+                                        .times(Mat4.scale(0.05,0.3,0.08))
+                                        .times(Mat4.scale(1/0.08,1/0.08,1));
+        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
+        gun_transform = gun_transform.times(Mat4.translation(0,0.7,-5.5))
+                                        .times(Mat4.scale(0.05, 0.05,0.5))
+                                        .times(Mat4.scale(1/0.05,1/0.3,1/0.08));
+        this.shapes.cylinder.draw(context, program_state, gun_transform, this.materials.gun);
+
+
+        
         let background_sky_transform = model_transform;
-        background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 0));
+        background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 1))
+                                                            .times(Mat4.translation(0,0,-4));
         this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.background_sky);
                                         
         this.draw_floor(context, program_state);
         this.draw_walls(context, program_state);
         
         this.draw_targets(context, program_state, t);
-        
-        // Difficulty Selection Tester
-        let desired;
-
-        if (this.attached && this.attached() !== null) {
-            desired = this.attached();
-        } else {
-            desired = this.initial_camera_location;
-        }
-        program_state.set_camera(desired);
    
     }
 }
