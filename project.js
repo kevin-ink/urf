@@ -5,6 +5,8 @@ const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
+const {Textured_Phong} = defs
+
 export class Project extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
@@ -41,6 +43,12 @@ export class Project extends Scene {
                 {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}), 
             gun: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
+            backgroundSky2: new Material(new Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 1,
+                texture: new Texture("assets/background/light-blue-sky.png")
+            })
+            
                    
         }
 
