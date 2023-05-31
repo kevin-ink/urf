@@ -5,6 +5,9 @@ const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
+const {Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere} = defs;
+
+
 export class Project extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
@@ -17,18 +20,29 @@ export class Project extends Scene {
             sphere: new defs.Subdivision_Sphere(4),
             circle: new defs.Regular_2D_Polygon(1, 15),
 
+            triangle : new defs.Triangle(),
+            windmill : new Windmill(),
+            square : new defs.Square(),
+            // tetra : new defs.Tetrahedron(),
+            cube : new defs.Cube(),
+            disk : new defs.Regular_2D_Polygon(5,100),
+            cone : new defs.Cone_Tip(5, 5,  [[.34, .66], [0, 1]]),
+            capped_cylinder : new defs.Capped_Cylinder(5, 5, [[.34, .66], [0, 1]]),
+            rounded_capped_cylinder : new defs.Rounded_Capped_Cylinder(5, 5,  [[.34, .66], [0, 1]]),
+            
+            cylinder : new defs.Cylindrical_Tube(1,5, [[.34, .66], [0, 1]]),
+
             // shapes for environment
             background_sky: new defs.Square(),
             floor: new defs.Cube(),
             walls: new defs.Cube(),
             rectangle: new defs.Cube(),
-            cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
         };
 
         // *** Materials
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
-                {ambient: .4, diffusivity: .6, specularity: 0.6, color: hex_color("#DF182D")}),
+                {ambient: .4, diffusivity: .6, specularity: 0.6, color: hex_color("#f54245")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#70B2E7")}),
             background_sky: new Material(new defs.Phong_Shader(),
@@ -40,7 +54,7 @@ export class Project extends Scene {
             back_wall: new Material(new defs.Phong_Shader(),
                 {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}), 
             gun: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
+                {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#2b2b2b')}),
                    
         }
 
@@ -370,32 +384,11 @@ export class Project extends Scene {
             Math.PI / 4, context.width / context.height, .1, 1000);
 
 
-        const light_position = vec4(0, 8, 8, 1);
+        const light_position = vec4(0, 12, 8, 1);
         // The parameters of the Light are: position, color, size
-        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
+        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 10000)];
     
         let model_transform = Mat4.identity();
-
-        // Scuffed "gun"
-        let gun_transform = model_transform;
-        // connect mouse clicking to recoil if possible
-        let recoil = 0;
-        // 0.2*Math.sin(3*Math.PI*t);
-        gun_transform = gun_transform.times(Mat4.translation(0.5,-0.9,18+recoil))
-                                      .times(Mat4.rotation(Math.PI/24, 0,1,0))
-                                      .times(Mat4.rotation(Math.PI/12, 1, 0, 0))
-                                      .times(Mat4.scale(0.08, 0.08, 1));
-
-        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
-        gun_transform = gun_transform.times(Mat4.translation(0, -3, -0.7))
-                                        .times(Mat4.scale(0.05,0.3,0.08))
-                                        .times(Mat4.scale(1/0.08,1/0.08,1));
-        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
-        gun_transform = gun_transform.times(Mat4.translation(0,0.7,-5.5))
-                                        .times(Mat4.scale(0.05, 0.05,0.5))
-                                        .times(Mat4.scale(1/0.05,1/0.3,1/0.08));
-        this.shapes.cylinder.draw(context, program_state, gun_transform, this.materials.gun);
-
 
         
         let background_sky_transform = model_transform;
@@ -407,6 +400,54 @@ export class Project extends Scene {
         this.draw_walls(context, program_state);
         
         this.draw_targets(context, program_state, t);
+
+
+
+        // Scuffed "gun"
+        // connect mouse clicking to recoil if possible
+        let recoil = 0;
+        // 0.2*Math.sin(3*Math.PI*t);
+
+        let gun_move_transform = Mat4.identity().times(Mat4.translation(2,-1,16)).times(Mat4.rotation(-44*Math.PI/90,0,1,0)).times(Mat4.rotation(-1*Math.PI/40,0,0,1)).times(Mat4.scale(0.3, 0.3, 0.3));
+
+
+
+        let gun_base_transform = gun_move_transform.times(Mat4.translation(0.2,0,0)).times(Mat4.scale(3.5,0.75,0.4));
+        this.shapes.cube.draw(context, program_state, gun_base_transform, this.materials.gun);
+
+        let gun_base_top_transform = gun_move_transform.times(Mat4.translation(3,0.1,0)).times(Mat4.rotation(-0.15, 0,0,1)).times(Mat4.scale(2,0.6,0.4)).times(Mat4.rotation(0.5, 0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_base_top_transform, this.materials.gun);
+
+        let gun_base_front_transform = gun_move_transform.times(Mat4.translation(-2.3,0.45,0)).times(Mat4.rotation(0.01,0,0,1)).times(Mat4.scale(2,0.3,0.4)).times(Mat4.rotation(-0.08, 0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_base_front_transform, this.materials.gun);  
+
+        let gun_clip_transform = gun_move_transform.times(Mat4.translation(0.65,-1.6,0)).times(Mat4.scale(0.8, 2, 0.23)).times(Mat4.rotation(0.035,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_clip_transform, this.materials.gun);
+
+        let gun_handle_transform = gun_move_transform.times(Mat4.translation(3.83,-1.7, 0)).times(Mat4.rotation(0.3,0,0,1)).times(Mat4.scale(0.52,1.3,0.2)).times(Mat4.rotation(0.08,0,0,1));;
+        this.shapes.cube.draw(context, program_state, gun_handle_transform, this.materials.gun);
+
+        let gun_stock_transform = gun_move_transform.times(Mat4.translation(6,-0.5,0)).times(Mat4.scale(2,0.55,0.4));
+        this.shapes.cube.draw(context, program_state, gun_stock_transform, this.materials.gun);
+
+        let gun_stock_2_transform = gun_move_transform.times(Mat4.translation(6.78,-0.85,0)).times(Mat4.rotation(0.3, 0,0,1)).times(Mat4.scale(1.1, 0.6, 0.4));
+        this.shapes.cube.draw(context, program_state, gun_stock_2_transform, this.materials.gun);
+
+        let gun_stock_3_transform = gun_move_transform.times(Mat4.translation(6.96,-1.34,0)).times(Mat4.rotation(-0.1, 0,0,1)).times(Mat4.scale(0.97,0.50, 0.3));
+        this.shapes.cube.draw(context, program_state, gun_stock_3_transform, this.materials.gun);
+
+        let gun_barrel_tranform = gun_move_transform.times(Mat4.translation(-6.5,0,0)).times(Mat4.scale(6,0.45,0.38)).times(Mat4.rotation(Math.PI/2, 0,1,0));
+        this.shapes.cylinder.draw(context, program_state, gun_barrel_tranform, this.materials.gun);
+        
+        let gun_barrel_front_transform = gun_move_transform.times(Mat4.translation(-2,-0.24,0)).times(Mat4.rotation(-0.05,0,0,1)).times(Mat4.scale(2,0.5,0.4)).times(Mat4.rotation(0.2,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_barrel_front_transform, this.materials.gun);
+
+        let gun_barrel_wedge_transform = gun_move_transform.times(Mat4.translation(-3.415,-0.6,0)).times(Mat4.scale(0.15,0.25,0.4)).times(Mat4.rotation(-0.4,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_barrel_wedge_transform, this.materials.gun);
+
+        let gun_aim_transform = gun_move_transform.times(Mat4.translation(-3.6,0.68,0)).times(Mat4.scale(0.4,0.2,0.08)).times(Mat4.rotation(0.4,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_aim_transform, this.materials.gun);
+
    
     }
 }
