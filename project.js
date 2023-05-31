@@ -46,9 +46,6 @@ export class Project extends Scene {
 
 
         // Sound effects
-
-        /* !!! Why does sound sometimes not play when they are stored here? !!! */
-
         this.gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
         this.shot_odd = new Audio('assets/sounds/gun.mp3');
         this.shot_even = new Audio('assets/sounds/gun.mp3');
@@ -79,21 +76,29 @@ export class Project extends Scene {
 
         // Number of Targets 
         this.target_num = config["scatter"];
-        // generate a set of locations for all targets
-        this.generate_target_locations();
 
         // Strafing 
         this.strafe = config["strafe"];
-        console.log(this.strafe);
+        this.move_factor = 0;
+        if (this.strafe){
+            this.move_factor = 2;
+            if (this.target_num == 5){
+                if (this.difficulty == "medium")
+                    this.move_factor = 1;
+                else if (this.difficulty == "easy"){
+                    this.move_factor = 0.5;
+                }
+            }
+        }
+        // console.log(this.strafe);
         
         /*
         !!! Notes on Strafing !!!
         If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
-        Must create another collision detection function so that movement is detected 
-        since we want strafing to be random and different we must implement another function to generate random strafes
-        this means we must store the periodicity of each target 
-
         */
+
+        // generate a set of locations for all targets
+        this.generate_target_locations();
 
         // How many hits in a row to coordinate sound effect
         this.cont_hits = 0;
@@ -112,21 +117,21 @@ export class Project extends Scene {
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
-    make_control_panel() {
-        // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("Easy", ["Control", "e"], () => {this.target_r = 1.5;}); // include generate_target_locations if want to repopulate after changing
-        this.key_triggered_button("Medium", ["Control", "m"], () => {this.target_r = 1;});
-        this.key_triggered_button("Hard", ["Control", "h"], () => {this.target_r = 0.5;});
-        this.new_line();
-        this.key_triggered_button("1", ["Control", "1"], () => {this.target_num = 1; this.generate_target_locations();});
-        this.key_triggered_button("3", ["Control", "3"], () => {this.target_num = 3; this.generate_target_locations();});
-        this.key_triggered_button("5", ["Control", "5"], () => {this.target_num = 5; this.generate_target_locations();});
-        this.new_line();
-        this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
-        this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
-        this.new_line();
-        this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
-    }
+    // make_control_panel() {
+    //     // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
+    //     this.key_triggered_button("Easy", ["Control", "e"], () => {this.target_r = 1.5;}); // include generate_target_locations if want to repopulate after changing
+    //     this.key_triggered_button("Medium", ["Control", "m"], () => {this.target_r = 1;});
+    //     this.key_triggered_button("Hard", ["Control", "h"], () => {this.target_r = 0.5;});
+    //     this.new_line();
+    //     this.key_triggered_button("1", ["Control", "1"], () => {this.target_num = 1; this.generate_target_locations();});
+    //     this.key_triggered_button("3", ["Control", "3"], () => {this.target_num = 3; this.generate_target_locations();});
+    //     this.key_triggered_button("5", ["Control", "5"], () => {this.target_num = 5; this.generate_target_locations();});
+    //     this.new_line();
+    //     this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
+    //     this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
+    //     this.new_line();
+    //     this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
+    // }
 
     draw_floor(context, program_state){
         let floor_transform = Mat4.identity();
@@ -164,19 +169,33 @@ export class Project extends Scene {
             if (dist < 2*this.target_r + 2){ // 2 times the radius + 2
                 return true;
             }
+            // 2 extra cases for strafing
+            // min with max and max with min
+            if (this.strafe){
+                let dist2 = Math.sqrt((ranX-x+2*this.move_factor)**2 + (ranY-y)**2);
+                let dist3 = Math.sqrt((ranX-x-2*this.move_factor)**2 + (ranY-y)**2);
+                if ((dist2 < 2*this.target_r + 2) || (dist3 < 2*this.target_r + 2)){ // 2 times the radius + 2
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     // Returns one random location that does not conflict with other targets
     generate_location() {
-        let factor = 0;
+        let size_factor = 0;
         if (this.target_r == 1.5){
-            factor = 1;
+            size_factor = 1;
         }
-        let xMin = -12+factor, xMax = 12-factor;
-        let yMin = -2, yMax = 6-factor;
-        
+        let strafe_speed = 0;
+
+        if (this.strafe){
+            strafe_speed = Math.random()*(Math.PI+Math.PI) + (-Math.PI);
+        }
+        let xMin = -12+size_factor+this.move_factor, xMax = 12-size_factor-this.move_factor;
+        let yMin = -2, yMax = 6-size_factor-this.move_factor;
+
         // Generate random coordinates
         let ranX, ranY, ranZ = Math.random()*5 + -2;
         do {
@@ -184,7 +203,7 @@ export class Project extends Scene {
             ranY = Math.random() * (yMax-yMin) + yMin;
         }
         while (this.target_collision(ranX, ranY));
-        return vec3(ranX, ranY, ranZ);
+        return vec4(ranX, ranY, ranZ, strafe_speed);
     }
 
     generate_target_locations(){
@@ -198,20 +217,21 @@ export class Project extends Scene {
     draw_targets(context, program_state, t){
         let model_transform = Mat4.identity();
         let r = this.target_r;
-        let d = 0;
-        if (this.strafe){
-            d = Math.sin(t);
-        }
         for (let coord of this.target_locations){
-            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])).times(Mat4.scale(r, r, r)), this.materials.test);
+            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+this.move_factor*Math.sin(coord[3]*t), coord[1], coord[2])).times(Mat4.scale(r, r, r)), this.materials.test);
         }
     }
 
     // Determine if a target was hit
-    hit_target(coord, pos_world){
+    hit_target(coord, pos_world, t){
         let t_x = coord[0], t_y = coord[1]; // Target coodinates
+        if (this.strafe){
+            t_x += this.move_factor*Math.sin(coord[3]*t);
+        }
         let h_x = pos_world[0], h_y = pos_world[1]; // Mouse click coordinates
         let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
+        console.log(t_x);
+        console.log(h_x);
         if (d <= this.target_r){ // If the mouse click is within radius length of target
             return true;
         }
@@ -220,7 +240,7 @@ export class Project extends Scene {
 
 
     // Mouse Picking 
-    my_mouse_down(e, pos, context, program_state) {
+    my_mouse_down(e, pos, context, program_state, t) {
         // Putting sounds here makes it faster? 
         // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
         // let heavy_shot = new Audio('assets/sounds/gun.mp3');
@@ -271,33 +291,33 @@ export class Project extends Scene {
             let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
             let world_coord = vec4(x, y, z, 1.0);
             console.log(world_coord); // each target has its own coordinates
-            if (this.hit_target(coord, world_coord)){
+            if (this.hit_target(coord, world_coord, t)){
                 missed = false;
                 this.cont_hits++;
                 this.cont_misses = 0;
-                console.log(this.cont_hits);
+                // console.log(this.cont_hits);
                 // Valorant kill sounds with different sound for more hits
                 switch(this.cont_hits){
                     case 1:
                         this.first_hit.play();
                         console.log("first");
-                        console.log(this.cont_hits);
+                        // console.log(this.cont_hits);
                         break;
                     case 2:
                         this.second_hit.play();
-                        console.log("second");
+                        // console.log("second");
                         break;
                     case 3:
                         this.third_hit.play();
-                        console.log("third");
+                        // console.log("third");
                         break;
                     case 4:
                         this.fourth_hit.play();
-                        console.log("fourth");
+                        // console.log("fourth");
                         break;
                     default:
                         this.fifth_hit.play();
-                        console.log("ace");
+                        // console.log("ace");
                         this.cont_hits = 0;
                         break;
                 }
@@ -324,6 +344,8 @@ export class Project extends Scene {
 
     display(context, program_state) {
 
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+
 
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
@@ -340,7 +362,7 @@ export class Project extends Scene {
             canvas.addEventListener("mousedown", e => {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect()
-                this.my_mouse_down(e, mouse_position(e), context, program_state);
+                this.my_mouse_down(e, mouse_position(e), context, program_state, t);
             });
         }
 
@@ -351,8 +373,6 @@ export class Project extends Scene {
         const light_position = vec4(0, 8, 8, 1);
         // The parameters of the Light are: position, color, size
         program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
-
-        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
     
         let model_transform = Mat4.identity();
 
