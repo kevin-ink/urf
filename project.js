@@ -2,10 +2,8 @@ import { defs, tiny } from "./examples/common.js";
 import { config, updateBar} from './frontend/ui.js';
 
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture
 } = tiny;
-
-const {Textured_Phong} = defs
 
 export class Project extends Scene {
     constructor() {
@@ -39,17 +37,29 @@ export class Project extends Scene {
                 {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
             walls: new Material(new defs.Phong_Shader(),
                 {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
-            back_wall: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}), 
             gun: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
-            backgroundSky2: new Material(new Textured_Phong(), {
+            backgroundSky2: new Material(new defs.Textured_Phong(), {
                 color: hex_color("#000000"),
-                ambient: 1,
-                texture: new Texture("assets/background/light-blue-sky.png")
-            })
-            
-                   
+                ambient: 1.3,
+                specularity: 0.3,
+                texture: new Texture("assets/background/blue-sky.jpg")
+            }),
+            wall_texture: new Material(new defs.Textured_Phong(), {
+                color: hex_color("000000"),
+                ambient: .8,
+                diffusivity: .9,
+                specularity: 0.2,
+                texture: new Texture("assets/background/wall-texture-color.png")
+            }),
+            floor_texture: new Material(new defs.Textured_Phong(), {
+                color: hex_color("000000"),
+                ambient: .75,
+                diffusivity: .9,
+                specularity: 0.2,
+                texture: new Texture("assets/background/wall-texture-color.png")
+            }),
+                  
         }
 
 
@@ -138,30 +148,30 @@ export class Project extends Scene {
 
     draw_floor(context, program_state){
         let floor_transform = Mat4.identity();
-        floor_transform = floor_transform.times(Mat4.scale(15, 1, context.width))
-                                         .times(Mat4.translation(0, -this.view_dist/4, 0));
-        this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
+        floor_transform = floor_transform.times(Mat4.scale(16, 1, 9))
+                                         .times(Mat4.translation(0., -this.view_dist/4, .5));
+        this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor_texture);
     }
 
     draw_walls(context, program_state){
         let left_wall_transform = Mat4.identity();
 
-        left_wall_transform = left_wall_transform.times(Mat4.scale(4, 5, context.width))
+        left_wall_transform = left_wall_transform.times(Mat4.scale(4, 5, 13.5))
                                                  .times(Mat4.rotation(1.1, 0, 1, 0))
-                                                 .times(Mat4.translation(-2.5, 0, -2));
-        this.shapes.walls.draw(context, program_state, left_wall_transform, this.materials.walls);
+                                                 .times(Mat4.translation(-2, 0, -4));
+        this.shapes.walls.draw(context, program_state, left_wall_transform, this.materials.wall_texture);
 
         let right_wall_transform = Mat4.identity();
 
-        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 5, context.width))
+        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 5, 10))
                                                    .times(Mat4.translation(68, 0, 0))
                                                    .times(Mat4.rotation(1.5, 0, 1, 0));
-         this.shapes.walls.draw(context, program_state, right_wall_transform, this.materials.walls);
+         this.shapes.walls.draw(context, program_state, right_wall_transform, this.materials.wall_texture);
 
         let back_wall_transform = Mat4.identity();
         back_wall_transform = back_wall_transform.times(Mat4.scale(13.5, 5, 1))
                                                  .times(Mat4.translation(0, 0, -3));
-        this.shapes.walls.draw(context, program_state, back_wall_transform, this.materials.back_wall);
+        this.shapes.walls.draw(context, program_state, back_wall_transform, this.materials.wall_texture);
     }
 
     // Check if any of the targets are too close to each other
@@ -387,9 +397,13 @@ export class Project extends Scene {
 
         
         let background_sky_transform = model_transform;
-        background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 1))
+        /*
+        background_sky_transform = background_sky_transform.times(Mat4.scale(context.width/10, context.height/10, 1))
                                                             .times(Mat4.translation(0,0,-4));
-        this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.background_sky);
+                                                            */
+        background_sky_transform = background_sky_transform.times(Mat4.scale(22, 8, 1))
+                                                            .times(Mat4.translation(0, .8,-4));   
+        this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.backgroundSky2);
                                         
         this.draw_floor(context, program_state);
         this.draw_walls(context, program_state);
