@@ -5,6 +5,9 @@ const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture
 } = tiny;
 
+const {Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere} = defs;
+
+
 export class Project extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
@@ -17,6 +20,20 @@ export class Project extends Scene {
             sphere: new defs.Subdivision_Sphere(8),
             circle: new defs.Regular_2D_Polygon(1, 15),
 
+            triangle : new defs.Triangle(),
+            windmill : new Windmill(),
+            square : new defs.Square(),
+            // tetra : new defs.Tetrahedron(),
+            cube : new defs.Cube(),
+            disk : new defs.Regular_2D_Polygon(5,100),
+            cone : new defs.Cone_Tip(5, 5,  [[.34, .66], [0, 1]]),
+            capped_cylinder : new defs.Capped_Cylinder(5, 5, [[.34, .66], [0, 1]]),
+            rounded_capped_cylinder : new defs.Rounded_Capped_Cylinder(5, 5,  [[.34, .66], [0, 1]]),
+            
+            cylinder : new defs.Cylindrical_Tube(1,5, [[.34, .66], [0, 1]]),
+            scope: new defs.Cylindrical_Tube(5,30, [[.34, .66], [0, 1]]),
+
+
             // shapes for environment
             square: new defs.Square(),
             cube: new defs.Cube(),
@@ -26,14 +43,16 @@ export class Project extends Scene {
             capped_cylinder: new defs.Capped_Cylinder(10, 30, [[.34, .66], [0, 1]]),
             cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
         }
+        };
 
         // *** Materials
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
-                {ambient: .4, diffusivity: .6, specularity: 0.6, color: hex_color("#DF182D")}),
+                {ambient: .4, diffusivity: .6, specularity: 0.6, color: hex_color("#f54245")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#70B2E7")}),
             gun: new Material(new defs.Phong_Shader(),
+
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
             crates: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#594231")}),
@@ -83,12 +102,16 @@ export class Project extends Scene {
                 texture: new Texture("assets/background/shooting.png")
             }),
                   
+                {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#2b2b2b')}),
+            gun2: new Material(new defs.Phong_Shader(),
+                {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#f55a00')}),
+
+            gun3: new Material(new defs.Phong_Shader(),
+                {ambient: 0.6, diffusivity: 0.9, specularity: 0.2, color: hex_color('#333333')}),
+                   
         }
 
         // Sound effects
-
-        /* !!! Why does sound sometimes not play when they are stored here? !!! */
-
         this.gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
         this.shot_odd = new Audio('assets/sounds/gun.mp3');
         this.shot_even = new Audio('assets/sounds/gun.mp3');
@@ -119,21 +142,29 @@ export class Project extends Scene {
 
         // Number of Targets 
         this.target_num = config["scatter"];
-        // generate a set of locations for all targets
-        this.generate_target_locations();
 
         // Strafing 
         this.strafe = config["strafe"];
-        console.log(this.strafe);
+        this.move_factor = 0;
+        if (this.strafe){
+            this.move_factor = 2;
+            if (this.target_num == 5){
+                if (this.difficulty == "medium")
+                    this.move_factor = 1;
+                else if (this.difficulty == "easy"){
+                    this.move_factor = 0.5;
+                }
+            }
+        }
+        // console.log(this.strafe);
         
         /*
         !!! Notes on Strafing !!!
         If strafing is active then the window sizes (ECS z) must be further away so the targets do not move offscreen
-        Must create another collision detection function so that movement is detected 
-        since we want strafing to be random and different we must implement another function to generate random strafes
-        this means we must store the periodicity of each target 
-
         */
+
+        // generate a set of locations for all targets
+        this.generate_target_locations();
 
         // How many hits in a row to coordinate sound effect
         this.cont_hits = 0;
@@ -153,21 +184,21 @@ export class Project extends Scene {
 
     }
 
-    make_control_panel() {
-        // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("Easy", ["Control", "e"], () => {this.target_r = 1.5;}); // include generate_target_locations if want to repopulate after changing
-        this.key_triggered_button("Medium", ["Control", "m"], () => {this.target_r = 1;});
-        this.key_triggered_button("Hard", ["Control", "h"], () => {this.target_r = 0.5;});
-        this.new_line();
-        this.key_triggered_button("1", ["Control", "1"], () => {this.target_num = 1; this.generate_target_locations();});
-        this.key_triggered_button("3", ["Control", "3"], () => {this.target_num = 3; this.generate_target_locations();});
-        this.key_triggered_button("5", ["Control", "5"], () => {this.target_num = 5; this.generate_target_locations();});
-        this.new_line();
-        this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
-        this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
-        this.new_line();
-        this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
-    }
+    // make_control_panel() {
+    //     // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
+    //     this.key_triggered_button("Easy", ["Control", "e"], () => {this.target_r = 1.5;}); // include generate_target_locations if want to repopulate after changing
+    //     this.key_triggered_button("Medium", ["Control", "m"], () => {this.target_r = 1;});
+    //     this.key_triggered_button("Hard", ["Control", "h"], () => {this.target_r = 0.5;});
+    //     this.new_line();
+    //     this.key_triggered_button("1", ["Control", "1"], () => {this.target_num = 1; this.generate_target_locations();});
+    //     this.key_triggered_button("3", ["Control", "3"], () => {this.target_num = 3; this.generate_target_locations();});
+    //     this.key_triggered_button("5", ["Control", "5"], () => {this.target_num = 5; this.generate_target_locations();});
+    //     this.new_line();
+    //     this.key_triggered_button("Strafe", ["Control", "s"], () => this.strafe ^= 1);
+    //     this.key_triggered_button("Randomize", ["Control", "r"], () => {this.generate_target_locations();});
+    //     this.new_line();
+    //     this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
+    // }
 
     draw_floor(context, program_state){
         let floor_transform = Mat4.identity();
@@ -333,19 +364,33 @@ export class Project extends Scene {
             if (dist < 2*this.target_r + 2){ // 2 times the radius + 2
                 return true;
             }
+            // 2 extra cases for strafing
+            // min with max and max with min
+            if (this.strafe){
+                let dist2 = Math.sqrt((ranX-x+2*this.move_factor)**2 + (ranY-y)**2);
+                let dist3 = Math.sqrt((ranX-x-2*this.move_factor)**2 + (ranY-y)**2);
+                if ((dist2 < 2*this.target_r + 2) || (dist3 < 2*this.target_r + 2)){ // 2 times the radius + 2
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     // Returns one random location that does not conflict with other targets
     generate_location() {
-        let factor = 0;
+        let size_factor = 0;
         if (this.target_r == 1.5){
-            factor = 1;
+            size_factor = 1;
         }
-        let xMin = -12+factor, xMax = 12-factor;
-        let yMin = -2, yMax = 6-factor;
-        
+        let strafe_speed = 0;
+
+        if (this.strafe){
+            strafe_speed = Math.random()*(Math.PI+Math.PI) + (-Math.PI);
+        }
+        let xMin = -12+size_factor+this.move_factor, xMax = 12-size_factor-this.move_factor;
+        let yMin = -2, yMax = 6-size_factor-this.move_factor;
+
         // Generate random coordinates
         let ranX, ranY  = Math.random()*5 + -2;
         let ranZ = Math.random() * 2;
@@ -354,7 +399,7 @@ export class Project extends Scene {
             ranY = Math.random() * (yMax-yMin) + yMin;
         }
         while (this.target_collision(ranX, ranY));
-        return vec3(ranX, ranY, ranZ);
+        return vec4(ranX, ranY, ranZ, strafe_speed);
     }
 
     generate_target_locations(){
@@ -368,20 +413,21 @@ export class Project extends Scene {
     draw_targets(context, program_state, t){
         let model_transform = Mat4.identity();
         let r = this.target_r;
-        let d = 0;
-        if (this.strafe){
-            d = Math.sin(t);
-        }
         for (let coord of this.target_locations){
-            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+d, coord[1], coord[2])).times(Mat4.scale(r, r, r)), this.materials.test);
+            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+this.move_factor*Math.sin(coord[3]*t), coord[1], coord[2])).times(Mat4.scale(r, r, r)), this.materials.test);
         }
     }
 
     // Determine if a target was hit
-    hit_target(coord, pos_world){
+    hit_target(coord, pos_world, t){
         let t_x = coord[0], t_y = coord[1]; // Target coodinates
+        if (this.strafe){
+            t_x += this.move_factor*Math.sin(coord[3]*t);
+        }
         let h_x = pos_world[0], h_y = pos_world[1]; // Mouse click coordinates
         let d = Math.sqrt((t_x-h_x)**2 + (t_y-h_y)**2);
+        console.log(t_x);
+        console.log(h_x);
         if (d <= this.target_r){ // If the mouse click is within radius length of target
             return true;
         }
@@ -390,7 +436,7 @@ export class Project extends Scene {
 
 
     // Mouse Picking 
-    my_mouse_down(e, pos, context, program_state) {
+    my_mouse_down(e, pos, context, program_state, t) {
         // Putting sounds here makes it faster? 
         // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
         // let heavy_shot = new Audio('assets/sounds/gun.mp3');
@@ -441,33 +487,33 @@ export class Project extends Scene {
             let y = (1-t)*pos_world_near[1]+t*pos_world_far[1];
             let world_coord = vec4(x, y, z, 1.0);
             console.log(world_coord); // each target has its own coordinates
-            if (this.hit_target(coord, world_coord)){
+            if (this.hit_target(coord, world_coord, t)){
                 missed = false;
                 this.cont_hits++;
                 this.cont_misses = 0;
-                console.log(this.cont_hits);
+                // console.log(this.cont_hits);
                 // Valorant kill sounds with different sound for more hits
                 switch(this.cont_hits){
                     case 1:
                         this.first_hit.play();
                         console.log("first");
-                        console.log(this.cont_hits);
+                        // console.log(this.cont_hits);
                         break;
                     case 2:
                         this.second_hit.play();
-                        console.log("second");
+                        // console.log("second");
                         break;
                     case 3:
                         this.third_hit.play();
-                        console.log("third");
+                        // console.log("third");
                         break;
                     case 4:
                         this.fourth_hit.play();
-                        console.log("fourth");
+                        // console.log("fourth");
                         break;
                     default:
                         this.fifth_hit.play();
-                        console.log("ace");
+                        // console.log("ace");
                         this.cont_hits = 0;
                         break;
                 }
@@ -490,9 +536,14 @@ export class Project extends Scene {
         this.accuracy = this.hits/this.total_shots;
         this.accuracy = Math.round(this.accuracy*10000)/100
         updateBar(this.points, this.accuracy);
+
+        // gun recoil animation queue here
+
     }
 
     display(context, program_state) {
+
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
 
         // display():  Called once per frame of animation.
@@ -510,7 +561,7 @@ export class Project extends Scene {
             canvas.addEventListener("mousedown", e => {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect()
-                this.my_mouse_down(e, mouse_position(e), context, program_state);
+                this.my_mouse_down(e, mouse_position(e), context, program_state, t);
             });
         }
 
@@ -518,11 +569,10 @@ export class Project extends Scene {
             Math.PI / 4, context.width / context.height, .1, 1000);
 
 
-        const light_position = vec4(0, 8, 8, 1);
+        const light_position = vec4(0, 12, 8, 1);
+        const light_position2 = vec4(0,12,20,1); // to illuminate back of gun
         // The parameters of the Light are: position, color, size
-        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
-
-        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 10000), new Light(light_position2, color(1,1,1,1), 100)];
     
         let model_transform = Mat4.identity();
 
@@ -549,12 +599,146 @@ export class Project extends Scene {
         let sky_transform = model_transform;
         sky_transform = sky_transform.times(Mat4.scale(22, 8, 1)).times(Mat4.translation(0, .7, -4));
         this.shapes.cube.draw(context, program_state, sky_transform, this.materials.sky);
+        
+        let background_sky_transform = model_transform;
+        background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 1))
+                                                            .times(Mat4.translation(0,0,-4));
+        this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.background_sky);
                                         
         this.draw_floor(context, program_state);
         this.draw_walls(context, program_state);
         this.draw_props(context, program_state);
         
         this.draw_targets(context, program_state, t);
+
+
+
+        // Scuffed "gun"
+        // connect mouse clicking to recoil if possible
+        let recoil = 0;
+        // 0.2*Math.sin(3*Math.PI*t);
+
+        let gun_move_transform = Mat4.identity().times(Mat4.translation(2,-1,15.7)).times(Mat4.rotation(-44*Math.PI/90,0,1,0)).times(Mat4.rotation(-1*Math.PI/40,0,0,1)).times(Mat4.scale(0.3, 0.3, 0.3));
+
+
+        let gun_base_transform = gun_move_transform.times(Mat4.translation(0.2,0,0)).times(Mat4.scale(3.5,0.75,0.4));
+        this.shapes.cube.draw(context, program_state, gun_base_transform, this.materials.gun);
+
+        let gun_base_top_transform = gun_move_transform.times(Mat4.translation(3,0.1,0)).times(Mat4.rotation(-0.15, 0,0,1)).times(Mat4.scale(2,0.6,0.4)).times(Mat4.rotation(0.5, 0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_base_top_transform, this.materials.gun);
+
+        let gun_base_front_transform = gun_move_transform.times(Mat4.translation(-2.3,0.45,0)).times(Mat4.rotation(0.01,0,0,1)).times(Mat4.scale(2,0.3,0.4)).times(Mat4.rotation(-0.08, 0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_base_front_transform, this.materials.gun);  
+
+        let gun_clip_transform = gun_move_transform.times(Mat4.translation(0.65,-1.6,0)).times(Mat4.scale(0.8, 2, 0.2)).times(Mat4.rotation(0.035,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_clip_transform, this.materials.gun);
+
+        let gun_handle_transform = gun_move_transform.times(Mat4.translation(3.83,-1.7, 0)).times(Mat4.rotation(0.3,0,0,1)).times(Mat4.scale(0.52,1.3,0.2)).times(Mat4.rotation(0.08,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_handle_transform, this.materials.gun);
+
+        let gun_stock_transform = gun_move_transform.times(Mat4.translation(6,-0.5,0)).times(Mat4.scale(2,0.55,0.4));
+        this.shapes.cube.draw(context, program_state, gun_stock_transform, this.materials.gun);
+
+        let gun_stock_2_transform = gun_move_transform.times(Mat4.translation(6.78,-0.85,0)).times(Mat4.rotation(0.3, 0,0,1)).times(Mat4.scale(1.1, 0.6, 0.4));
+        this.shapes.cube.draw(context, program_state, gun_stock_2_transform, this.materials.gun);
+        let gun_stock_3_transform = gun_move_transform.times(Mat4.translation(6.96,-1.34,0)).times(Mat4.rotation(-0.1, 0,0,1)).times(Mat4.scale(0.97,0.50, 0.3));
+        this.shapes.cube.draw(context, program_state, gun_stock_3_transform, this.materials.gun);
+
+        let gun_barrel_tranform = gun_move_transform.times(Mat4.translation(-6.5,0,0)).times(Mat4.scale(6,0.45,0.38)).times(Mat4.rotation(Math.PI/2, 0,1,0));
+        this.shapes.cylinder.draw(context, program_state, gun_barrel_tranform, this.materials.gun);
+
+        gun_barrel_tranform = gun_barrel_tranform.times(Mat4.translation(0,0,0.18)).times(Mat4.scale(1.08,1.08,0.04));
+        this.shapes.cylinder.draw(context, program_state, gun_barrel_tranform, this.materials.gun3);
+
+        gun_barrel_tranform = gun_barrel_tranform.times(Mat4.translation(0,0,2));
+        this.shapes.cylinder.draw(context, program_state, gun_barrel_tranform, this.materials.gun3);
+
+        
+        let gun_barrel_front_transform = gun_move_transform.times(Mat4.translation(-2,-0.24,0)).times(Mat4.rotation(-0.05,0,0,1)).times(Mat4.scale(2,0.5,0.4)).times(Mat4.rotation(0.2,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_barrel_front_transform, this.materials.gun);
+
+        let gun_barrel_wedge_transform = gun_move_transform.times(Mat4.translation(-3.415,-0.6,0)).times(Mat4.scale(0.15,0.25,0.4)).times(Mat4.rotation(-0.4,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_barrel_wedge_transform, this.materials.gun);
+
+        let gun_aim_transform = gun_move_transform.times(Mat4.translation(-3.6,0.68,0.15)).times(Mat4.scale(0.4,0.2,0.025)).times(Mat4.rotation(0.4,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_aim_transform, this.materials.gun);
+
+        let gun_aim_2_transform = gun_move_transform.times(Mat4.translation(-3.6,0.68,-0.15)).times(Mat4.scale(0.4,0.2,0.025)).times(Mat4.rotation(0.4,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_aim_2_transform, this.materials.gun);
+
+        let gun_aim_3_transform = gun_move_transform.times(Mat4.translation(-3.5,0.7,0)).times(Mat4.scale(0.2,0.15,0.02)).times(Mat4.rotation(0.4,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_aim_3_transform, this.materials.gun2);
+
+        let gun_aim_base_transform = gun_move_transform.times(Mat4.translation(-3.6,0.68,0)).times(Mat4.scale(0.3,0.125,0.125));
+        this.shapes.cube.draw(context, program_state, gun_aim_base_transform, this.materials.gun);
+
+        let gun_mag_holder_transform = gun_move_transform.times(Mat4.translation(0.63,-0.9,0)).times(Mat4.scale(1,1.3,1)).times(Mat4.rotation(-0.3,0,0,1)).times(Mat4.scale(1,0.6,0.4)).times(Mat4.rotation(0.2,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_mag_holder_transform, this.materials.gun);
+
+        let gun_side_1_tansform = gun_move_transform.times(Mat4.translation(-1.8,-0.1,0)).times(Mat4.rotation(-0.28, 0,0,1)).times(Mat4.scale(1.2 ,0.6,1)).times(Mat4.rotation(Math.PI/6, 0,0,1)).times(Mat4.scale(1.2,0.6,0.6)).times(Mat4.rotation(Math.PI/2, 0, 1, 0));
+        this.shapes.cube.draw(context, program_state, gun_side_1_tansform, this.materials.gun);
+
+        let gun_side_2_tansform = gun_move_transform.times(Mat4.translation(1,-0.1,0)).times(Mat4.rotation(-0.065,0,0,1)).times(Mat4.scale(3 ,0.3,0.9)).times(Mat4.rotation(1, 0,0,1)).times(Mat4.scale(1.2,0.6,0.6)).times(Mat4.rotation(-0.7, 0, 0, 1));
+        this.shapes.cube.draw(context, program_state, gun_side_2_tansform, this.materials.gun);
+
+        let gun_top_transform = gun_move_transform.times(Mat4.translation(0.6,0.8,0)).times(Mat4.scale(0.8,0.09,0.5));
+        this.shapes.cube.draw(context, program_state, gun_top_transform, this.materials.gun);
+
+        let gun_top_tri_1_transform = gun_move_transform.times(Mat4.translation(1.3,1.1,0)).times(Mat4.scale(1,0.3,0.6)).times(Mat4.rotation(Math.PI, 0,0,1)).times(Mat4.rotation(Math.PI/4, 1,0,0)).times(Mat4.rotation(Math.PI/2,0,1,0));
+        this.shapes.triangle.draw(context, program_state, gun_top_tri_1_transform, this.materials.gun);
+
+        let gun_top_tri_2_transform = gun_move_transform.times(Mat4.translation(1.31,1.1,0)).times(Mat4.scale(1,0.1,0.1)).times(Mat4.rotation(Math.PI, 0,0,1)).times(Mat4.rotation(Math.PI/4, 1,0,0)).times(Mat4.rotation(Math.PI/2,0,1,0));
+        this.shapes.triangle.draw(context, program_state, gun_top_tri_2_transform, this.materials.gun2);
+
+
+        let gun_scope_base_transform = gun_move_transform.times(Mat4.translation(3.1,0.8,0)).times(Mat4.scale(0.4,0.09,0.3));
+        this.shapes.cube.draw(context, program_state, gun_scope_base_transform, this.materials.gun);
+
+        let gun_scope_base_2_transform = gun_move_transform.times(Mat4.translation(3.2,0.9,0)).times(Mat4.scale(0.2,0.025,0.2));
+        this.shapes.cube.draw(context, program_state, gun_scope_base_2_transform, this.materials.gun);
+        
+        let gun_scope_base_3_transform = gun_move_transform.times(Mat4.translation(3.2,0.93,0)).times(Mat4.scale(0.08,0.025,0.0225));
+        this.shapes.cube.draw(context, program_state, gun_scope_base_3_transform, this.materials.gun2);
+
+        let gun_scope_side_1_transform = gun_move_transform.times(Mat4.translation(3.1,0.8,0.2)).times(Mat4.scale(0.32,0.3,0.026));
+        this.shapes.cube.draw(context, program_state, gun_scope_side_1_transform, this.materials.gun);
+
+        let gun_scope_side_2_transform = gun_move_transform.times(Mat4.translation(3.1,0.8,-0.2)).times(Mat4.scale(0.32,0.3,0.026));
+        this.shapes.cube.draw(context, program_state, gun_scope_side_2_transform, this.materials.gun);
+
+        let gun_scope_dot_transform = gun_move_transform.times(Mat4.translation(3.2,1.0,0)).times(Mat4.rotation(Math.PI/2, 0,1,0)).times(Mat4.scale(0.08,0.08,0.15));
+        this.shapes.scope.draw(context, program_state, gun_scope_dot_transform, this.materials.gun);
+
+        let gun_side_thing_transform = gun_move_transform.times(Mat4.translation(1.6,-0.7,0)).times(Mat4.scale(0.025,0.1,0.5));
+        this.shapes.cube.draw(context, program_state, gun_side_thing_transform, this.materials.gun2);
+
+        gun_side_thing_transform = gun_side_thing_transform.times(Mat4.scale(0.98,2,0.98));
+        this.shapes.cube.draw(context, program_state, gun_side_thing_transform, this.materials.gun);
+
+        let gun_side_thing_2_transform = gun_move_transform.times(Mat4.translation(1.76,-0.525,0)).times(Mat4.scale(0.2,0.03,0.5));
+        this.shapes.cube.draw(context, program_state, gun_side_thing_2_transform, this.materials.gun);
+
+        gun_side_thing_2_transform = gun_side_thing_2_transform.times(Mat4.translation(0,-14,0));
+        this.shapes.cube.draw(context, program_state, gun_side_thing_2_transform, this.materials.gun);
+
+        let gun_circle_transform = gun_move_transform.times(Mat4.translation(2.8,-0.65,0)).times(Mat4.scale(0.125,0.125,0.9));
+        this.shapes.capped_cylinder.draw(context, program_state, gun_circle_transform, this.materials.gun);
+
+        let gun_circle_2_transform = gun_move_transform.times(Mat4.translation(2.7,-0.56,0)).times(Mat4.scale(0.1,0.03,0.45));
+        this.shapes.cube.draw(context, program_state, gun_circle_2_transform, this.materials.gun);
+
+        let gun_trigger_base_transform = gun_move_transform.times(Mat4.translation(2.2,-0.7,0)).times(Mat4.scale(0.9,0.4,0.4));
+        this.shapes.cube.draw(context, program_state, gun_trigger_base_transform, this.materials.gun);
+
+        let gun_trigger_safety_transform = gun_move_transform.times(Mat4.translation(1.7,-1.8,0)).times(Mat4.rotation(-Math.PI/16, 0,0,1)).times(Mat4.scale(0.9,0.03,0.2));
+        this.shapes.cube.draw(context, program_state, gun_trigger_safety_transform, this.materials.gun);
+
+        gun_trigger_safety_transform = gun_move_transform.times(Mat4.translation(3.4,-1.5,0)).times(Mat4.rotation(Math.PI/6,0,0,1)).times(Mat4.scale(0.98,0.03,0.2));
+        this.shapes.cube.draw(context, program_state, gun_trigger_safety_transform, this.materials.gun);
+
+        let gun_trigger_transform = gun_move_transform.times(Mat4.translation(2.6,-1.25,0)).times(Mat4.rotation(0.3,0,0,1)).times(Mat4.scale(0.05,0.3,0.1)).times(Mat4.rotation(0.2,0,0,1));
+        this.shapes.cube.draw(context, program_state, gun_trigger_transform, this.materials.gun);
+
    
     }
 }
