@@ -80,6 +80,7 @@ export class Project extends Scene {
             // spike shapes
             spike : new Spike(),
             spike_cylinder : new defs.Capped_Cylinder(5, 40, [[.34, .66], [0, 1]]),
+            spike_sphere : new defs.Subdivision_Sphere(4),
         }
 
         // *** Materials
@@ -153,7 +154,7 @@ export class Project extends Scene {
 
             spike_handle: new Material(new defs.Phong_Shader(),
             {ambient: .4, diffusivity: .6, color: hex_color("#2f3333")}),
-                   
+                
         }
 
         // Sound effects
@@ -223,10 +224,12 @@ export class Project extends Scene {
         this.total_shots = 0;
         this.accuracy = 1;
 
-        // testing
+        // Testing
         this.recoil_counter = 0;
 
-        this.timer = 0;
+        // Timer
+
+        this.timer = config["timer"];
         this.time = 0;
 
         this.view_dist = 20;
@@ -603,7 +606,7 @@ export class Project extends Scene {
         if (shot){
             this.recoil_counter++;
             recoil = 0.2*Math.sin(3*Math.PI*t);
-            if (this.recoil_counter == 20){
+            if (this.recoil_counter == 30){
                 this.shot = false;
                 this.recoil_counter =0;
             }
@@ -732,8 +735,7 @@ export class Project extends Scene {
     }
     // Spike model
     draw_spike(context, program_state, t){
-        let spike_loc_transform = Mat4.translation(0,-4,-1).times(Mat4.scale(1.5,1.5,1.5));
-
+        let spike_loc_transform = Mat4.translation(0,-4,-2).times(Mat4.scale(1.5,1.5,1.5));
 
         // spike base midpoint is 1/3
         let spike_base_tri_transform = spike_loc_transform.times(Mat4.scale(1,0.9,1));
@@ -747,16 +749,23 @@ export class Project extends Scene {
         let b_spike = 1;
         let aura_color = color(r_spike, g_spike, b_spike, 0.95);
 
+
+        // spike parts that need to spin
+        // start here ---
+
+        // currently brute forced
+        let spike_t = (config["timer"]-this.timer)*t/3;
+
         let spike_cylinder_base_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,1/3)).times(Mat4.scale(0.25,1.1,0.25)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
         this.shapes.spike_cylinder.draw(context, program_state, spike_cylinder_base_transform, this.materials.spike_aura.override({color: aura_color}));
 
-        let spike_pillar_transform = spike_loc_transform.times(Mat4.translation(0,0,0.25)).times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.scale(0.07,0.55,0.02));
+        let spike_pillar_transform = spike_loc_transform.times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.rotation(spike_t, 0,1,0)).times(Mat4.translation(0,0,0.25)).times(Mat4.scale(0.07,0.55,0.02));
         this.shapes.cube.draw(context, program_state, spike_pillar_transform, this.materials.spike);
         
-        let spike_pillar_2_transform = spike_loc_transform.times(Mat4.translation(0.20,0,-0.125)).times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.rotation(2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.07,0.55,0.02));
+        let spike_pillar_2_transform = spike_loc_transform.times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.rotation(spike_t, 0,1,0)).times(Mat4.translation(0.20,0,-0.125)).times(Mat4.rotation(2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.07,0.55,0.02));
         this.shapes.cube.draw(context, program_state, spike_pillar_2_transform, this.materials.spike);
 
-        let spike_pillar_3_transform = spike_loc_transform.times(Mat4.translation(-0.20,0,-0.125)).times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.rotation(-2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.07,0.55,0.02));
+        let spike_pillar_3_transform = spike_loc_transform.times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.rotation(spike_t, 0,1,0)).times(Mat4.translation(-0.20,0,-0.125)).times(Mat4.rotation(-2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.07,0.55,0.02));
         this.shapes.cube.draw(context, program_state, spike_pillar_3_transform, this.materials.spike);
 
         let spike_pillar_ring_transform = spike_loc_transform.times(Mat4.translation(0,spike_up, 1/3)).times(Mat4.scale(0.255,0.025,0.255)).times(Mat4.rotation(Math.PI/2, 1,0,0));
@@ -765,17 +774,30 @@ export class Project extends Scene {
         let spike_handle_base_transform = spike_loc_transform.times(Mat4.translation(0,0.6+spike_up,1/3)).times(Mat4.scale(0.28,0.1,0.28)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
         this.shapes.spike_cylinder.draw(context, program_state, spike_handle_base_transform, this.materials.spike);
 
+        // blinking color
+        let blinker;
+        if (Math.trunc(spike_t/3.5) % 2 == 1){
+            blinker = hex_color("#2f3333");
+        }
+        else {
+            blinker = color(0.47,1,1,1);
+        }
         let spike_handle_base_2_transform = spike_loc_transform.times(Mat4.translation(0,0.67+spike_up,1/3)).times(Mat4.scale(0.26,0.05,0.26)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
-        this.shapes.spike_cylinder.draw(context, program_state, spike_handle_base_2_transform, this.materials.spike);
+        this.shapes.spike_cylinder.draw(context, program_state, spike_handle_base_2_transform, this.materials.spike.override({color: blinker}));
 
-        let spike_handle_transform = spike_loc_transform.times(Mat4.translation(0,0.82+spike_up,1/3)).times(Mat4.scale(0.35,0.04,0.04)).times(Mat4.rotation(Math.PI/2, 0, 1, 0));
+        let spike_handle_base_3_transform = spike_loc_transform.times(Mat4.translation(0,0.72+spike_up,1/3)).times(Mat4.scale(0.26,0.05,0.26)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
+        this.shapes.spike_cylinder.draw(context, program_state, spike_handle_base_3_transform, this.materials.spike);
+
+        let spike_handle_transform = spike_loc_transform.times(Mat4.translation(0,0.82+spike_up,1/3)).times(Mat4.rotation(spike_t, 0,1,0)).times(Mat4.scale(0.35,0.04,0.04)).times(Mat4.rotation(Math.PI/2, 0, 1, 0));
         this.shapes.spike_cylinder.draw(context, program_state, spike_handle_transform, this.materials.spike);
 
-        let spike_handle_side_transform = spike_loc_transform.times(Mat4.translation(0.2,0.78+spike_up,1/3)).times(Mat4.rotation(Math.PI/30, 0,0,1)).times(Mat4.scale(0.025,0.098,0.05));
+        let spike_handle_side_transform = spike_loc_transform.times(Mat4.translation(0,0.78+spike_up, 1/3)).times(Mat4.rotation(spike_t,0,1,0)).times(Mat4.translation(0.2,0,0)).times(Mat4.rotation(Math.PI/30, 0,0,1)).times(Mat4.scale(0.025,0.098,0.05));
         this.shapes.cube.draw(context, program_state, spike_handle_side_transform, this.materials.spike);
 
-        let spike_handle_side_2_transform = spike_loc_transform.times(Mat4.translation(-0.2,0.78+spike_up,1/3)).times(Mat4.rotation(-Math.PI/30, 0,0,1)).times(Mat4.scale(0.025,0.098,0.05));
+        let spike_handle_side_2_transform = spike_loc_transform.times(Mat4.translation(0,0.78+spike_up, 1/3)).times(Mat4.rotation(spike_t,0,1,0)).times(Mat4.translation(-0.2,0,0)).times(Mat4.rotation(-Math.PI/30, 0,0,1)).times(Mat4.scale(0.025,0.098,0.05));
         this.shapes.cube.draw(context, program_state, spike_handle_side_2_transform, this.materials.spike);
+
+        // end here ----
 
         let spike_shield_transform = spike_loc_transform.times(Mat4.translation(0,0.2,1)).times(Mat4.scale(0.1,0.25,0.03));
         this.shapes.cube.draw(context, program_state, spike_shield_transform, this.materials.spike);
@@ -813,6 +835,20 @@ export class Project extends Scene {
 
         let spike_shield_tri_3_transform_3 = spike_loc_transform.times(Mat4.translation(-0.35,0.2,-0.1)).times(Mat4.rotation(Math.PI, 0,0,1)).times(Mat4.rotation(0,0,1,0)).times(Mat4.scale(0.25,0.35,1)).times(Mat4.rotation(-Math.PI/4, 0,0,1));
         this.shapes.triangle.draw(context, program_state, spike_shield_tri_3_transform_3, this.materials.spike);
+
+        
+        
+        let spike_sphere_r_2 = 0.05*Math.sin(spike_t/1.5)+0.7;
+        let spike_sphere_transform_2 = spike_loc_transform.times(Mat4.translation(0,spike_up,0)).times(Mat4.scale(spike_sphere_r_2, spike_sphere_r_2, spike_sphere_r_2));
+        this.shapes.spike_sphere.draw(context, program_state, spike_sphere_transform_2, this.materials.test.override({color: color(1,1,1,0.1)}));
+
+        let spike_sphere_r_3 = 0.05*Math.sin(spike_t/1.5)+1;
+        let spike_sphere_transform_3 = spike_loc_transform.times(Mat4.translation(0,spike_up,0)).times(Mat4.scale(spike_sphere_r_3, spike_sphere_r_3, spike_sphere_r_3));
+        this.shapes.spike_sphere.draw(context, program_state, spike_sphere_transform_3, this.materials.test.override({color: color(0,0,0,0.08)}));
+
+        let spike_sphere_r = 0.05*Math.sin(spike_t/1.5)+1.4;
+        let spike_sphere_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,0)).times(Mat4.scale(spike_sphere_r, spike_sphere_r, spike_sphere_r));
+        this.shapes.spike_sphere.draw(context, program_state, spike_sphere_transform, this.materials.test.override({color: color(1,1,1,0.08)}));
     }
 
     display(context, program_state) {
@@ -862,18 +898,20 @@ export class Project extends Scene {
         this.draw_gun(context, program_state, t, this.shot);
         this.draw_spike(context, program_state,t);
 
-        // explosion test
-        this.timer = Math.trunc(t);
-        if (this.timer > 10 && this.timer < 12){
+        // explosion timer testing
+        this.timer -= dt;
+        this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
+
+        if (this.timer <= 0 && this.timer > -2){
             this.time += dt;
-            let R_explode = 20*Math.sin(this.time);
+            let R_explode = 19*Math.sin(this.time);
             let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
-            this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: hex_color("#ffffff")}));
+            this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: color(1,1,1,0.6)}));
         }
-        else if (this.timer >= 12){
-            let R_explode = 20;
+        else if (this.timer <= -2){
+            let R_explode = 19;
             let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
-            this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: hex_color("#ffffff")}));
+            this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: color(1,1,1,0.6)}));
         }
     }
 }
