@@ -17,7 +17,7 @@ export class Project extends Scene {
         this.shapes = {
             torus: new defs.Torus(15, 15),
             torus2: new defs.Torus(3, 15),
-            sphere: new defs.Subdivision_Sphere(8),
+            sphere: new defs.Subdivision_Sphere(4),
             circle: new defs.Regular_2D_Polygon(1, 15),
 
             triangle : new defs.Triangle(),
@@ -43,7 +43,6 @@ export class Project extends Scene {
             capped_cylinder: new defs.Capped_Cylinder(10, 30, [[.34, .66], [0, 1]]),
             cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
         }
-        };
 
         // *** Materials
         this.materials = {
@@ -52,7 +51,6 @@ export class Project extends Scene {
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#70B2E7")}),
             gun: new Material(new defs.Phong_Shader(),
-
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
             crates: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#594231")}),
@@ -102,7 +100,6 @@ export class Project extends Scene {
                 texture: new Texture("assets/background/shooting.png")
             }),
                   
-                {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#2b2b2b')}),
             gun2: new Material(new defs.Phong_Shader(),
                 {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#f55a00')}),
 
@@ -338,8 +335,7 @@ export class Project extends Scene {
                                                .times(Mat4.translation(0, 0, -.5));
         this.shapes.sphere.draw(context, program_state, bullet_head7_trans, this.materials.bullet);
         
-        
-
+    
 
         // Wall decor - shooting guide
         let shooting_guide_trans = Mat4.identity();
@@ -573,41 +569,16 @@ export class Project extends Scene {
     
         let model_transform = Mat4.identity();
 
-        // Scuffed "gun"
-        let gun_transform = model_transform;
-        // connect mouse clicking to recoil if possible
-        let recoil = 0;
-        // 0.2*Math.sin(3*Math.PI*t);
-        gun_transform = gun_transform.times(Mat4.translation(0.5,-0.9,18+recoil))
-                                      .times(Mat4.rotation(Math.PI/24, 0,1,0))
-                                      .times(Mat4.rotation(Math.PI/12, 1, 0, 0))
-                                      .times(Mat4.scale(0.08, 0.08, 1));
-
-        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
-        gun_transform = gun_transform.times(Mat4.translation(0, -3, -0.7))
-                                        .times(Mat4.scale(0.05,0.3,0.08))
-                                        .times(Mat4.scale(1/0.08,1/0.08,1));
-        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
-        gun_transform = gun_transform.times(Mat4.translation(0,0.7,-5.5))
-                                        .times(Mat4.scale(0.05, 0.05,0.5))
-                                        .times(Mat4.scale(1/0.05,1/0.3,1/0.08));
-        this.shapes.cylinder.draw(context, program_state, gun_transform, this.materials.gun);
-
         let sky_transform = model_transform;
         sky_transform = sky_transform.times(Mat4.scale(22, 8, 1)).times(Mat4.translation(0, .7, -4));
         this.shapes.cube.draw(context, program_state, sky_transform, this.materials.sky);
-        
-        let background_sky_transform = model_transform;
-        background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 1))
-                                                            .times(Mat4.translation(0,0,-4));
-        this.shapes.background_sky.draw(context, program_state, background_sky_transform, this.materials.background_sky);
+
                                         
         this.draw_floor(context, program_state);
         this.draw_walls(context, program_state);
         this.draw_props(context, program_state);
         
         this.draw_targets(context, program_state, t);
-
 
 
         // Scuffed "gun"
@@ -736,7 +707,6 @@ export class Project extends Scene {
         let gun_trigger_transform = gun_move_transform.times(Mat4.translation(2.6,-1.25,0)).times(Mat4.rotation(0.3,0,0,1)).times(Mat4.scale(0.05,0.3,0.1)).times(Mat4.rotation(0.2,0,0,1));
         this.shapes.cube.draw(context, program_state, gun_trigger_transform, this.materials.gun);
 
-   
     }
 }
 
