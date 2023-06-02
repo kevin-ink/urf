@@ -7,6 +7,40 @@ const {
 
 const {Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere} = defs;
 
+class Spike extends Shape {
+    constructor() {
+        super("position", "normal",);
+        // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
+        this.arrays.position = Vector3.cast(
+            [0, 0, 1], [Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 0, 0], 
+            [0, 1/2, 1], [Math.sqrt(1/3), 1/2, 0], [-Math.sqrt(1/3), 1/2, 0],
+            [Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 0, 0], [Math.sqrt(1/3), 1/2, 0],
+            [Math.sqrt(1/3), 1/2, 0], [-Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 1/2, 0],
+            [-Math.sqrt(1/3), 0, 0], [0, 0, 1], [0, 1/2, 1],
+            [-Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 1/2, 0], [0, 1/2, 1],
+            [Math.sqrt(1/3), 0, 0], [0, 0, 1], [0, 1/2, 1],
+            [Math.sqrt(1/3), 0, 0], [Math.sqrt(1/3), 1/2, 0], [0, 1/2, 1]);
+        this.arrays.normal = Vector3.cast(
+            [0, -1, 0], [0, -1, 0], [0, -1, 0],
+            [0, 1, 0], [0, 1, 0], [0, 1, 0],
+            [0, 0, -1], [0, 0, -1], [0, 0, -1],
+            [0, 0, -1], [0, 0, -1], [0, 0, -1],
+            [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2],
+            [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2],
+            [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2],
+            [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2]);
+        // Arrange the vertices into a square shape in texture space too:
+        this.indices.push(0, 1, 2, 
+                          3, 4, 5,
+                          6, 7, 8,
+                          9, 10, 11,
+                          12, 13, 14,
+                          15, 16, 17,
+                          18, 19, 20,
+                          21, 22, 23
+                          );
+    }
+}
 
 export class Project extends Scene {
     constructor() {
@@ -30,9 +64,9 @@ export class Project extends Scene {
             capped_cylinder : new defs.Capped_Cylinder(5, 5, [[.34, .66], [0, 1]]),
             rounded_capped_cylinder : new defs.Rounded_Capped_Cylinder(5, 5,  [[.34, .66], [0, 1]]),
             
+            // Shapes for gun
             cylinder : new defs.Cylindrical_Tube(1,5, [[.34, .66], [0, 1]]),
             scope: new defs.Cylindrical_Tube(5,30, [[.34, .66], [0, 1]]),
-
 
             // shapes for environment
             square: new defs.Square(),
@@ -42,6 +76,10 @@ export class Project extends Scene {
             rounded_capped_cylinder : new defs.Rounded_Capped_Cylinder(30, 30,  [[.34, .66], [0, 1]]),
             capped_cylinder: new defs.Capped_Cylinder(10, 30, [[.34, .66], [0, 1]]),
             cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
+
+            // spike shapes
+            spike : new Spike(),
+            spike_cylinder : new defs.Capped_Cylinder(5, 40, [[.34, .66], [0, 1]]),
         }
 
         // *** Materials
@@ -50,8 +88,14 @@ export class Project extends Scene {
                 {ambient: .4, diffusivity: .6, specularity: 0.6, color: hex_color("#f54245")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#70B2E7")}),
+
             gun: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
+            gun2: new Material(new defs.Phong_Shader(),
+                {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#f55a00')}),
+            gun3: new Material(new defs.Phong_Shader(),
+                {ambient: 0.6, diffusivity: 0.9, specularity: 0.2, color: hex_color('#333333')}),
+
             crates: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#594231")}),
             roof: new Material(new defs.Phong_Shader(),
@@ -66,7 +110,7 @@ export class Project extends Scene {
                 texture: new Texture("assets/background/sky.jpg")
             }),
             wall_texture: new Material(new defs.Textured_Phong(), {
-                color: hex_color("000000"),
+                color: hex_color("#000000"),
                 ambient: .8,
                 diffusivity: .9,
                 specularity: 0.2,
@@ -99,12 +143,16 @@ export class Project extends Scene {
                 ambient: 1,
                 texture: new Texture("assets/background/shooting.png")
             }),
-                  
-            gun2: new Material(new defs.Phong_Shader(),
-                {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#f55a00')}),
 
-            gun3: new Material(new defs.Phong_Shader(),
-                {ambient: 0.6, diffusivity: 0.9, specularity: 0.2, color: hex_color('#333333')}),
+            // spike materials
+            spike: new Material(new defs.Phong_Shader(),
+            {ambient: .4, diffusivity: .6, color: hex_color("#2f3333")}),
+
+            spike_aura: new Material(new defs.Phong_Shader(),
+            {ambient: 1, diffusivity: 0.6, specularity: 0, color: color(0.47,1,1,0.92)}),
+
+            spike_handle: new Material(new defs.Phong_Shader(),
+            {ambient: .4, diffusivity: .6, color: hex_color("#2f3333")}),
                    
         }
 
@@ -175,6 +223,9 @@ export class Project extends Scene {
         this.total_shots = 0;
         this.accuracy = 1;
 
+        // testing
+        this.recoil_counter = 0;
+
         this.view_dist = 20;
 
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
@@ -197,6 +248,7 @@ export class Project extends Scene {
     //     this.key_triggered_button("Spectrum Song", ["Control", "m"], () => {this.spectrum.play()});
     // }
 
+    // Background functions
     draw_floor(context, program_state){
         let floor_transform = Mat4.identity();
         floor_transform = floor_transform.times(Mat4.scale(14, 1, 9))
@@ -334,8 +386,7 @@ export class Project extends Scene {
         bullet_head7_trans = bullet_head7_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
         this.shapes.sphere.draw(context, program_state, bullet_head7_trans, this.materials.bullet);
-        
-    
+
 
         // Wall decor - shooting guide
         let shooting_guide_trans = Mat4.identity();
@@ -349,7 +400,11 @@ export class Project extends Scene {
                                                    .times(Mat4.rotation(1.55, 0, 1, 0));
         this.shapes.square.draw(context, program_state, shooting_guide2_trans, this.materials.shooting_guide);
 
-        
+    }
+
+    draw_sky(context, program_state){
+        let sky_transform = Mat4.scale(22, 8, 1).times(Mat4.translation(0, .7, -4));
+        this.shapes.cube.draw(context, program_state, sky_transform, this.materials.sky);
     }
 
     // Check if any of the targets are too close to each other
@@ -532,61 +587,26 @@ export class Project extends Scene {
         this.accuracy = this.hits/this.total_shots;
         this.accuracy = Math.round(this.accuracy*10000)/100
         updateBar(this.points, this.accuracy);
+
+        this.shot = true;
+
     }
 
-    display(context, program_state) {
+    // Gun model
+    draw_gun(context, program_state,t, shot){
+        // connect mouse clicking to recoil if possible
 
-        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-
-
-        // display():  Called once per frame of animation.
-        // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
-        if (!context.scratchpad.controls) {
-            this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
-            // Define the global camera and projection matrices, which are stored in program_state.
-            program_state.set_camera(this.initial_camera_location);
-
-            let canvas = context.canvas;
-            const mouse_position = (e, rect = canvas.getBoundingClientRect()) =>
-                vec((e.clientX - (rect.left + rect.right) / 2) / ((rect.right - rect.left) / 2),
-                    (e.clientY - (rect.bottom + rect.top) / 2) / ((rect.top - rect.bottom) / 2));
-
-            canvas.addEventListener("mousedown", e => {
-                e.preventDefault();
-                const rect = canvas.getBoundingClientRect()
-                this.my_mouse_down(e, mouse_position(e), context, program_state, t);
-            });
+        let recoil = 0;
+        if (shot){
+            this.recoil_counter++;
+            recoil = 0.2*Math.sin(3*Math.PI*t);
+            if (this.recoil_counter == 20){
+                this.shot = false;
+                this.recoil_counter =0;
+            }
         }
 
-        program_state.projection_transform = Mat4.perspective(
-            Math.PI / 4, context.width / context.height, .1, 1000);
-
-
-        const light_position = vec4(0, 12, 8, 1);
-        const light_position2 = vec4(0,12,20,1); // to illuminate back of gun
-        // The parameters of the Light are: position, color, size
-        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 10000), new Light(light_position2, color(1,1,1,1), 100)];
-    
-        let model_transform = Mat4.identity();
-
-        let sky_transform = model_transform;
-        sky_transform = sky_transform.times(Mat4.scale(22, 8, 1)).times(Mat4.translation(0, .7, -4));
-        this.shapes.cube.draw(context, program_state, sky_transform, this.materials.sky);
-
-                                        
-        this.draw_floor(context, program_state);
-        this.draw_walls(context, program_state);
-        this.draw_props(context, program_state);
-        
-        this.draw_targets(context, program_state, t);
-
-
-        // Scuffed "gun"
-        // connect mouse clicking to recoil if possible
-        let recoil = 0;
-        // 0.2*Math.sin(3*Math.PI*t);
-
-        let gun_move_transform = Mat4.identity().times(Mat4.translation(2,-1,15.7)).times(Mat4.rotation(-44*Math.PI/90,0,1,0)).times(Mat4.rotation(-1*Math.PI/40,0,0,1)).times(Mat4.scale(0.3, 0.3, 0.3));
+        let gun_move_transform = Mat4.translation(2,-1,15.7+recoil).times(Mat4.rotation(recoil/10-44*Math.PI/90,0,1,0)).times(Mat4.rotation(recoil/10-1*Math.PI/40,0,0,1)).times(Mat4.scale(0.3, 0.3, 0.3));
 
 
         let gun_base_transform = gun_move_transform.times(Mat4.translation(0.2,0,0)).times(Mat4.scale(3.5,0.75,0.4));
@@ -706,7 +726,138 @@ export class Project extends Scene {
 
         let gun_trigger_transform = gun_move_transform.times(Mat4.translation(2.6,-1.25,0)).times(Mat4.rotation(0.3,0,0,1)).times(Mat4.scale(0.05,0.3,0.1)).times(Mat4.rotation(0.2,0,0,1));
         this.shapes.cube.draw(context, program_state, gun_trigger_transform, this.materials.gun);
+    }
+    // Spike model
+    draw_spike(context, program_state, t){
+        let spike_loc_transform = Mat4.translation(0,-4,-1).times(Mat4.scale(1.5,1.5,1.5));
 
+
+        // spike base midpoint is 1/3
+        let spike_base_tri_transform = spike_loc_transform.times(Mat4.scale(1,0.9,1));
+
+        this.shapes.spike.draw(context, program_state, spike_base_tri_transform, this.materials.spike);
+
+        let spike_up = (0.3*t < 1.2) ? (0.3*t-0.2) : (1);
+
+        let r_spike = 0.20*Math.sin((Math.PI*t/2))+0.47
+        let g_spike = 1;
+        let b_spike = 1;
+        let aura_color = color(r_spike, g_spike, b_spike, 0.95);
+
+        let spike_cylinder_base_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,1/3)).times(Mat4.scale(0.25,1.1,0.25)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
+        this.shapes.spike_cylinder.draw(context, program_state, spike_cylinder_base_transform, this.materials.spike_aura.override({color: aura_color}));
+
+        let spike_pillar_transform = spike_loc_transform.times(Mat4.translation(0,0,0.25)).times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.scale(0.07,0.55,0.02));
+        this.shapes.cube.draw(context, program_state, spike_pillar_transform, this.materials.spike);
+        
+        let spike_pillar_2_transform = spike_loc_transform.times(Mat4.translation(0.20,0,-0.125)).times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.rotation(2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.07,0.55,0.02));
+        this.shapes.cube.draw(context, program_state, spike_pillar_2_transform, this.materials.spike);
+
+        let spike_pillar_3_transform = spike_loc_transform.times(Mat4.translation(-0.20,0,-0.125)).times(Mat4.translation(0, spike_up, 1/3)).times(Mat4.rotation(-2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.07,0.55,0.02));
+        this.shapes.cube.draw(context, program_state, spike_pillar_3_transform, this.materials.spike);
+
+        let spike_pillar_ring_transform = spike_loc_transform.times(Mat4.translation(0,spike_up, 1/3)).times(Mat4.scale(0.255,0.025,0.255)).times(Mat4.rotation(Math.PI/2, 1,0,0));
+        this.shapes.spike_cylinder.draw(context, program_state, spike_pillar_ring_transform, this.materials.spike);  
+
+        let spike_handle_base_transform = spike_loc_transform.times(Mat4.translation(0,0.6+spike_up,1/3)).times(Mat4.scale(0.28,0.1,0.28)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
+        this.shapes.spike_cylinder.draw(context, program_state, spike_handle_base_transform, this.materials.spike);
+
+        let spike_handle_base_2_transform = spike_loc_transform.times(Mat4.translation(0,0.67+spike_up,1/3)).times(Mat4.scale(0.26,0.05,0.26)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
+        this.shapes.spike_cylinder.draw(context, program_state, spike_handle_base_2_transform, this.materials.spike);
+
+        let spike_handle_transform = spike_loc_transform.times(Mat4.translation(0,0.82+spike_up,1/3)).times(Mat4.scale(0.35,0.04,0.04)).times(Mat4.rotation(Math.PI/2, 0, 1, 0));
+        this.shapes.spike_cylinder.draw(context, program_state, spike_handle_transform, this.materials.spike);
+
+        let spike_handle_side_transform = spike_loc_transform.times(Mat4.translation(0.2,0.78+spike_up,1/3)).times(Mat4.rotation(Math.PI/30, 0,0,1)).times(Mat4.scale(0.025,0.098,0.05));
+        this.shapes.cube.draw(context, program_state, spike_handle_side_transform, this.materials.spike);
+
+        let spike_handle_side_2_transform = spike_loc_transform.times(Mat4.translation(-0.2,0.78+spike_up,1/3)).times(Mat4.rotation(-Math.PI/30, 0,0,1)).times(Mat4.scale(0.025,0.098,0.05));
+        this.shapes.cube.draw(context, program_state, spike_handle_side_2_transform, this.materials.spike);
+
+        let spike_shield_transform = spike_loc_transform.times(Mat4.translation(0,0.2,1)).times(Mat4.scale(0.1,0.25,0.03));
+        this.shapes.cube.draw(context, program_state, spike_shield_transform, this.materials.spike);
+
+        let spike_shield_tri_transform = spike_loc_transform.times(Mat4.translation(0,0.54,1)).times(Mat4.rotation(-Math.PI/30,1,0,0)).times(Mat4.rotation(-3*Math.PI/4, 0,0,1)).times(Mat4.scale(0.13,0.13 ,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_transform, this.materials.spike);
+
+        let spike_shield_tri_2_transform = spike_loc_transform.times(Mat4.translation(-0.25,0.2,0.92)).times(Mat4.rotation(-Math.PI/6,0,1,0)).times(Mat4.scale(0.25,0.35,1)).times(Mat4.rotation(-Math.PI/4, 0,0,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_2_transform, this.materials.spike);
+
+        let spike_shield_tri_3_transform = spike_loc_transform.times(Mat4.translation(0.25,0.2,0.92)).times(Mat4.rotation(Math.PI, 0,0,1)).times(Mat4.rotation(-Math.PI/6,0,1,0)).times(Mat4.scale(0.25,0.35,1)).times(Mat4.rotation(-Math.PI/4, 0,0,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_3_transform, this.materials.spike);
+
+        let spike_shield_transform_2 = spike_loc_transform.times(Mat4.translation(Math.sqrt(1/3),0.2,0)).times(Mat4.rotation(2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.1,0.25,0.03));
+        this.shapes.cube.draw(context, program_state, spike_shield_transform_2, this.materials.spike);
+
+        let spike_shield_tri_transform_2 = spike_loc_transform.times(Mat4.translation(Math.sqrt(1/3),0.54,0)).times(Mat4.rotation(2*Math.PI/3, 0,1,0)).times(Mat4.rotation(-Math.PI/30,1,0,0)).times(Mat4.rotation(-3*Math.PI/4, 0,0,1)).times(Mat4.scale(0.13,0.13 ,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_transform_2, this.materials.spike);
+
+        let spike_shield_tri_2_transform_2 = spike_loc_transform.times(Mat4.translation(0.5,0.2,0.22)).times(Mat4.rotation(Math.PI/4,0,1,0)).times(Mat4.scale(0.25,0.35,1)).times(Mat4.rotation(-Math.PI/4, 0,0,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_2_transform_2, this.materials.spike);
+
+        let spike_shield_tri_3_transform_2 = spike_loc_transform.times(Mat4.translation(0.365,0.2,-0.005)).times(Mat4.rotation(0, 0,0,1)).times(Mat4.rotation(Math.PI/6,0,1,0)).times(Mat4.scale(0.25,0.35,1)).times(Mat4.rotation(-Math.PI/4, 0,0,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_3_transform_2, this.materials.spike);
+
+        let spike_shield_transform_3 = spike_loc_transform.times(Mat4.translation(-Math.sqrt(1/3),0.2,0)).times(Mat4.rotation(-2*Math.PI/3, 0,1,0)).times(Mat4.scale(0.1,0.25,0.03));
+        this.shapes.cube.draw(context, program_state, spike_shield_transform_3, this.materials.spike);
+
+        let spike_shield_tri_transform_3 = spike_loc_transform.times(Mat4.translation(-Math.sqrt(1/3),0.54,0)).times(Mat4.rotation(-2*Math.PI/3, 0,1,0)).times(Mat4.rotation(-Math.PI/30,1,0,0)).times(Mat4.rotation(-3*Math.PI/4, 0,0,1)).times(Mat4.scale(0.13,0.13 ,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_transform_3, this.materials.spike);
+
+
+        let spike_shield_tri_2_transform_3 = spike_loc_transform.times(Mat4.translation(-0.5,0.2,0.22)).times(Mat4.rotation(3*Math.PI/4,0,1,0)).times(Mat4.scale(0.25,0.35,1)).times(Mat4.rotation(-Math.PI/4, 0,0,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_2_transform_3, this.materials.spike);
+
+        let spike_shield_tri_3_transform_3 = spike_loc_transform.times(Mat4.translation(-0.35,0.2,-0.1)).times(Mat4.rotation(Math.PI, 0,0,1)).times(Mat4.rotation(0,0,1,0)).times(Mat4.scale(0.25,0.35,1)).times(Mat4.rotation(-Math.PI/4, 0,0,1));
+        this.shapes.triangle.draw(context, program_state, spike_shield_tri_3_transform_3, this.materials.spike);
+    }
+
+    display(context, program_state) {
+
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+
+        // display():  Called once per frame of animation.
+        // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
+        if (!context.scratchpad.controls) {
+            this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
+            // Define the global camera and projection matrices, which are stored in program_state.
+            program_state.set_camera(this.initial_camera_location);
+
+            let canvas = context.canvas;
+            const mouse_position = (e, rect = canvas.getBoundingClientRect()) =>
+                vec((e.clientX - (rect.left + rect.right) / 2) / ((rect.right - rect.left) / 2),
+                    (e.clientY - (rect.bottom + rect.top) / 2) / ((rect.top - rect.bottom) / 2));
+
+            canvas.addEventListener("mousedown", e => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect()
+                this.my_mouse_down(e, mouse_position(e), context, program_state, t);
+            });
+        }
+
+        program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, .1, 1000);
+
+        // Lights
+        const light_position = vec4(0, 12, 8, 1);
+        const light_position2 = vec4(0,12,20,1); // to illuminate back of gun
+        const spike_light = vec4(0,-4.2,1.2,1); // spike illumation
+        
+        // The parameters of the Light are: position, color, size
+        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000), new Light(light_position2, color(1,1,1,1), 1000)];
+    
+        // need to figure out how to add another light source 
+        // new Light(spike_light, hex_color("#a6ffff"), 10000)
+
+        // background        
+        this.draw_sky(context, program_state);
+        this.draw_floor(context, program_state);
+        this.draw_walls(context, program_state);
+        this.draw_props(context, program_state);
+        
+        // game interactives
+        this.draw_targets(context, program_state, t);
+        this.draw_gun(context, program_state, t, this.shot);
+        this.draw_spike(context, program_state,t);
     }
 }
 
