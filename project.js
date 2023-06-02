@@ -536,9 +536,6 @@ export class Project extends Scene {
         this.accuracy = this.hits/this.total_shots;
         this.accuracy = Math.round(this.accuracy*10000)/100
         updateBar(this.points, this.accuracy);
-
-        // gun recoil animation queue here
-
     }
 
     display(context, program_state) {
