@@ -226,6 +226,9 @@ export class Project extends Scene {
         // testing
         this.recoil_counter = 0;
 
+        this.timer = 0;
+        this.time = 0;
+
         this.view_dist = 20;
 
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
@@ -858,6 +861,20 @@ export class Project extends Scene {
         this.draw_targets(context, program_state, t);
         this.draw_gun(context, program_state, t, this.shot);
         this.draw_spike(context, program_state,t);
+
+        // explosion test
+        this.timer = Math.trunc(t);
+        if (this.timer > 10 && this.timer < 12){
+            this.time += dt;
+            let R_explode = 20*Math.sin(this.time);
+            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
+            this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: hex_color("#ffffff")}));
+        }
+        else if (this.timer >= 12){
+            let R_explode = 20;
+            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
+            this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: hex_color("#ffffff")}));
+        }
     }
 }
 
