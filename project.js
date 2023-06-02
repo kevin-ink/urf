@@ -2,7 +2,7 @@ import { defs, tiny } from "./examples/common.js";
 import { config, updateBar} from './frontend/ui.js';
 
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture
 } = tiny;
 
 const {Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere} = defs;
@@ -17,7 +17,7 @@ export class Project extends Scene {
         this.shapes = {
             torus: new defs.Torus(15, 15),
             torus2: new defs.Torus(3, 15),
-            sphere: new defs.Subdivision_Sphere(4),
+            sphere: new defs.Subdivision_Sphere(8),
             circle: new defs.Regular_2D_Polygon(1, 15),
 
             triangle : new defs.Triangle(),
@@ -35,10 +35,14 @@ export class Project extends Scene {
 
 
             // shapes for environment
-            background_sky: new defs.Square(),
-            floor: new defs.Cube(),
-            walls: new defs.Cube(),
+            square: new defs.Square(),
+            cube: new defs.Cube(),
             rectangle: new defs.Cube(),
+            cone: new defs.Rounded_Closed_Cone(30, 30,  [[.34, .66], [0, 1]]),
+            rounded_capped_cylinder : new defs.Rounded_Capped_Cylinder(30, 30,  [[.34, .66], [0, 1]]),
+            capped_cylinder: new defs.Capped_Cylinder(10, 30, [[.34, .66], [0, 1]]),
+            cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
+        }
         };
 
         // *** Materials
@@ -47,15 +51,57 @@ export class Project extends Scene {
                 {ambient: .4, diffusivity: .6, specularity: 0.6, color: hex_color("#f54245")}),
             test2: new Material(new Gouraud_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#70B2E7")}),
-            background_sky: new Material(new defs.Phong_Shader(),
-                {ambient: 0.5, diffusivity: 0.8, specularity: 0, color: hex_color("#99b6f2")}),
-            floor: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
-            walls: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}),
-            back_wall: new Material(new defs.Phong_Shader(),
-                {ambient: .5, diffusivity: .4, specularity: 0.3, color: hex_color("#C4C1E0")}), 
             gun: new Material(new defs.Phong_Shader(),
+
+                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
+            crates: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#594231")}),
+            roof: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 1, color: hex_color("#401C1B")}),
+            bullet: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#212121")}),
+            sky: new Material(new Texture_Scroll_X(), {
+                color: hex_color("#000000"),
+                ambient: 1.1,
+                diffusivity: 0,
+                specularity: 0,
+                texture: new Texture("assets/background/sky.jpg")
+            }),
+            wall_texture: new Material(new defs.Textured_Phong(), {
+                color: hex_color("000000"),
+                ambient: .8,
+                diffusivity: .9,
+                specularity: 0.2,
+                texture: new Texture("assets/background/wall-texture-color.png")
+            }),
+            floor_texture: new Material(new defs.Textured_Phong(), {
+                color: hex_color("000000"),
+                ambient: .75,
+                diffusivity: .9,
+                specularity: 0.2,
+                texture: new Texture("assets/background/wall-texture-color.png")
+            }),
+            crates_texture: new Material(new defs.Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 0.8,
+                texture: new Texture("assets/background/crate.png")
+            }),
+            reverse_crate: new Material(new defs.Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 0.8,
+                texture: new Texture("assets/background/reverse-crate.png")
+            }),
+            locked_box: new Material(new defs.Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 0.8,
+                texture: new Texture("assets/background/locked-box.png")
+            }),
+            shooting_guide: new Material(new defs.Textured_Phong(), {
+                color: hex_color("000000"),
+                ambient: 1,
+                texture: new Texture("assets/background/shooting.png")
+            }),
+                  
                 {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#2b2b2b')}),
             gun2: new Material(new defs.Phong_Shader(),
                 {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#f55a00')}),
@@ -64,7 +110,6 @@ export class Project extends Scene {
                 {ambient: 0.6, diffusivity: 0.9, specularity: 0.2, color: hex_color('#333333')}),
                    
         }
-
 
         // Sound effects
         this.gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
@@ -136,6 +181,7 @@ export class Project extends Scene {
         this.view_dist = 20;
 
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, this.view_dist), vec3(0, 0, 0), vec3(0, 1, 0));
+
     }
 
     // make_control_panel() {
@@ -156,30 +202,158 @@ export class Project extends Scene {
 
     draw_floor(context, program_state){
         let floor_transform = Mat4.identity();
-        floor_transform = floor_transform.times(Mat4.scale(15, 1, context.width))
-                                         .times(Mat4.translation(0, -this.view_dist/4, 0));
-        this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
+        floor_transform = floor_transform.times(Mat4.scale(14, 1, 9))
+                                         .times(Mat4.translation(0., -this.view_dist/4, .5));
+        this.shapes.cube.draw(context, program_state, floor_transform, this.materials.floor_texture);
     }
 
     draw_walls(context, program_state){
         let left_wall_transform = Mat4.identity();
-
-        left_wall_transform = left_wall_transform.times(Mat4.scale(4, 5, context.width))
-                                                 .times(Mat4.rotation(1.1, 0, 1, 0))
-                                                 .times(Mat4.translation(-2.5, 0, -2));
-        this.shapes.walls.draw(context, program_state, left_wall_transform, this.materials.walls);
+       left_wall_transform = left_wall_transform.times(Mat4.scale(.2, 5, 10))
+                                                .times(Mat4.translation(-68, 0, 0))
+                                                .times(Mat4.rotation(-1.5, 0, 1, 0));       
+        this.shapes.cube.draw(context, program_state, left_wall_transform, this.materials.wall_texture);
 
         let right_wall_transform = Mat4.identity();
 
-        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 5, context.width))
+        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 5, 10))
                                                    .times(Mat4.translation(68, 0, 0))
                                                    .times(Mat4.rotation(1.5, 0, 1, 0));
-         this.shapes.walls.draw(context, program_state, right_wall_transform, this.materials.walls);
+         this.shapes.cube.draw(context, program_state, right_wall_transform, this.materials.wall_texture);
 
         let back_wall_transform = Mat4.identity();
         back_wall_transform = back_wall_transform.times(Mat4.scale(13.5, 5, 1))
                                                  .times(Mat4.translation(0, 0, -3));
-        this.shapes.walls.draw(context, program_state, back_wall_transform, this.materials.back_wall);
+        this.shapes.cube.draw(context, program_state, back_wall_transform, this.materials.wall_texture);
+    }
+
+    draw_props(context, program_state) {
+        // Roof
+        let roof_trans = Mat4.identity();
+        roof_trans = roof_trans.times(Mat4.translation(13, 5, 5))
+                               .times(Mat4.rotation(2.3, 0, 0, 1))
+                               .times(Mat4.scale(0.25, 0.5, 7));
+        this.shapes.cube.draw(context, program_state, roof_trans, this.materials.roof);
+
+        // Crates
+        let crate1_trans = Mat4.identity();
+        crate1_trans = crate1_trans.times(Mat4.translation(-12.5, -3, 4)
+                                   .times(Mat4.scale(1, 1, 1)));
+        this.shapes.cube.draw(context, program_state, crate1_trans, this.materials.crates_texture);
+
+        let crate2_trans = Mat4.identity();
+        crate2_trans = crate2_trans.times(Mat4.translation(11, .44, -1))
+                                   .times(Mat4.scale(1.5, 1.5, 1))
+                                   .times(Mat4.rotation(-0.1, 0, 1, 0));
+        this.shapes.cube.draw(context, program_state, crate2_trans, this.materials.crates_texture);
+
+        let crate3_trans = Mat4.identity();
+        crate3_trans = crate3_trans.times(Mat4.translation(10.5, 3.34, -1))
+                                   .times(Mat4.scale(1.4, 1.4, 1))
+                                   .times(Mat4.rotation(-.9, 0, 1, 0));
+        this.shapes.cube.draw(context, program_state, crate3_trans, this.materials.reverse_crate);
+
+        // Locked boxes
+        let standing_block1_trans = Mat4.identity();
+        standing_block1_trans = standing_block1_trans.times(Mat4.scale(2, 1.5, 1))
+                                                   .times(Mat4.translation(2, -1.7, -1));
+        this.shapes.cube.draw(context, program_state, standing_block1_trans, this.materials.locked_box);
+        let standing_block2_trans = Mat4.identity();
+        standing_block2_trans = standing_block2_trans.times(Mat4.scale(2, 1.5, 1))
+                                                     .times(Mat4.translation(4, -1.7, -1));
+        this.shapes.cube.draw(context, program_state, standing_block2_trans, this.materials.locked_box);
+        let standing_block3_trans = Mat4.identity();
+        standing_block3_trans = standing_block3_trans.times(Mat4.scale(2, 1.5, 1))
+                                                     .times(Mat4.translation(6, -1.7, -1));
+        this.shapes.cube.draw(context, program_state, standing_block3_trans, this.materials.locked_box);
+
+        // Bullets on the floor
+        let bullet_body1_trans = Mat4.identity();
+        bullet_body1_trans = bullet_body1_trans.times(Mat4.scale(.25, .0625, .0625))
+                                               .times(Mat4.translation(-27, -60, 150))
+                                               .times(Mat4.rotation(-1.55, 0, 1, 0));
+        this.shapes.capped_cylinder.draw(context, program_state, bullet_body1_trans, this.materials.bullet);
+        let bullet_head1_trans = bullet_body1_trans;
+        bullet_head1_trans = bullet_head1_trans.times(Mat4.scale(1, 1, 1))
+                                               .times(Mat4.translation(0, 0, -.5));
+        this.shapes.sphere.draw(context, program_state, bullet_head1_trans, this.materials.bullet);
+        
+        let bullet_body2_trans = Mat4.identity();
+        bullet_body2_trans = bullet_body2_trans.times(Mat4.scale(.25, .0625, .0625))
+                                               .times(Mat4.translation(-25, -60, 135))
+                                               .times(Mat4.rotation(2, 0, 1, 0));
+        this.shapes.capped_cylinder.draw(context, program_state, bullet_body2_trans, this.materials.bullet);
+        let bullet_head2_trans = bullet_body2_trans;
+        bullet_head2_trans = bullet_head2_trans.times(Mat4.scale(1, 1, 1))
+                                               .times(Mat4.translation(0, 0, -.5));
+        this.shapes.sphere.draw(context, program_state, bullet_head2_trans, this.materials.bullet);
+
+        let bullet_body3_trans = Mat4.identity();
+        bullet_body3_trans = bullet_body3_trans.times(Mat4.scale(.25, .0625, .0625))
+                                               .times(Mat4.translation(-15, -58, 80))
+                                               .times(Mat4.rotation(1, 0, 1, 0));
+        this.shapes.capped_cylinder.draw(context, program_state, bullet_body3_trans, this.materials.bullet);
+        let bullet_head3_trans = bullet_body3_trans;
+        bullet_head3_trans = bullet_head3_trans.times(Mat4.scale(1, 1, 1))
+                                               .times(Mat4.translation(0, 0, -.5));
+        this.shapes.sphere.draw(context, program_state, bullet_head3_trans, this.materials.bullet);
+        
+        let bullet_body4_trans = Mat4.identity();
+        bullet_body4_trans = bullet_body4_trans.times(Mat4.scale(.25, .0625, .0625))
+                                               .times(Mat4.translation(40, -58, 60))
+                                               .times(Mat4.rotation(1.8, 0, 1, 0));
+        this.shapes.capped_cylinder.draw(context, program_state, bullet_body4_trans, this.materials.bullet);
+        let bullet_head4_trans = bullet_body4_trans;
+        bullet_head4_trans = bullet_head4_trans.times(Mat4.scale(1, 1, 1))
+                                               .times(Mat4.translation(0, 0, -.5));
+        this.shapes.sphere.draw(context, program_state, bullet_head4_trans, this.materials.bullet);
+
+        let bullet_body5_trans = Mat4.identity();
+        bullet_body5_trans = bullet_body5_trans.times(Mat4.scale(.25, .0625, .0625))
+                                               .times(Mat4.translation(20, -58, 100))
+                                               .times(Mat4.rotation(-2, 0, 1, 0));
+        this.shapes.capped_cylinder.draw(context, program_state, bullet_body5_trans, this.materials.bullet);
+        let bullet_head5_trans = bullet_body5_trans;
+        bullet_head5_trans = bullet_head5_trans.times(Mat4.scale(1, 1, 1))
+                                               .times(Mat4.translation(0, 0, -.5));
+        this.shapes.sphere.draw(context, program_state, bullet_head5_trans, this.materials.bullet);
+
+        let bullet_body6_trans = Mat4.identity();
+        bullet_body6_trans = bullet_body6_trans.times(Mat4.scale(.25, .0625, .0625))
+                                               .times(Mat4.translation(32, -60, 160))
+                                               .times(Mat4.rotation(-2.3, 0, 1, 0));
+        this.shapes.capped_cylinder.draw(context, program_state, bullet_body6_trans, this.materials.bullet);
+        let bullet_head6_trans = bullet_body6_trans;
+        bullet_head6_trans = bullet_head6_trans.times(Mat4.scale(1, 1, 1))
+                                               .times(Mat4.translation(0, 0, -.5));
+        this.shapes.sphere.draw(context, program_state, bullet_head6_trans, this.materials.bullet);
+
+        let bullet_body7_trans = Mat4.identity();
+        bullet_body7_trans = bullet_body7_trans.times(Mat4.scale(.25, .0625, .0625))
+                                               .times(Mat4.translation(5, -60, 120))
+                                               .times(Mat4.rotation(1.3, 0, 1, 0));
+        this.shapes.capped_cylinder.draw(context, program_state, bullet_body7_trans, this.materials.bullet);
+        let bullet_head7_trans = bullet_body7_trans;
+        bullet_head7_trans = bullet_head7_trans.times(Mat4.scale(1, 1, 1))
+                                               .times(Mat4.translation(0, 0, -.5));
+        this.shapes.sphere.draw(context, program_state, bullet_head7_trans, this.materials.bullet);
+        
+        
+
+
+        // Wall decor - shooting guide
+        let shooting_guide_trans = Mat4.identity();
+        shooting_guide_trans = shooting_guide_trans.times(Mat4.scale(2.5, 2.5, 1))
+                                                   .times(Mat4.translation(5.3, 0, 1.5))
+                                                   .times(Mat4.rotation(1.55, 0, 1, 0));
+        this.shapes.square.draw(context, program_state, shooting_guide_trans, this.materials.shooting_guide);
+        let shooting_guide2_trans = Mat4.identity();
+        shooting_guide2_trans = shooting_guide2_trans.times(Mat4.scale(2.5, 2.5, 1))
+                                                   .times(Mat4.translation(5.3, 0, 3.5))
+                                                   .times(Mat4.rotation(1.55, 0, 1, 0));
+        this.shapes.square.draw(context, program_state, shooting_guide2_trans, this.materials.shooting_guide);
+
+        
     }
 
     // Check if any of the targets are too close to each other
@@ -218,7 +392,8 @@ export class Project extends Scene {
         let yMin = -2, yMax = 6-size_factor-this.move_factor;
 
         // Generate random coordinates
-        let ranX, ranY, ranZ = Math.random()*5 + -2;
+        let ranX, ranY  = Math.random()*5 + -2;
+        let ranZ = Math.random() * 2;
         do {
             ranX = Math.random() * (xMax-xMin) + xMin;
             ranY = Math.random() * (yMax-yMin) + yMin;
@@ -401,6 +576,29 @@ export class Project extends Scene {
     
         let model_transform = Mat4.identity();
 
+        // Scuffed "gun"
+        let gun_transform = model_transform;
+        // connect mouse clicking to recoil if possible
+        let recoil = 0;
+        // 0.2*Math.sin(3*Math.PI*t);
+        gun_transform = gun_transform.times(Mat4.translation(0.5,-0.9,18+recoil))
+                                      .times(Mat4.rotation(Math.PI/24, 0,1,0))
+                                      .times(Mat4.rotation(Math.PI/12, 1, 0, 0))
+                                      .times(Mat4.scale(0.08, 0.08, 1));
+
+        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
+        gun_transform = gun_transform.times(Mat4.translation(0, -3, -0.7))
+                                        .times(Mat4.scale(0.05,0.3,0.08))
+                                        .times(Mat4.scale(1/0.08,1/0.08,1));
+        this.shapes.rectangle.draw(context, program_state, gun_transform, this.materials.gun);
+        gun_transform = gun_transform.times(Mat4.translation(0,0.7,-5.5))
+                                        .times(Mat4.scale(0.05, 0.05,0.5))
+                                        .times(Mat4.scale(1/0.05,1/0.3,1/0.08));
+        this.shapes.cylinder.draw(context, program_state, gun_transform, this.materials.gun);
+
+        let sky_transform = model_transform;
+        sky_transform = sky_transform.times(Mat4.scale(22, 8, 1)).times(Mat4.translation(0, .7, -4));
+        this.shapes.cube.draw(context, program_state, sky_transform, this.materials.sky);
         
         let background_sky_transform = model_transform;
         background_sky_transform = background_sky_transform.times(Mat4.scale(context.width, context.height, 1))
@@ -409,6 +607,7 @@ export class Project extends Scene {
                                         
         this.draw_floor(context, program_state);
         this.draw_walls(context, program_state);
+        this.draw_props(context, program_state);
         
         this.draw_targets(context, program_state, t);
 
@@ -686,6 +885,35 @@ class Gouraud_Shader extends Shader {
 
         this.send_material(context, gpu_addresses, material);
         this.send_gpu_state(context, gpu_addresses, gpu_state, model_transform);
+    }
+}
+
+class Texture_Scroll_X extends defs.Textured_Phong {
+    fragment_glsl_code() {
+        return this.shared_glsl_code() + `
+            varying vec2 f_tex_coord;
+            uniform sampler2D texture;
+            uniform float animation_time;
+            
+            void main(){
+                // Sample the texture image in the correct place:
+
+                mat4 scroll_matrix = mat4(vec4(1., .0, 0., 0.),
+                                          vec4(0., 1., 0., 0.),
+                                          vec4(0., 0., 1., 0.),
+                                          vec4(animation_time / 300., 0., 0., 1.));
+
+                vec4 scaled_tex_coord = vec4(f_tex_coord, 0., 0.) + vec4(1., 1., 0., 1.);
+                scaled_tex_coord = scroll_matrix * scaled_tex_coord;
+                
+                vec4 tex_color = texture2D(texture, scaled_tex_coord.xy);
+
+                if( tex_color.w < .01 ) discard;
+                // Compute an initial (ambient) color:
+                gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
+                // Compute the final color with contributions from lights:
+                gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );
+        } `;
     }
 }
 
