@@ -133,11 +133,11 @@ export class Project extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#70B2E7")}),
 
             gun: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
+                {ambient: 0.4, diffusivity: 1, specularity: 1, color: hex_color('#131313')}),
             gun2: new Material(new defs.Phong_Shader(),
-                {ambient: 0.6, diffusivity: 0.8, specularity: 1, color: hex_color('#f55a00')}),
+                {ambient: 0.4, diffusivity: 0.8, specularity: 1, color: hex_color('#f55a00')}),
             gun3: new Material(new defs.Phong_Shader(),
-                {ambient: 0.6, diffusivity: 0.9, specularity: 0.2, color: hex_color('#333333')}),
+                {ambient: 0.4, diffusivity: 0.9, specularity: 0.2, color: hex_color('#333333')}),
 
             crates: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#594231")}),
@@ -189,19 +189,19 @@ export class Project extends Scene {
 
             // spike materials
             spike: new Material(new defs.Phong_Shader(),
-            {ambient: .4, diffusivity: .6, color: hex_color("#2f3333")}),
+            {ambient: .2, diffusivity: .8, color: hex_color("#2f3333")}),
 
             spike_aura: new Material(new defs.Phong_Shader(),
-            {ambient: 1, diffusivity: 0.6, specularity: 0, color: color(0.47,1,1,0.92)}),
+            {ambient: 1, diffusivity: 0.8, specularity: 0, color: color(0.47,1,1,0.92)}),
 
             spike_handle: new Material(new defs.Phong_Shader(),
-            {ambient: .4, diffusivity: .6, color: hex_color("#2f3333")}),
+            {ambient: .2, diffusivity: .8, color: hex_color("#2f3333")}),
 
             // target materials
             dark_gray : new Material(new defs.Phong_Shader(),
-            {ambient: .6, diffusivity: .5, specularity: 0.2, color: hex_color("#4a4b4d")}),
+            {ambient: .2, diffusivity: .8, specularity: 0.4, color: hex_color("#4a4b4d")}),
             gray : new Material(new defs.Phong_Shader(),
-            {ambient: .6, diffusivity: .5, specularity: 0.2, color: hex_color("#989a9c")}),
+            {ambient: .2, diffusivity: .8, specularity: 0.4, color: hex_color("#989a9c")}),
                 
         }
 
@@ -601,6 +601,43 @@ export class Project extends Scene {
 
         let target_bot_yellow_transform = target_loc_transform.times(Mat4.translation(0,1.8,-0.14)).times(Mat4.scale(0.46, 0.09, 0.1));
         this.shapes.cube.draw(context, program_state, target_bot_yellow_transform, this.materials.gray.override({color: hex_color("#91826a")}));
+
+        // Additional aesthetics
+        let target_circles_transform = target_loc_transform.times(Mat4.translation(0,1.8,0.12)).times(Mat4.scale(0.02,0.02,1));
+        this.shapes.disk.draw(context, program_state, target_circles_transform, this.materials.dark_gray);
+
+        let target_circles_2_transform = target_loc_transform.times(Mat4.translation(-0.04,1.8-0.05,0.12)).times(Mat4.scale(0.02,0.02,1));
+        this.shapes.disk.draw(context, program_state, target_circles_2_transform, this.materials.dark_gray);
+
+        let target_circles_3_transform = target_loc_transform.times(Mat4.translation(0.04,1.8-0.05,0.12)).times(Mat4.scale(0.02,0.02,1));
+        this.shapes.disk.draw(context, program_state, target_circles_3_transform, this.materials.dark_gray);
+
+        // WINDMILL
+        let wind_mill_spin = 50*t;
+
+        let wind_mill_center_transform = target_loc_transform.times(Mat4.translation(0,2.3,-0.1)).times(Mat4.rotation(wind_mill_spin,0,1,0)).times(Mat4.rotation(-Math.PI/2, 1,0,0)).times(Mat4.scale(1.5,1.5,1));
+        this.shapes.capped_cylinder.draw(context, program_state, wind_mill_center_transform.times(Mat4.scale(0.05,0.05,0.08)), this.materials.dark_gray);
+
+        this.shapes.capped_cylinder.draw(context, program_state, wind_mill_center_transform.times(Mat4.translation(0,0,-0.1)).times(Mat4.scale(0.025,0.025,0.3)), this.materials.gray);
+
+        let wind_mill_wing_transform = wind_mill_center_transform.times(Mat4.translation(0,0,0)).times(Mat4.scale(0.06,0.6,0.01));
+        this.shapes.cube.draw(context, program_state, wind_mill_wing_transform, this.materials.gray);
+
+        let wind_mill_wing_2_transform = wind_mill_center_transform.times(Mat4.translation(0,0,0)).times(Mat4.rotation(Math.PI/2, 0,0,1)).times(Mat4.scale(0.06,0.6,0.01));
+        this.shapes.cube.draw(context, program_state, wind_mill_wing_2_transform, this.materials.gray);
+
+        let wind_mill_wing_armor_transform = wind_mill_wing_transform.times(Mat4.translation(0,0,0)).times(Mat4.scale(0.4,0.6,2));
+        this.shapes.cube.draw(context, program_state, wind_mill_wing_armor_transform, this.materials.dark_gray);
+
+        let wind_mill_wing_armor_transform_2 = wind_mill_wing_transform.times(Mat4.translation(0,0,0)).times(Mat4.scale(0.2,0.4,3));
+        this.shapes.cube.draw(context, program_state, wind_mill_wing_armor_transform_2, this.materials.gray);
+
+        let wind_mill_wing_armor_2_transform = wind_mill_wing_2_transform.times(Mat4.translation(0,0,0)).times(Mat4.scale(0.4,0.6,2));
+        this.shapes.cube.draw(context, program_state, wind_mill_wing_armor_2_transform, this.materials.dark_gray);
+
+        let wind_mill_wing_armor_2_transform_2 = wind_mill_wing_2_transform.times(Mat4.translation(0,0,0)).times(Mat4.scale(0.2,0.4,3));
+        this.shapes.cube.draw(context, program_state, wind_mill_wing_armor_2_transform_2, this.materials.gray);
+        
     }
 
     draw_targets(context, program_state, t){
