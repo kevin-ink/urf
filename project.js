@@ -781,7 +781,7 @@ export class Project extends Scene {
         }
         this.accuracy = this.hits/this.total_shots;
         this.accuracy = Math.round(this.accuracy*10000)/100
-        updateBar(this.points, this.accuracy);
+        updateBar(this.points, this.accuracy, this.display_timer);
 
         this.shot = true;
 
