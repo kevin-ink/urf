@@ -69,13 +69,13 @@ export class Project extends Scene {
             scope: new defs.Cylindrical_Tube(5,30, [[.34, .66], [0, 1]]),
 
             // shapes for environment
-            square: new defs.Square(),
-            cube: new defs.Cube(),
-            rectangle: new defs.Cube(),
-            cone: new defs.Rounded_Closed_Cone(30, 30,  [[.34, .66], [0, 1]]),
+            square : new defs.Square(),
+            cube : new defs.Cube(),
+            rectangle : new defs.Cube(),
+            cone : new defs.Rounded_Closed_Cone(30, 30,  [[.34, .66], [0, 1]]),
             rounded_capped_cylinder : new defs.Rounded_Capped_Cylinder(30, 30,  [[.34, .66], [0, 1]]),
-            bullet_capped_cylinder: new defs.Capped_Cylinder(5, 30, [[.34, .66], [0, 1]]),
-            cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
+            bullet_capped_cylinder : new defs.Capped_Cylinder(5, 30, [[.34, .66], [0, 1]]),
+            cylinder2 : new defs.Cylindrical_Tube(5, 4),
 
             // spike shapes
             spike : new Spike(),
@@ -117,8 +117,21 @@ export class Project extends Scene {
                 specularity: 0.2,
                 texture: new Texture("assets/background/wall-texture-color.png")
             }),
+            wall_2_texture: new Material(new defs.Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 1,
+                diffusivity: .9,
+                specularity: 0.2,
+                texture: new Texture("assets/background/wall-texture.jpg")
+            }),
+            outside_floor_texture: new Material(new defs.Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 0.4,
+                diffusivity: 0,
+                texture: new Texture("assets/background/wall-texture-color.png")
+            }),
             floor_texture: new Material(new defs.Textured_Phong(), {
-                color: hex_color("000000"),
+                color: hex_color("#000000"),
                 ambient: .75,
                 diffusivity: .9,
                 specularity: 0.2,
@@ -143,6 +156,11 @@ export class Project extends Scene {
                 color: hex_color("000000"),
                 ambient: 1,
                 texture: new Texture("assets/background/shooting.png")
+            }),
+            wood_plank: new Material(new defs.Textured_Phong(), {
+                color: hex_color("000000"),
+                ambient: 1,
+                texture: new Texture("assets/background/wood-plank.jpg")
             }),
 
             // spike materials
@@ -257,29 +275,68 @@ export class Project extends Scene {
     // Background functions
     draw_floor(context, program_state){
         let floor_transform = Mat4.identity();
-        floor_transform = floor_transform.times(Mat4.scale(14, 1, 9))
-                                         .times(Mat4.translation(0., -this.view_dist/4, .5));
+        floor_transform = floor_transform.times(Mat4.scale(14, 1, 10))
+                                         .times(Mat4.translation(0., -this.view_dist/4, 0));
         this.shapes.cube.draw(context, program_state, floor_transform, this.materials.floor_texture);
     }
 
     draw_walls(context, program_state){
-        let left_wall_transform = Mat4.identity();
-       left_wall_transform = left_wall_transform.times(Mat4.scale(.2, 5, 10))
-                                                .times(Mat4.translation(-68, 0, 0))
+       let left_wall_transform = Mat4.identity();
+       left_wall_transform = left_wall_transform.times(Mat4.scale(.2, 5, 7))
+                                                .times(Mat4.translation(-68, 0, 0.5))
                                                 .times(Mat4.rotation(-1.5, 0, 1, 0));       
-        this.shapes.cube.draw(context, program_state, left_wall_transform, this.materials.wall_texture);
+        //this.shapes.cube.draw(context, program_state, left_wall_transform, this.materials.wall_texture);
+
+        let left_wall_1_transform = Mat4.identity();
+        left_wall_1_transform = left_wall_1_transform.times(Mat4.scale(0.2, 5, 1))
+                                                     .times(Mat4.translation(-68, -0.07, -1))
+                                                     .times(Mat4.rotation(-1.5, 0, 0, 1));
+        this.shapes.cube.draw(context, program_state, left_wall_1_transform, this.materials.wall_texture);
+
+        let left_wall_2_transform = left_wall_1_transform;
+        left_wall_2_transform = left_wall_2_transform.times(Mat4.scale(1, 1, 3.5))
+                                                     .times(Mat4.translation(0, 0, 2.2));
+        this.shapes.cube.draw(context, program_state, left_wall_2_transform, this.materials.wall_texture);
+
+        let left_wall_3_transform = left_wall_1_transform;
+        left_wall_3_transform = left_wall_3_transform.times(Mat4.scale(0.5, 1, 2))
+                                                     .times(Mat4.translation(0.7, -5, 0.5))
+                                                     .times(Mat4.rotation(Math.PI/ 180 * 0, 0, 1, 0));
+        this.shapes.cube.draw(context, program_state, left_wall_3_transform, this.materials.wall_texture);
+
+        let left_wall_4_transform = Mat4.identity();
+        left_wall_4_transform = left_wall_4_transform.times(Mat4.scale(0.2, 1, 1.75))
+                                                     .times(Mat4.translation(-68, 3.96, 1))
+                                                     .times(Mat4.rotation(Math.PI/180 * 2, 0, 0, 1))
+                                                     .times(Mat4.rotation(Math.PI/180 * 0, 1, 0, 0));
+        this.shapes.cube.draw(context, program_state, left_wall_4_transform, this.materials.wall_texture);
 
         let right_wall_transform = Mat4.identity();
-
-        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 5, 10))
-                                                   .times(Mat4.translation(68, 0, 0))
+        right_wall_transform = right_wall_transform.times(Mat4.scale(.2, 5, 7))
+                                                   .times(Mat4.translation(68, 0, 0.5))
                                                    .times(Mat4.rotation(1.5, 0, 1, 0));
-         this.shapes.cube.draw(context, program_state, right_wall_transform, this.materials.wall_texture);
+        this.shapes.cube.draw(context, program_state, right_wall_transform, this.materials.wall_texture);
+        
+        let back_wall_1_transform = Mat4.identity();
+        back_wall_1_transform = back_wall_1_transform.times(Mat4.scale(13.5, 1.5, 1))
+                                                     .times(Mat4.translation(0, 2.35, -3));
+        this.shapes.cube.draw(context, program_state, back_wall_1_transform, this.materials.wall_texture);
 
+        let back_wall_2_transform = Mat4.identity();
+        back_wall_2_transform = back_wall_2_transform.times(Mat4.scale(1, 3.5, 1))
+                                                     .times(Mat4.translation(-13, -.3, -3));
+        this.shapes.cube.draw(context, program_state, back_wall_2_transform, this.materials.wall_texture);
+
+        let back_wall_3_transform = Mat4.identity();
+        back_wall_3_transform = back_wall_3_transform.times(Mat4.scale(10, 3.5, 1))
+                                                     .times(Mat4.translation(0.3, -.3, -3));
+        this.shapes.cube.draw(context, program_state, back_wall_3_transform, this.materials.wall_texture);
+         /*
         let back_wall_transform = Mat4.identity();
         back_wall_transform = back_wall_transform.times(Mat4.scale(13.5, 5, 1))
                                                  .times(Mat4.translation(0, 0, -3));
         this.shapes.cube.draw(context, program_state, back_wall_transform, this.materials.wall_texture);
+        */
     }
 
     draw_props(context, program_state) {
@@ -403,7 +460,6 @@ export class Project extends Scene {
                                                .times(Mat4.translation(0, 0, -.5));
         this.shapes.sphere.draw(context, program_state, bullet_head7_trans, this.materials.bullet);
 
-
         // Wall decor - shooting guide
         let shooting_guide_trans = Mat4.identity();
         shooting_guide_trans = shooting_guide_trans.times(Mat4.scale(2.5, 2.5, 1))
@@ -416,10 +472,92 @@ export class Project extends Scene {
                                                    .times(Mat4.rotation(1.55, 0, 1, 0));
         this.shapes.square.draw(context, program_state, shooting_guide2_trans, this.materials.shooting_guide);
 
+        // Wall decor - windows
+        let window_1_transform = Mat4.identity();
+        window_1_transform = window_1_transform.times(Mat4.scale(0.5, 2.57, 1.4))
+                                               .times(Mat4.translation(-25.5, 0.36, 2.05))
+                                               .times(Mat4.rotation(Math.PI/180 * 85, 0, 1, 0))
+                                               .times(Mat4.rotation(Math.PI/180 * 45, 0, 0, 1));
+        this.shapes.cylinder2.draw(context, program_state, window_1_transform, this.materials.bullet);
+
+        let wood_plank_1_transform = Mat4.identity();
+        wood_plank_1_transform = wood_plank_1_transform.times(Mat4.scale(0.25, 0.25, 1.5))
+                                 .times(Mat4.rotation(Math.PI/180 * -10, 0, 1, 0))
+                                 .times(Mat4.translation(-48, 8, 10.8));
+        this.shapes.cube.draw(context, program_state, wood_plank_1_transform, this.materials.wood_plank);
+
+        let wood_plank_2_transform = wood_plank_1_transform.times(Mat4.translation(0, -2.5, 0));
+        this.shapes.cube.draw(context, program_state, wood_plank_2_transform, this.materials.wood_plank);
+
+        let wood_plank_3_transform = wood_plank_1_transform.times(Mat4.translation(0, -8, 0))
+                                                           .times(Mat4.rotation(Math.PI/180 * 0, 1, 0 ,0));
+        this.shapes.cube.draw(context, program_state, wood_plank_3_transform, this.materials.wood_plank);
+
+        let bolt_1_transform = Mat4.identity();
+        bolt_1_transform = bolt_1_transform.times(Mat4.scale(0.25, 0.25, 0.5))
+                                           .times(Mat4.rotation(Math.PI/180 * 90, 0, 1, 0))
+                                           .times(Mat4.translation(-14, 0.5, -42))
+                                           .times(Mat4.scale(0.25, 0.25, 0.25))
+                                           .times(Mat4.scale(0.3, 0.3, 0.3));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_1_transform, this.materials.bullet);
+
+        let bolt_2_transform = bolt_1_transform.times(Mat4.translation(0, -13, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_2_transform, this.materials.bullet);
+
+        let bolt_3_transform = bolt_1_transform.times(Mat4.translation(0, 0, 87));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_3_transform, this.materials.bullet);
+
+        let bolt_4_transform = bolt_3_transform.times(Mat4.translation(0, -12, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_4_transform, this.materials.bullet);
+
+        let bolt_5_transform = bolt_1_transform.times(Mat4.translation(0, 64, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_5_transform, this.materials.bullet);
+
+        let bolt_6_transform = bolt_1_transform.times(Mat4.translation(0, 50, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_6_transform, this.materials.bullet);
+
+        let bolt_7_transform = bolt_6_transform.times(Mat4.translation(0, 4, 87));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_7_transform, this.materials.bullet);
+
+        let bolt_8_transform = bolt_7_transform.times(Mat4.translation(0, -12, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_8_transform, this.materials.bullet);
+
+
+        // Second Room Effect
+        let building_1_transform = Mat4.identity();
+        building_1_transform = building_1_transform.times(Mat4.scale(.2, 3, 3))
+                                                   .times(Mat4.translation(-67, -.5, -2.5))
+                                                   .times(Mat4.rotation(Math.PI/180 * 95, 0, 1, 0))
+                                                   .times(Mat4.translation(0.5, 0, -1));
+        this.shapes.cube.draw(context, program_state, building_1_transform, this.materials.wall_2_texture);
+
+        let roof_1_transform = Mat4.identity();
+        roof_1_transform = roof_1_transform.times(Mat4.translation(-13, 5, 5))
+                                           .times(Mat4.rotation(Math.PI/180 * 45, 0, 0, 1))
+                                           .times(Mat4.scale(0.25, 0.5, 4))
+                                           .times(Mat4.translation(-12, -5, -3.2));
+        this.shapes.cube.draw(context, program_state, roof_1_transform, this.materials.roof);
+
+        let building_2_transform = Mat4.identity();
+        building_2_transform = building_2_transform.times(Mat4.scale(3, 2.5, 1))
+                                                   .times(Mat4.translation(-4, -1, -14));
+        this.shapes.cube.draw(context, program_state, building_2_transform, this.materials.wall_2_texture);
+
+        let building_3_transform = Mat4.identity();
+        building_3_transform = building_3_transform.times(Mat4.scale(2, 4, 1))
+                                                   .times(Mat4.translation(-5.5, -0, -13))
+                                                   .times(Mat4.rotation(Math.PI/180 * 15, 0, 1, 0));
+        this.shapes.cube.draw(context, program_state, building_3_transform, this.materials.wall_2_texture);
+
+        let floor_2_transform = Mat4.identity();
+        floor_2_transform = floor_2_transform.times(Mat4.scale(3, 0.1, 4))
+                                             .times(Mat4.translation(-3.5, -40.5, -2.));
+        this.shapes.cube.draw(context, program_state, floor_2_transform, this.materials.outside_floor_texture);
+
     }
 
     draw_sky(context, program_state){
-        let sky_transform = Mat4.scale(22, 8, 1).times(Mat4.translation(0, .7, -4));
+        let sky_transform = Mat4.scale(28, 15, 1).times(Mat4.translation(0, .6, -15));
         this.shapes.cube.draw(context, program_state, sky_transform, this.materials.sky);
     }
 
