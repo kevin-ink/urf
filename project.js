@@ -277,10 +277,12 @@ export class Project extends Scene {
         this.recoil_counter = 0;
 
         // Timer
-        this.spike_time = 0;
         this.timer = config["timer"];
         // this.timer = 5;
         this.time = 0; 
+
+        // Use a constant offset value to solve start time issue
+        this.iter = 0;
 
         this.game_end = false;
 
@@ -921,7 +923,7 @@ export class Project extends Scene {
         this.shapes.cube.draw(context, program_state, gun_trigger_transform, this.materials.gun);
     }
     // Spike model
-    draw_spike(context, program_state, dt){
+    draw_spike(context, program_state, t){
         let spike_loc_transform = Mat4.translation(0,-4,-2).times(Mat4.scale(1.5,1.5,1.5));
 
         // spike base midpoint is 1/3
@@ -929,10 +931,9 @@ export class Project extends Scene {
 
         this.shapes.spike.draw(context, program_state, spike_base_tri_transform, this.materials.spike);
 
-        this.spike_time += dt;
-        let spike_up = (0.3*this.spike_time < 1.2) ? (0.3*this.spike_time-0.2) : (1);
+        let spike_up = (0.3*(t-this.t_diff) < 1.2) ? (0.3*(t-this.t_diff)-0.2) : (1);
 
-        let r_spike = 0.20*Math.sin((Math.PI*this.spike_time/2))+0.47
+        let r_spike = 0.20*Math.sin((Math.PI*(t-this.t_diff)/2))+0.47
         let g_spike = 1;
         let b_spike = 1;
         let aura_color = color(r_spike, g_spike, b_spike, 0.95);
@@ -943,7 +944,7 @@ export class Project extends Scene {
 
         // currently brute forced
 
-        let spike_t = (config["timer"]-this.timer)*this.spike_time/4;
+        let spike_t = (config["timer"]-this.timer)*(t-this.t_diff)/4;
 
         let spike_cylinder_base_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,1/3)).times(Mat4.scale(0.25,1.1,0.25)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
         this.shapes.spike_cylinder.draw(context, program_state, spike_cylinder_base_transform, this.materials.spike_aura.override({color: aura_color}));
@@ -1045,6 +1046,15 @@ export class Project extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
+        // allows for relative start time of the game
+        if (this.iter == 1){
+            this.t_diff = t;
+            // console.log(t);
+            // console.log(this.t_diff);
+        }
+        this.iter++;
+
+
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
         if (!context.scratchpad.controls) {
@@ -1091,12 +1101,19 @@ export class Project extends Scene {
         if (!this.game_end){
             this.draw_targets(context, program_state, t);
             this.draw_gun(context, program_state, t, this.shot);
-            this.draw_spike(context, program_state, dt);
+            this.draw_spike(context, program_state, t);
         }
       
-        // explosion timer testing
-        this.timer -= dt;
+        // force timer on first frame
+        if (this.iter == 1){
+            this.timer = config["timer"];
+        }
+        else {
+            this.timer = config["timer"]-t+this.t_diff;
+        }
+        // console.log(this.timer);
         this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
+        console.log(this.display_timer);
 
         if (this.timer <= 0 && this.timer > -2){
             this.game_end = true;
