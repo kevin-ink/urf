@@ -276,9 +276,11 @@ export class Project extends Scene {
         this.recoil_counter = 0;
 
         // Timer
-
         this.timer = config["timer"];
-        this.time = 0;
+        // this.timer = 5;
+        this.time = 0; 
+
+        this.game_end = false;
 
         this.view_dist = 20;
 
@@ -927,7 +929,7 @@ export class Project extends Scene {
         // start here ---
 
         // currently brute forced
-        let spike_t = (config["timer"]-this.timer)*t/3;
+        let spike_t = (config["timer"]-this.timer)*t/4;
 
         let spike_cylinder_base_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,1/3)).times(Mat4.scale(0.25,1.1,0.25)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
         this.shapes.spike_cylinder.draw(context, program_state, spike_cylinder_base_transform, this.materials.spike_aura.override({color: aura_color}));
@@ -949,7 +951,7 @@ export class Project extends Scene {
 
         // blinking color
         let blinker;
-        if (Math.trunc(spike_t/3.5) % 2 == 1){
+        if (Math.trunc(spike_t/4) % 2 == 1){
             blinker = hex_color("#2f3333");
         }
         else {
@@ -1055,7 +1057,9 @@ export class Project extends Scene {
         const spike_light = vec4(0,-4.2,1.2,1); // spike illumation
         
         // The parameters of the Light are: position, color, size
-        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000), new Light(light_position2, color(1,1,1,1), 1000)];
+        if (!this.game_end){
+            program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000), new Light(light_position2, color(1,1,1,1), 1000)];
+        }
     
         // need to figure out how to add another light source 
         // new Light(spike_light, hex_color("#a6ffff"), 10000)
@@ -1067,23 +1071,31 @@ export class Project extends Scene {
         this.draw_props(context, program_state);
         
         // game interactives
-        this.draw_targets(context, program_state, t);
-        this.draw_gun(context, program_state, t, this.shot);
-        this.draw_spike(context, program_state,t);
-
+        if (!this.game_end){
+            this.draw_targets(context, program_state, t);
+            this.draw_gun(context, program_state, t, this.shot);
+            this.draw_spike(context, program_state,t);
+        }
         // explosion timer testing
         this.timer -= dt;
         this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
 
         if (this.timer <= 0 && this.timer > -2){
+            this.game_end = true;
             this.time += dt;
-            let R_explode = 19*Math.sin(this.time);
-            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
+            this.R_explode = 20*Math.sin(this.time);
+            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(this.R_explode, this.R_explode, this.R_explode));
             this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: color(1,1,1,0.6)}));
         }
         else if (this.timer <= -2){
-            let R_explode = 19;
-            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
+            this.time += dt;
+            if (this.R_explode <= 1 && this.R_explode >= -1){
+                this.R_explode = 0;
+            }
+            else {
+                this.R_explode = 20*Math.sin(this.time);
+            }
+            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(this.R_explode, this.R_explode, this.R_explode));
             this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: color(1,1,1,0.6)}));
         }
     }
