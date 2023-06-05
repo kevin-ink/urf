@@ -7,6 +7,43 @@ const {
 
 const {Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere} = defs;
 
+class RectPyramid extends Shape {
+    constructor() {
+        super("position", "normal",);
+        // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
+        this.arrays.position = Vector3.cast(
+            [1, 0, 0], [0, 4/3, 0], [0, 0, 0], 
+            [1, 0, 1/3], [0, 4/3, 1/3], [0, 0, 1/3],
+            [0, 0, 0], [0, 4/3, 0], [0, 0, 1/3],
+            [0, 0, 1/3], [0, 4/3, 1/3], [0, 4/3, 0],
+            [0, 0, 0], [0, 0, 1/3], [1, 0, 0],
+            [0, 0, 1/3], [1, 0, 1/3], [1, 0, 0],
+            [1, 0, 0], [1, 0, 1/3], [0, 4/3, 1/3],
+            [1, 0, 0], [0, 4/3, 0], [0, 4/3, 1/3],
+            );
+        this.arrays.normal = Vector3.cast(
+            [0, 0, -1], [0, 0, -1], [0, 0, -1],
+            [0, 0, 1], [0, 0, 1], [0, 0, 1],
+            [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
+            [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
+            [0, -1, 0], [0, -1, 0], [0, -1, 0],
+            [0, -1, 0], [0, -1, 0], [0, -1, 0],
+            [1, 1, 0], [1, 1, 0], [1, 1, 0],
+            [1, 1, 0], [1, 1, 0], [1, 1, 0],
+            );
+        // Arrange the vertices into a square shape in texture space too:
+        this.indices.push(0, 1, 2, 
+                          3, 4, 5,
+                          6, 7, 8,
+                          9, 10, 11,
+                          12, 13, 14,
+                          15, 16, 17,
+                          18, 19, 20,
+                          21, 22, 23
+                          ); 
+        }   
+}
+
 class Spike extends Shape {
     constructor() {
         super("position", "normal",);
@@ -81,7 +118,12 @@ export class Project extends Scene {
             spike : new Spike(),
             spike_cylinder : new defs.Capped_Cylinder(5, 40, [[.34, .66], [0, 1]]),
             spike_sphere : new defs.Subdivision_Sphere(4),
+
+            // target shapes
+            target_circle : new defs.Capped_Cylinder(5, 80, [[.34, .66], [0, 1]]),
+            bot_tri : new RectPyramid(),
         }
+
 
         // *** Materials
         this.materials = {
@@ -154,6 +196,12 @@ export class Project extends Scene {
 
             spike_handle: new Material(new defs.Phong_Shader(),
             {ambient: .4, diffusivity: .6, color: hex_color("#2f3333")}),
+
+            // target materials
+            dark_gray : new Material(new defs.Phong_Shader(),
+            {ambient: .6, diffusivity: .5, specularity: 0.2, color: hex_color("#4a4b4d")}),
+            gray : new Material(new defs.Phong_Shader(),
+            {ambient: .6, diffusivity: .5, specularity: 0.2, color: hex_color("#989a9c")}),
                 
         }
 
@@ -466,12 +514,100 @@ export class Project extends Scene {
         }
     }
 
+    model_target(context, program_state, coord, r, t){
+        let up_down = 0.03*Math.sin(6*t);
+
+        let target_loc_transform = Mat4.translation(coord[0]+this.move_factor*Math.sin(coord[3]*t), coord[1]+up_down, coord[2]).times(Mat4.scale(r,r,r));
+
+        let target_circ_transform = target_loc_transform.times(Mat4.scale(1,1,0.05));  
+        this.shapes.target_circle.draw(context, program_state, target_circ_transform, this.materials.gray);
+
+        let target_circ_2_transform = target_loc_transform.times(Mat4.translation(0,0,0.01)).times(Mat4.scale(2/3, 2/3, 0.05));
+        this.shapes.target_circle.draw(context, program_state, target_circ_2_transform, this.materials.dark_gray);
+
+        let target_circ_3_transform = target_loc_transform.times(Mat4.translation(0,0,0.02)).times(Mat4.scale(1/4, 1/4, 0.05));
+        this.shapes.target_circle.draw(context, program_state, target_circ_3_transform, this.materials.gray);
+
+        let target_base_transform = target_loc_transform.times(Mat4.translation(0,0,-0.03)).times(Mat4.scale(0.95,1.05,0.05));
+        this.shapes.cube.draw(context, program_state, target_base_transform, this.materials.dark_gray);
+
+        let target_base_2_transform = target_loc_transform.times(Mat4.translation(0,1-1/5,-0.03)).times(Mat4.scale(1, 1/4, 0.05));
+        this.shapes.cube.draw(context, program_state, target_base_2_transform, this.materials.dark_gray);
+        
+        let target_base_3_transform = target_loc_transform.times(Mat4.translation(0,-1+1/5,-0.03)).times(Mat4.scale(1, 1/4, 0.05));
+        this.shapes.cube.draw(context, program_state, target_base_3_transform, this.materials.dark_gray);
+
+        let target_hinge_transform = target_loc_transform.times(Mat4.translation(0,1,0.04)).times(Mat4.scale(0.1,0.06,0.04));
+        this.shapes.cube.draw(context, program_state, target_hinge_transform, this.materials.dark_gray);
+
+        let target_hinge_2_transform = target_loc_transform.times(Mat4.translation(0,-1,0.04)).times(Mat4.scale(0.1,0.06,0.04));
+        this.shapes.cube.draw(context, program_state, target_hinge_2_transform, this.materials.dark_gray);
+
+        let target_back_hinge_transform = target_loc_transform.times(Mat4.translation(0,0,-0.125)).times(Mat4.scale(0.6, 1.12, 0.05));
+        this.shapes.cube.draw(context, program_state, target_back_hinge_transform, this.materials.dark_gray);
+
+        let target_back_hinge_2_transform = target_loc_transform.times(Mat4.translation(0.125,0,-0.1)).times(Mat4.scale(0.02, 1.18, 0.05));
+        this.shapes.cube.draw(context, program_state, target_back_hinge_2_transform, this.materials.dark_gray);
+
+        let target_back_hinge_3_transform = target_loc_transform.times(Mat4.translation(-0.125,0,-0.1)).times(Mat4.scale(0.02, 1.18, 0.05));
+        this.shapes.cube.draw(context, program_state, target_back_hinge_3_transform, this.materials.dark_gray);
+
+        let target_back_hinge_4_transform = target_loc_transform.times(Mat4.translation(0,-1.19,-0.1)).times(Mat4.scale(0.15, 0.015, 0.05));
+        this.shapes.cube.draw(context, program_state, target_back_hinge_4_transform, this.materials.dark_gray);
+
+        let target_bot_hinge_transform = target_loc_transform.times(Mat4.translation(0,1.19,-0.1)).times(Mat4.scale(0.15,0.015,0.05));
+        this.shapes.cube.draw(context, program_state, target_bot_hinge_transform, this.materials.dark_gray);
+
+        let target_bot_hinge_2_transform = target_loc_transform.times(Mat4.translation(0,1.33,-0.1)).times(Mat4.scale(0.08,0.15,0.08));
+        this.shapes.cube.draw(context, program_state, target_bot_hinge_2_transform, this.materials.dark_gray);
+
+        let target_bot_base_transform = target_loc_transform.times(Mat4.translation(0,1.65,-0.1)).times(Mat4.scale(0.15, 0.35, 0.2));
+        this.shapes.cube.draw(context, program_state, target_bot_base_transform, this.materials.gray);
+
+        let target_bot_base_2_transform = target_loc_transform.times(Mat4.translation(0,2,-0.1)).times(Mat4.scale(0.5, 0.1, 0.2));
+        this.shapes.cube.draw(context, program_state, target_bot_base_2_transform, this.materials.gray);
+
+        this.shapes.cube.draw(context, program_state, target_bot_base_2_transform.times(Mat4.translation(0,1,0)).times(Mat4.scale(1.01,0.25,1.2)), this.materials.dark_gray);
+    
+        let target_eye_transform = target_loc_transform.times(Mat4.translation(0, 1.88, 0.11)).times(Mat4.scale(1.1,0.7,1)).times(Mat4.rotation(Math.PI/4, 0, 0, 1)).times(Mat4.scale(0.3,0.3,1));
+        this.shapes.triangle.draw(context, program_state, target_eye_transform, this.materials.spike_aura);
+
+        let target_tri_transform = target_loc_transform.times(Mat4.translation(0.152,2,-0.3)).times(Mat4.scale(0.35,0.5,1)).times(Mat4.scale(1,-1,1));
+        this.shapes.bot_tri.draw(context, program_state, target_tri_transform, this.materials.gray);
+
+        let target_tri_2_transform = target_loc_transform.times(Mat4.translation(-0.15,2,-0.3)).times(Mat4.scale(0.35,0.5,1)).times(Mat4.scale(-1,-1,1));
+        this.shapes.bot_tri.draw(context, program_state, target_tri_2_transform, this.materials.gray);
+
+        let target_outline_transform = target_loc_transform.times(Mat4.translation(0.5,2,-0.1)).times(Mat4.scale(0.025, 0.125, 0.24));
+        this.shapes.cube.draw(context, program_state, target_outline_transform, this.materials.dark_gray);
+
+        let target_outline_2_transform = target_loc_transform.times(Mat4.translation(-0.5,2,-0.1)).times(Mat4.scale(0.025, 0.125, 0.24));
+        this.shapes.cube.draw(context, program_state, target_outline_2_transform, this.materials.dark_gray);
+
+        let target_outline_3_transform = target_loc_transform.times(Mat4.translation(0.16,1.6,-0.1)).times(Mat4.scale(0.025, 0.275, 0.24));
+        this.shapes.cube.draw(context, program_state, target_outline_3_transform, this.materials.dark_gray);
+
+        let target_outline_4_transform = target_loc_transform.times(Mat4.translation(-0.16,1.6,-0.1)).times(Mat4.scale(0.025, 0.275, 0.24));
+        this.shapes.cube.draw(context, program_state, target_outline_4_transform, this.materials.dark_gray);
+
+        let target_outline_5_transform = target_loc_transform.times(Mat4.translation(-0.325,1.9,-0.1)).times(Mat4.scale(0.19, 0.025, 0.24));
+        this.shapes.cube.draw(context, program_state, target_outline_5_transform, this.materials.dark_gray);
+
+        let target_outline_6_transform = target_loc_transform.times(Mat4.translation(0.325,1.9,-0.1)).times(Mat4.scale(0.19, 0.025, 0.24));
+        this.shapes.cube.draw(context, program_state, target_outline_6_transform, this.materials.dark_gray);
+
+        let target_outline_7_transform = target_loc_transform.times(Mat4.translation(0,1.3,-0.1)).times(Mat4.scale(0.185, 0.025, 0.24));
+        this.shapes.cube.draw(context, program_state, target_outline_7_transform, this.materials.dark_gray);
+
+        let target_bot_yellow_transform = target_loc_transform.times(Mat4.translation(0,1.8,-0.14)).times(Mat4.scale(0.46, 0.09, 0.1));
+        this.shapes.cube.draw(context, program_state, target_bot_yellow_transform, this.materials.gray.override({color: hex_color("#91826a")}));
+    }
 
     draw_targets(context, program_state, t){
         let model_transform = Mat4.identity();
         let r = this.target_r;
         for (let coord of this.target_locations){
-            this.shapes.sphere.draw(context, program_state, model_transform.times(Mat4.translation(coord[0]+this.move_factor*Math.sin(coord[3]*t), coord[1], coord[2])).times(Mat4.scale(r, r, r)), this.materials.test);
+            this.model_target(context, program_state, coord, r, t);
         }
     }
 
@@ -605,8 +741,8 @@ export class Project extends Scene {
         let recoil = 0;
         if (shot){
             this.recoil_counter++;
-            recoil = 0.2*Math.sin(3*Math.PI*t);
-            if (this.recoil_counter == 30){
+            recoil = 0.1*Math.sin(5*Math.PI*t);
+            if (this.recoil_counter == 18){
                 this.shot = false;
                 this.recoil_counter =0;
             }
