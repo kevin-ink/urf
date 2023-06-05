@@ -111,7 +111,7 @@ export class Project extends Scene {
             rectangle: new defs.Cube(),
             cone: new defs.Rounded_Closed_Cone(30, 30,  [[.34, .66], [0, 1]]),
             rounded_capped_cylinder : new defs.Rounded_Capped_Cylinder(30, 30,  [[.34, .66], [0, 1]]),
-            capped_cylinder: new defs.Capped_Cylinder(10, 30, [[.34, .66], [0, 1]]),
+            bullet_capped_cylinder: new defs.Capped_Cylinder(5, 30, [[.34, .66], [0, 1]]),
             cylinder: new defs.Cylindrical_Tube(30, 30, [[.34, .66], [0, 1]]),
 
             // spike shapes
@@ -122,6 +122,7 @@ export class Project extends Scene {
             // target shapes
             target_circle : new defs.Capped_Cylinder(5, 80, [[.34, .66], [0, 1]]),
             bot_tri : new RectPyramid(),
+
         }
 
 
@@ -342,11 +343,12 @@ export class Project extends Scene {
         this.shapes.cube.draw(context, program_state, roof_trans, this.materials.roof);
 
         // Crates
+        
         let crate1_trans = Mat4.identity();
         crate1_trans = crate1_trans.times(Mat4.translation(-12.5, -3, 4)
                                    .times(Mat4.scale(1, 1, 1)));
         this.shapes.cube.draw(context, program_state, crate1_trans, this.materials.crates_texture);
-
+        
         let crate2_trans = Mat4.identity();
         crate2_trans = crate2_trans.times(Mat4.translation(11, .44, -1))
                                    .times(Mat4.scale(1.5, 1.5, 1))
@@ -360,25 +362,28 @@ export class Project extends Scene {
         this.shapes.cube.draw(context, program_state, crate3_trans, this.materials.reverse_crate);
 
         // Locked boxes
+        /*
         let standing_block1_trans = Mat4.identity();
         standing_block1_trans = standing_block1_trans.times(Mat4.scale(2, 1.5, 1))
                                                    .times(Mat4.translation(2, -1.7, -1));
         this.shapes.cube.draw(context, program_state, standing_block1_trans, this.materials.locked_box);
+        */
         let standing_block2_trans = Mat4.identity();
         standing_block2_trans = standing_block2_trans.times(Mat4.scale(2, 1.5, 1))
-                                                     .times(Mat4.translation(4, -1.7, -1));
+                                                     .times(Mat4.translation(3.5, -1.7, -1));
         this.shapes.cube.draw(context, program_state, standing_block2_trans, this.materials.locked_box);
         let standing_block3_trans = Mat4.identity();
         standing_block3_trans = standing_block3_trans.times(Mat4.scale(2, 1.5, 1))
-                                                     .times(Mat4.translation(6, -1.7, -1));
+                                                     .times(Mat4.translation(5.5, -1.7, -1));
         this.shapes.cube.draw(context, program_state, standing_block3_trans, this.materials.locked_box);
 
         // Bullets on the floor
         let bullet_body1_trans = Mat4.identity();
-        bullet_body1_trans = bullet_body1_trans.times(Mat4.scale(.25, .0625, .0625))
-                                               .times(Mat4.translation(-27, -60, 150))
-                                               .times(Mat4.rotation(-1.55, 0, 1, 0));
-        this.shapes.capped_cylinder.draw(context, program_state, bullet_body1_trans, this.materials.bullet);
+        bullet_body1_trans = bullet_body1_trans.times(Mat4.scale(.125, .03125, .03125))
+                                               .times(Mat4.translation(-27, -60, 470))
+                                               .times(Mat4.rotation(-1.55, 0, 1, 0))
+                                               .times(Mat4.scale(0.75, 0.75, 0.75));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bullet_body1_trans, this.materials.bullet);
         let bullet_head1_trans = bullet_body1_trans;
         bullet_head1_trans = bullet_head1_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
@@ -387,8 +392,9 @@ export class Project extends Scene {
         let bullet_body2_trans = Mat4.identity();
         bullet_body2_trans = bullet_body2_trans.times(Mat4.scale(.25, .0625, .0625))
                                                .times(Mat4.translation(-25, -60, 135))
-                                               .times(Mat4.rotation(2, 0, 1, 0));
-        this.shapes.capped_cylinder.draw(context, program_state, bullet_body2_trans, this.materials.bullet);
+                                               .times(Mat4.rotation(2, 0, 1, 0))
+                                               .times(Mat4.scale(0.75, 0.75, 0.75));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bullet_body2_trans, this.materials.bullet);
         let bullet_head2_trans = bullet_body2_trans;
         bullet_head2_trans = bullet_head2_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
@@ -397,8 +403,9 @@ export class Project extends Scene {
         let bullet_body3_trans = Mat4.identity();
         bullet_body3_trans = bullet_body3_trans.times(Mat4.scale(.25, .0625, .0625))
                                                .times(Mat4.translation(-15, -58, 80))
-                                               .times(Mat4.rotation(1, 0, 1, 0));
-        this.shapes.capped_cylinder.draw(context, program_state, bullet_body3_trans, this.materials.bullet);
+                                               .times(Mat4.rotation(1, 0, 1, 0))
+                                               .times(Mat4.scale(0.75, 0.75, 0.75));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bullet_body3_trans, this.materials.bullet);
         let bullet_head3_trans = bullet_body3_trans;
         bullet_head3_trans = bullet_head3_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
@@ -407,8 +414,9 @@ export class Project extends Scene {
         let bullet_body4_trans = Mat4.identity();
         bullet_body4_trans = bullet_body4_trans.times(Mat4.scale(.25, .0625, .0625))
                                                .times(Mat4.translation(40, -58, 60))
-                                               .times(Mat4.rotation(1.8, 0, 1, 0));
-        this.shapes.capped_cylinder.draw(context, program_state, bullet_body4_trans, this.materials.bullet);
+                                               .times(Mat4.rotation(1.8, 0, 1, 0))
+                                               .times(Mat4.scale(0.75, 0.75, 0.75));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bullet_body4_trans, this.materials.bullet);
         let bullet_head4_trans = bullet_body4_trans;
         bullet_head4_trans = bullet_head4_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
@@ -417,8 +425,9 @@ export class Project extends Scene {
         let bullet_body5_trans = Mat4.identity();
         bullet_body5_trans = bullet_body5_trans.times(Mat4.scale(.25, .0625, .0625))
                                                .times(Mat4.translation(20, -58, 100))
-                                               .times(Mat4.rotation(-2, 0, 1, 0));
-        this.shapes.capped_cylinder.draw(context, program_state, bullet_body5_trans, this.materials.bullet);
+                                               .times(Mat4.rotation(-2, 0, 1, 0))
+                                               .times(Mat4.scale(0.75, 0.75, 0.75));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bullet_body5_trans, this.materials.bullet);
         let bullet_head5_trans = bullet_body5_trans;
         bullet_head5_trans = bullet_head5_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
@@ -427,8 +436,9 @@ export class Project extends Scene {
         let bullet_body6_trans = Mat4.identity();
         bullet_body6_trans = bullet_body6_trans.times(Mat4.scale(.25, .0625, .0625))
                                                .times(Mat4.translation(32, -60, 160))
-                                               .times(Mat4.rotation(-2.3, 0, 1, 0));
-        this.shapes.capped_cylinder.draw(context, program_state, bullet_body6_trans, this.materials.bullet);
+                                               .times(Mat4.rotation(-2.3, 0, 1, 0))
+                                               .times(Mat4.scale(0.75, 0.75, 0.75));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bullet_body6_trans, this.materials.bullet);
         let bullet_head6_trans = bullet_body6_trans;
         bullet_head6_trans = bullet_head6_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
@@ -437,8 +447,9 @@ export class Project extends Scene {
         let bullet_body7_trans = Mat4.identity();
         bullet_body7_trans = bullet_body7_trans.times(Mat4.scale(.25, .0625, .0625))
                                                .times(Mat4.translation(5, -60, 120))
-                                               .times(Mat4.rotation(1.3, 0, 1, 0));
-        this.shapes.capped_cylinder.draw(context, program_state, bullet_body7_trans, this.materials.bullet);
+                                               .times(Mat4.rotation(1.3, 0, 1, 0))
+                                               .times(Mat4.scale(0.75, 0.75, 0.75));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bullet_body7_trans, this.materials.bullet);
         let bullet_head7_trans = bullet_body7_trans;
         bullet_head7_trans = bullet_head7_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
@@ -498,10 +509,10 @@ export class Project extends Scene {
         }
         let xMin = -12+size_factor+this.move_factor, xMax = 12-size_factor-this.move_factor;
         let yMin = -2, yMax = 6-size_factor-this.move_factor;
-
+        
         // Generate random coordinates
         let ranX, ranY  = Math.random()*5 + -2;
-        let ranZ = Math.random() * 2;
+        let ranZ = Math.random() * 2 + Math.random() * 2;
         do {
             ranX = Math.random() * (xMax-xMin) + xMin;
             ranY = Math.random() * (yMax-yMin) + yMin;
@@ -931,6 +942,7 @@ export class Project extends Scene {
         // start here ---
 
         // currently brute forced
+
         let spike_t = (config["timer"]-this.timer)*this.spike_time/4;
 
         let spike_cylinder_base_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,1/3)).times(Mat4.scale(0.25,1.1,0.25)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
@@ -953,6 +965,7 @@ export class Project extends Scene {
 
         // blinking color
         let blinker;
+
         if (Math.trunc(spike_t/4) % 2 == 1){
             blinker = hex_color("#2f3333");
         }
@@ -1059,6 +1072,7 @@ export class Project extends Scene {
         const spike_light = vec4(0,-4.2,1.2,1); // spike illumation
         
         // The parameters of the Light are: position, color, size
+
         if (!this.game_end){
             program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000), new Light(light_position2, color(1,1,1,1), 1000)];
         }
@@ -1073,11 +1087,13 @@ export class Project extends Scene {
         this.draw_props(context, program_state);
         
         // game interactives
+
         if (!this.game_end){
             this.draw_targets(context, program_state, t);
             this.draw_gun(context, program_state, t, this.shot);
             this.draw_spike(context, program_state, dt);
         }
+      
         // explosion timer testing
         this.timer -= dt;
         this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
