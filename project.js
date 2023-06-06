@@ -695,6 +695,14 @@ export class Project extends Scene {
         // let third_hit = new Audio('assets/sounds/third_kill.mp3');
         // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
+        if (this.iter <= 3*60){
+            return;
+        }
+
+        if (this.game_end){
+            return;
+        }
+
         let missed = true;
 
         let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
