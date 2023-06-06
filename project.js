@@ -160,12 +160,12 @@ export class Project extends Scene {
                 specularity: 0.2,
                 texture: new Texture("assets/background/wall-texture-color.png")
             }),
-            floor_texture: new Material(new defs.Textured_Phong(), {
-                color: hex_color("#000000"),
-                ambient: .75,
-                diffusivity: .9,
-                specularity: 0.2,
-                texture: new Texture("assets/background/wall-texture-color.png")
+            floor_texture: new Material(new defs.Phong_Shader(), {
+                color: hex_color("#b7a496"),
+                ambient: .5,
+                diffusivity: .5,
+                specularity: .5,
+                // texture: new Texture("assets/background/wall-texture-color.png")
             }),
             crates_texture: new Material(new defs.Textured_Phong(), {
                 color: hex_color("#000000"),
