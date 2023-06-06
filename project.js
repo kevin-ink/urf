@@ -122,6 +122,7 @@ export class Project extends Scene {
             // target shapes
             target_circle : new defs.Capped_Cylinder(5, 80, [[.34, .66], [0, 1]]),
             bot_tri : new RectPyramid(),
+
         }
 
 
@@ -147,37 +148,37 @@ export class Project extends Scene {
                 {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#212121")}),
             sky: new Material(new Texture_Scroll_X(), {
                 color: hex_color("#000000"),
-                ambient: 1.1,
+                ambient: 1,
                 diffusivity: 0,
                 specularity: 0,
                 texture: new Texture("assets/background/sky.jpg")
             }),
             wall_texture: new Material(new defs.Textured_Phong(), {
                 color: hex_color("#000000"),
-                ambient: .8,
+                ambient: 0.8,
                 diffusivity: .9,
                 specularity: 0.2,
-                texture: new Texture("assets/background/wall-texture-color.png")
+                texture: new Texture("assets/background/wall-texture-brown2.png")
             }),
             wall_2_texture: new Material(new defs.Textured_Phong(), {
                 color: hex_color("#000000"),
-                ambient: 1,
+                ambient: 0.6,
                 diffusivity: .9,
                 specularity: 0.2,
-                texture: new Texture("assets/background/wall-texture.jpg")
+                texture: new Texture("assets/background/concrete.jpg")
             }),
             outside_floor_texture: new Material(new defs.Textured_Phong(), {
                 color: hex_color("#000000"),
-                ambient: 0.4,
-                diffusivity: 0,
-                texture: new Texture("assets/background/wall-texture-color.png")
+                ambient: 0.5,
+                diffusivity: 0.9,
+                texture: new Texture("assets/background/concrete.jpg")
             }),
             floor_texture: new Material(new defs.Textured_Phong(), {
                 color: hex_color("#000000"),
-                ambient: .75,
+                ambient: .5,
                 diffusivity: .9,
                 specularity: 0.2,
-                texture: new Texture("assets/background/wall-texture-color.png")
+                texture: new Texture("assets/background/wall-texture-brown.png")
             }),
             crates_texture: new Material(new defs.Textured_Phong(), {
                 color: hex_color("#000000"),
@@ -197,11 +198,11 @@ export class Project extends Scene {
             shooting_guide: new Material(new defs.Textured_Phong(), {
                 color: hex_color("000000"),
                 ambient: 1,
-                texture: new Texture("assets/background/shooting.png")
+                texture: new Texture("assets/background/shooting-guide.png")
             }),
             wood_plank: new Material(new defs.Textured_Phong(), {
                 color: hex_color("000000"),
-                ambient: 1,
+                ambient: 0.8,
                 texture: new Texture("assets/background/wood-plank.jpg")
             }),
 
@@ -220,7 +221,7 @@ export class Project extends Scene {
             {ambient: .2, diffusivity: .8, specularity: 0.4, color: hex_color("#4a4b4d")}),
             gray : new Material(new defs.Phong_Shader(),
             {ambient: .2, diffusivity: .8, specularity: 0.4, color: hex_color("#989a9c")}),
-       
+                
         }
 
         // Sound effects
@@ -294,9 +295,14 @@ export class Project extends Scene {
         this.recoil_counter = 0;
 
         // Timer
-
         this.timer = config["timer"];
-        this.time = 0;
+        // this.timer = 5;
+        this.time = 0; 
+
+        // Use a constant offset value to solve start time issue
+        this.iter = 0;
+
+        this.game_end = false;
 
         this.view_dist = 20;
 
@@ -366,9 +372,12 @@ export class Project extends Scene {
         this.shapes.cube.draw(context, program_state, right_wall_transform, this.materials.wall_texture);
         
         let back_wall_1_transform = Mat4.identity();
-        back_wall_1_transform = back_wall_1_transform.times(Mat4.scale(13.5, 1.5, 1))
-                                                     .times(Mat4.translation(0, 2.35, -3));
+        back_wall_1_transform = back_wall_1_transform.times(Mat4.scale(7, 1.5, 1))
+                                                     .times(Mat4.translation(-1, 2.35, -3));
         this.shapes.cube.draw(context, program_state, back_wall_1_transform, this.materials.wall_texture);
+
+        let back_wall_4_transform = back_wall_1_transform.times(Mat4.translation(2, 0, 0));
+        this.shapes.cube.draw(context, program_state, back_wall_4_transform, this.materials.wall_texture);
 
         let back_wall_2_transform = Mat4.identity();
         back_wall_2_transform = back_wall_2_transform.times(Mat4.scale(1, 3.5, 1))
@@ -507,8 +516,6 @@ export class Project extends Scene {
         bullet_head7_trans = bullet_head7_trans.times(Mat4.scale(1, 1, 1))
                                                .times(Mat4.translation(0, 0, -.5));
         this.shapes.sphere.draw(context, program_state, bullet_head7_trans, this.materials.bullet);
-        
-    
 
         // Wall decor - shooting guide
         let shooting_guide_trans = Mat4.identity();
@@ -524,8 +531,8 @@ export class Project extends Scene {
 
         // Wall decor - windows
         let window_1_transform = Mat4.identity();
-        window_1_transform = window_1_transform.times(Mat4.scale(0.5, 2.57, 1.4))
-                                               .times(Mat4.translation(-25.5, 0.36, 2.05))
+        window_1_transform = window_1_transform.times(Mat4.scale(0.5, 2.57, 1.5))
+                                               .times(Mat4.translation(-25.5, 0.36, 1.95))
                                                .times(Mat4.rotation(Math.PI/180 * 85, 0, 1, 0))
                                                .times(Mat4.rotation(Math.PI/180 * 45, 0, 0, 1));
         this.shapes.cylinder2.draw(context, program_state, window_1_transform, this.materials.bullet);
@@ -572,8 +579,20 @@ export class Project extends Scene {
         let bolt_8_transform = bolt_7_transform.times(Mat4.translation(0, -12, 0));
         this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_8_transform, this.materials.bullet);
 
+        let bolt_9_transform = bolt_1_transform.times(Mat4.translation(0, 77, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_9_transform, this.materials.bullet);
+
+        let bolt_10_transform = bolt_9_transform.times(Mat4.translation(0, 15, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_10_transform, this.materials.bullet);
+
+        let bolt_11_transform = bolt_9_transform.times(Mat4.translation(0, 0, 87));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_11_transform, this.materials.bullet);
+
+        let bolt_12_transform = bolt_11_transform.times(Mat4.translation(0, -10, 0));
+        this.shapes.bullet_capped_cylinder.draw(context, program_state, bolt_12_transform, this.materials.bullet);
 
         // Second Room Effect
+        
         let building_1_transform = Mat4.identity();
         building_1_transform = building_1_transform.times(Mat4.scale(.2, 3, 3))
                                                    .times(Mat4.translation(-67, -.5, -2.5))
@@ -590,12 +609,12 @@ export class Project extends Scene {
 
         let building_2_transform = Mat4.identity();
         building_2_transform = building_2_transform.times(Mat4.scale(3, 2.5, 1))
-                                                   .times(Mat4.translation(-4, -1, -14));
+                                                   .times(Mat4.translation(-4, -1, -14.5));
         this.shapes.cube.draw(context, program_state, building_2_transform, this.materials.wall_2_texture);
 
         let building_3_transform = Mat4.identity();
         building_3_transform = building_3_transform.times(Mat4.scale(2, 4, 1))
-                                                   .times(Mat4.translation(-5.5, -0, -13))
+                                                   .times(Mat4.translation(-5.5, -0, -12.5))
                                                    .times(Mat4.rotation(Math.PI/180 * 15, 0, 1, 0));
         this.shapes.cube.draw(context, program_state, building_3_transform, this.materials.wall_2_texture);
 
@@ -1065,9 +1084,9 @@ export class Project extends Scene {
 
         this.shapes.spike.draw(context, program_state, spike_base_tri_transform, this.materials.spike);
 
-        let spike_up = (0.3*t < 1.2) ? (0.3*t-0.2) : (1);
+        let spike_up = (0.3*(t-this.t_diff) < 1.2) ? (0.3*(t-this.t_diff)-0.2) : (1);
 
-        let r_spike = 0.20*Math.sin((Math.PI*t/2))+0.47
+        let r_spike = 0.20*Math.sin((Math.PI*(t-this.t_diff)/2))+0.47
         let g_spike = 1;
         let b_spike = 1;
         let aura_color = color(r_spike, g_spike, b_spike, 0.95);
@@ -1077,7 +1096,8 @@ export class Project extends Scene {
         // start here ---
 
         // currently brute forced
-        let spike_t = (config["timer"]-this.timer)*t/3;
+
+        let spike_t = (config["timer"]-this.timer)*(t-this.t_diff)/4;
 
         let spike_cylinder_base_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,1/3)).times(Mat4.scale(0.25,1.1,0.25)).times(Mat4.rotation(Math.PI/2, 1, 0, 0));
         this.shapes.spike_cylinder.draw(context, program_state, spike_cylinder_base_transform, this.materials.spike_aura.override({color: aura_color}));
@@ -1099,7 +1119,8 @@ export class Project extends Scene {
 
         // blinking color
         let blinker;
-        if (Math.trunc(spike_t/3.5) % 2 == 1){
+
+        if (Math.trunc(spike_t/4) % 2 == 1){
             blinker = hex_color("#2f3333");
         }
         else {
@@ -1161,15 +1182,15 @@ export class Project extends Scene {
 
         
         
-        let spike_sphere_r_2 = 0.05*Math.sin(spike_t/1.5)+0.7;
+        let spike_sphere_r_2 = 0.05*Math.sin(spike_t/1.1)+0.7;
         let spike_sphere_transform_2 = spike_loc_transform.times(Mat4.translation(0,spike_up,0)).times(Mat4.scale(spike_sphere_r_2, spike_sphere_r_2, spike_sphere_r_2));
         this.shapes.spike_sphere.draw(context, program_state, spike_sphere_transform_2, this.materials.test.override({color: color(1,1,1,0.1)}));
 
-        let spike_sphere_r_3 = 0.05*Math.sin(spike_t/1.5)+1;
+        let spike_sphere_r_3 = 0.05*Math.sin(spike_t/1.1)+1;
         let spike_sphere_transform_3 = spike_loc_transform.times(Mat4.translation(0,spike_up,0)).times(Mat4.scale(spike_sphere_r_3, spike_sphere_r_3, spike_sphere_r_3));
         this.shapes.spike_sphere.draw(context, program_state, spike_sphere_transform_3, this.materials.test.override({color: color(0,0,0,0.08)}));
 
-        let spike_sphere_r = 0.05*Math.sin(spike_t/1.5)+1.4;
+        let spike_sphere_r = 0.05*Math.sin(spike_t/1.1)+1.4;
         let spike_sphere_transform = spike_loc_transform.times(Mat4.translation(0,spike_up,0)).times(Mat4.scale(spike_sphere_r, spike_sphere_r, spike_sphere_r));
         this.shapes.spike_sphere.draw(context, program_state, spike_sphere_transform, this.materials.test.override({color: color(1,1,1,0.08)}));
     }
@@ -1177,6 +1198,15 @@ export class Project extends Scene {
     display(context, program_state) {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+
+        // allows for relative start time of the game
+        if (this.iter == 1){
+            this.t_diff = t;
+            // console.log(t);
+            // console.log(this.t_diff);
+        }
+        this.iter++;
+
 
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
@@ -1205,7 +1235,10 @@ export class Project extends Scene {
         const spike_light = vec4(0,-4.2,1.2,1); // spike illumation
         
         // The parameters of the Light are: position, color, size
-        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000), new Light(light_position2, color(1,1,1,1), 1000)];
+
+        if (!this.game_end){
+            program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000), new Light(light_position2, color(1,1,1,1), 1000)];
+        }
     
         // need to figure out how to add another light source 
         // new Light(spike_light, hex_color("#a6ffff"), 10000)
@@ -1217,23 +1250,40 @@ export class Project extends Scene {
         this.draw_props(context, program_state);
         
         // game interactives
-        this.draw_targets(context, program_state, t);
-        this.draw_gun(context, program_state, t, this.shot);
-        this.draw_spike(context, program_state,t);
 
-        // explosion timer testing
-        this.timer -= dt;
+        if (!this.game_end){
+            this.draw_targets(context, program_state, t);
+            this.draw_gun(context, program_state, t, this.shot);
+            this.draw_spike(context, program_state, t);
+        }
+      
+        // force timer on first frame
+        if (this.iter == 1){
+            this.timer = config["timer"];
+        }
+        else {
+            this.timer = config["timer"]-t+this.t_diff;
+        }
+        // console.log(this.timer);
         this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
+        console.log(this.display_timer);
 
         if (this.timer <= 0 && this.timer > -2){
+            this.game_end = true;
             this.time += dt;
-            let R_explode = 19*Math.sin(this.time);
-            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
+            this.R_explode = 20*Math.sin(this.time);
+            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(this.R_explode, this.R_explode, this.R_explode));
             this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: color(1,1,1,0.6)}));
         }
         else if (this.timer <= -2){
-            let R_explode = 19;
-            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(R_explode, R_explode, R_explode));
+            this.time += dt;
+            if (this.R_explode <= 1 && this.R_explode >= -1){
+                this.R_explode = 0;
+            }
+            else {
+                this.R_explode = 20*Math.sin(this.time);
+            }
+            let sphere_transform = Mat4.translation(0,-3,-1).times(Mat4.scale(this.R_explode, this.R_explode, this.R_explode));
             this.shapes.sphere.draw(context, program_state, sphere_transform, this.materials.test.override({diffuse: 0, specularity: 0, color: color(1,1,1,0.6)}));
         }
     }
