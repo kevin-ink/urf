@@ -223,19 +223,15 @@ button.close-btn:hover {
 #top-bar {
     position: absolute;
     padding-right: 10%;
-    padding-left: 10%;
+    padding-left: 15%;
     display: flex;
     flex-direction: row;
     box-sizing: border-box;
     padding-bottom: 0.5%;
     height: 10vh;
     width: 100vw;
-    border-top: 0;
-    border-right: 0;
-    border-left: 0;
-    border-style: solid;
-    background-image: linear-gradient(var(--angle), #c9d6ff,#e2e2e2);
-    border-image: linear-gradient(var(--angle), #0575e6, #021b79);
+    z-index: 1;
+    background: transparent;
 }
 
 #accuracy, #time, #points {
