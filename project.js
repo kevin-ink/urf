@@ -615,7 +615,7 @@ export class Project extends Scene {
         let building_3_transform = Mat4.identity();
         building_3_transform = building_3_transform.times(Mat4.scale(2, 4, 1))
                                                    .times(Mat4.translation(-5.5, -0, -12.5))
-                                                   .times(Mat4.rotation(Math.PI/180 * 15, 0, 1, 0));
+                                                   .times(Mat4.rotation(Math.PI/180 * 10, 0, 1, 0));
         this.shapes.cube.draw(context, program_state, building_3_transform, this.materials.wall_2_texture);
 
         let floor_2_transform = Mat4.identity();
