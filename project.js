@@ -173,19 +173,19 @@ export class Project extends Scene {
       }),
 
       gun: new Material(new defs.Phong_Shader(), {
-        ambient: 0.4,
+        ambient: 0.5,
         diffusivity: 1,
         specularity: 1,
-        color: hex_color("#131313"),
+        color: hex_color("#222222"),
       }),
       gun2: new Material(new defs.Phong_Shader(), {
-        ambient: 0.4,
+        ambient: 0.5,
         diffusivity: 0.8,
         specularity: 1,
         color: hex_color("#f55a00"),
       }),
       gun3: new Material(new defs.Phong_Shader(), {
-        ambient: 0.4,
+        ambient: 0.5,
         diffusivity: 0.9,
         specularity: 0.2,
         color: hex_color("#333333"),
@@ -365,10 +365,15 @@ export class Project extends Scene {
     // this.timer = 5;
     this.time = 0;
 
-    // Use a constant offset value to solve start time issue
+    // Use a constant offset value to solve start time issue (very useful apparently!)
     this.iter = 0;
+    // pregame time offset in number of frames (3 seconds * 60 frames)
+    this.frames_offset = 3*60;
 
+    // determine whether we should render certain models
     this.game_end = false;
+
+
 
     this.view_dist = 20;
 
@@ -1270,7 +1275,7 @@ export class Project extends Scene {
         // let third_hit = new Audio('assets/sounds/third_kill.mp3');
         // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-        if (this.iter <= 3*60){
+        if (this.iter <= this.frames_offset){
             return;
         }
 
@@ -2127,37 +2132,45 @@ export class Project extends Scene {
       this.materials.spike
     );
 
+    let opacity = 0.08;
+    if (this.iter <= this.frames_offset){
+        opacity = 0;
+    }
+    else if (this.iter > this.frames_offset && this.iter <= 6*60){
+        // 180 to 360 to 0 -> 0.08
+        opacity = (this.iter-180)/180 * (0.08);
+    }
     let spike_sphere_r_2 = 0.05 * Math.sin(spike_t / 1.1) + 0.7;
     let spike_sphere_transform_2 = spike_loc_transform
-      .times(Mat4.translation(0, spike_up, 0))
-      .times(Mat4.scale(spike_sphere_r_2, spike_sphere_r_2, spike_sphere_r_2));
+    .times(Mat4.translation(0, spike_up, 0))
+    .times(Mat4.scale(spike_sphere_r_2, spike_sphere_r_2, spike_sphere_r_2));
     this.shapes.spike_sphere.draw(
-      context,
-      program_state,
-      spike_sphere_transform_2,
-      this.materials.test.override({ color: color(1, 1, 1, 0.1) })
+    context,
+    program_state,
+    spike_sphere_transform_2,
+    this.materials.test.override({ color: color(1, 1, 1, opacity+0.02) })
     );
 
     let spike_sphere_r_3 = 0.05 * Math.sin(spike_t / 1.1) + 1;
     let spike_sphere_transform_3 = spike_loc_transform
-      .times(Mat4.translation(0, spike_up, 0))
-      .times(Mat4.scale(spike_sphere_r_3, spike_sphere_r_3, spike_sphere_r_3));
+    .times(Mat4.translation(0, spike_up, 0))
+    .times(Mat4.scale(spike_sphere_r_3, spike_sphere_r_3, spike_sphere_r_3));
     this.shapes.spike_sphere.draw(
-      context,
-      program_state,
-      spike_sphere_transform_3,
-      this.materials.test.override({ color: color(0, 0, 0, 0.08) })
+    context,
+    program_state,
+    spike_sphere_transform_3,
+    this.materials.test.override({ color: color(0, 0, 0, opacity) })
     );
 
     let spike_sphere_r = 0.05 * Math.sin(spike_t / 1.1) + 1.4;
     let spike_sphere_transform = spike_loc_transform
-      .times(Mat4.translation(0, spike_up, 0))
-      .times(Mat4.scale(spike_sphere_r, spike_sphere_r, spike_sphere_r));
+    .times(Mat4.translation(0, spike_up, 0))
+    .times(Mat4.scale(spike_sphere_r, spike_sphere_r, spike_sphere_r));
     this.shapes.spike_sphere.draw(
-      context,
-      program_state,
-      spike_sphere_transform,
-      this.materials.test.override({ color: color(1, 1, 1, 0.08) })
+    context,
+    program_state,
+    spike_sphere_transform,
+    this.materials.test.override({ color: color(1, 1, 1, opacity) })
     );
   }
 
@@ -2166,7 +2179,7 @@ export class Project extends Scene {
       dt = program_state.animation_delta_time / 1000;
 
     // allows for relative start time of the game
-    if (this.iter <= 3 * 60) {
+    if (this.iter <= 3 * 60 ) {
       // modify here to stall timer and spike
       this.t_diff = t;
       // console.log(t);
@@ -2207,21 +2220,36 @@ export class Project extends Scene {
     );
 
     // Lights
-    const light_position = vec4(0, 15, 15, 1);
-    const light_position2 = vec4(0, 12, 20, 1); // to illuminate back of gun
-    const spike_light = vec4(0, -2, -14, 1); // spike illumation
+    const light_position = vec4(0, 10, 20, 1);
+    const gun_light = vec4(0, 6, 20, 1); // to illuminate back of gun
+    const spike_light = vec4(0, -2, -12, 1); // spike illumation
 
+    let spike_light_size = 10;
+    if (this.iter <= this.frames_offset){
+      spike_light_size = 0;
+    }
+    else if (this.iter > this.frames_offset && this.iter <= 6*60){
+      spike_light_size = (this.iter-180)/180 * 10;
+    }
     // The parameters of the Light are: position, color, size
 
     if (!this.game_end) {
-      program_state.lights = [
-        new Light(
-          light_position,
-          color(1, 0.95, 0.8, 1),
-          1000
-        ), 
-        // new Light(spike_light, color(0.47,1,1,1), 5),
-      ];
+        program_state.lights = [
+          new Light(
+            light_position,
+            color(1, 0.95, 0.8, 1),
+            1000
+          ), 
+          new Light(spike_light, color(0.47,1,1,1), spike_light_size)
+        ];
+    }
+    else {
+      program_state.lights = [new Light(
+        light_position,
+        color(1, 0.95, 0.8, 1),
+        0
+      ), 
+      new Light(spike_light, color(0.47,1,1,1), 0)];
     }
 
     // need to figure out how to add another light source
@@ -2253,7 +2281,7 @@ export class Project extends Scene {
     // console.log(this.timer);
     this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
     if (this.display_timer < 0) {
-      this.display_timer = "GAME OVER";
+      this.display_timer = 0;
     }
     console.log(this.display_timer);
 
@@ -2262,8 +2290,8 @@ export class Project extends Scene {
     if (this.timer <= 0 && this.timer > -2) {
       this.game_end = true;
       this.time += dt;
-      this.R_explode = 20 * Math.sin(this.time);
-      let sphere_transform = Mat4.translation(0, -3, -1).times(
+      this.R_explode = 40 * Math.sin(this.time);
+      let sphere_transform = Mat4.translation(0, -4, -12).times(
         Mat4.scale(this.R_explode, this.R_explode, this.R_explode)
       );
       this.shapes.sphere.draw(
@@ -2281,9 +2309,9 @@ export class Project extends Scene {
       if (this.R_explode <= 1 && this.R_explode >= -1) {
         this.R_explode = 0;
       } else {
-        this.R_explode = 20 * Math.sin(this.time);
+        this.R_explode = 40 * Math.sin(this.time);
       }
-      let sphere_transform = Mat4.translation(0, -3, -1).times(
+      let sphere_transform = Mat4.translation(0, -4, -12).times(
         Mat4.scale(this.R_explode, this.R_explode, this.R_explode)
       );
       this.shapes.sphere.draw(
