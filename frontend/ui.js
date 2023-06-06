@@ -1,4 +1,5 @@
 import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
+export var DEBUG = true;
 
 //
 // FUNCTIONS
@@ -265,6 +266,18 @@ if (btns.length !== 0) {
   });
 }
 
+if (DEBUG)
+{
+  canvas.style.display = "block";
+  main.style.display = "none";
+  // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
+  // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
+  const element_to_replace = document.querySelector("#main-canvas");
+  // Import the file that defines a scene.
+  const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
+  new Canvas_Widget(element_to_replace, scenes);
+  topBar.style.display = "block";
+}
 //
 // END OF SETUP
 //

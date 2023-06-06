@@ -453,24 +453,33 @@ export class Project extends Scene {
   }
 
   draw_pillars(context, program_state) {
-    let leftPillar_trans = Mat4.identity();
-    leftPillar_trans = leftPillar_trans.times(
-      Mat4.translation(32, 0, -9).times(Mat4.scale(1, 7, 1))
-    );
+    let leftPillar_trans = Mat4.identity()
+      .times(Mat4.translation(-9, 0, -17.5)
+      .times(Mat4.scale(0.75, 10, 0.5)));
     this.shapes.cube.draw(
       context,
       program_state,
       leftPillar_trans,
       this.materials.wooden
     );
-    let rightPillar_trans = Mat4.identity();
-    rightPillar_trans = leftPillar_trans.times(Mat4.translation(-64, 0, 0));
+    let rightPillar_trans = Mat4.identity()
+      .times(Mat4.translation(9, 0, -17.5))
+      .times(Mat4.scale(0.75,10,0.5));
     this.shapes.cube.draw(
       context,
       program_state,
       rightPillar_trans,
       this.materials.wooden
     );
+    let rightPillar_2_trans = Mat4.identity()
+      .times(Mat4.translation(9,0,0))
+      .times(Mat4.rotation(Math.PI/4,1,0,0));
+      this.shapes.cube.draw(
+        context,
+        program_state,
+        rightPillar_2_trans,
+        this.materials.wooden
+      );
   }
 
   draw_props(context, program_state) {
