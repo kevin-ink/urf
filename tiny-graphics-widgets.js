@@ -29,7 +29,7 @@ const Canvas_Widget = widgets.Canvas_Widget =
             Object.assign(this, defaults, options)
 
             const rules = [
-              ".canvas-widget { width: 100vw; background: transparent; margin-top: 10vh}",
+              ".canvas-widget { width: 100vw; background: transparent; margin; 0}",
               ".canvas-widget canvas { width: 100vw; margin: 0}",
             ];
 
