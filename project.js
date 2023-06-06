@@ -2,196 +2,82 @@ import { defs, tiny } from "./examples/common.js";
 import { config, updateBar } from "./frontend/ui.js";
 
 const {
-  Vector,
-  Vector3,
-  vec,
-  vec3,
-  vec4,
-  color,
-  hex_color,
-  Shader,
-  Matrix,
-  Mat4,
-  Light,
-  Shape,
-  Material,
-  Scene,
-  Texture,
+  Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture,
 } = tiny;
 
 const { Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere } =
   defs;
 
-class RectPyramid extends Shape {
-  constructor() {
-    super("position", "normal");
-    // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
-    this.arrays.position = Vector3.cast(
-      [1, 0, 0],
-      [0, 4 / 3, 0],
-      [0, 0, 0],
-      [1, 0, 1 / 3],
-      [0, 4 / 3, 1 / 3],
-      [0, 0, 1 / 3],
-      [0, 0, 0],
-      [0, 4 / 3, 0],
-      [0, 0, 1 / 3],
-      [0, 0, 1 / 3],
-      [0, 4 / 3, 1 / 3],
-      [0, 4 / 3, 0],
-      [0, 0, 0],
-      [0, 0, 1 / 3],
-      [1, 0, 0],
-      [0, 0, 1 / 3],
-      [1, 0, 1 / 3],
-      [1, 0, 0],
-      [1, 0, 0],
-      [1, 0, 1 / 3],
-      [0, 4 / 3, 1 / 3],
-      [1, 0, 0],
-      [0, 4 / 3, 0],
-      [0, 4 / 3, 1 / 3]
-    );
-    this.arrays.normal = Vector3.cast(
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, 1],
-      [0, 0, 1],
-      [0, 0, 1],
-      [-1, 0, 0],
-      [-1, 0, 0],
-      [-1, 0, 0],
-      [-1, 0, 0],
-      [-1, 0, 0],
-      [-1, 0, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-      [1, 1, 0],
-      [1, 1, 0],
-      [1, 1, 0],
-      [1, 1, 0],
-      [1, 1, 0],
-      [1, 1, 0]
-    );
-    // Arrange the vertices into a square shape in texture space too:
-    this.indices.push(
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23
-    );
-  }
+  class RectPyramid extends Shape {
+    constructor() {
+        super("position", "normal",);
+        // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
+        this.arrays.position = Vector3.cast(
+            [1, 0, 0], [0, 4/3, 0], [0, 0, 0], 
+            [1, 0, 1/3], [0, 4/3, 1/3], [0, 0, 1/3],
+            [0, 0, 0], [0, 4/3, 0], [0, 0, 1/3],
+            [0, 0, 1/3], [0, 4/3, 1/3], [0, 4/3, 0],
+            [0, 0, 0], [0, 0, 1/3], [1, 0, 0],
+            [0, 0, 1/3], [1, 0, 1/3], [1, 0, 0],
+            [1, 0, 0], [1, 0, 1/3], [0, 4/3, 1/3],
+            [1, 0, 0], [0, 4/3, 0], [0, 4/3, 1/3],
+            );
+        this.arrays.normal = Vector3.cast(
+            [0, 0, -1], [0, 0, -1], [0, 0, -1],
+            [0, 0, 1], [0, 0, 1], [0, 0, 1],
+            [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
+            [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
+            [0, -1, 0], [0, -1, 0], [0, -1, 0],
+            [0, -1, 0], [0, -1, 0], [0, -1, 0],
+            [1, 1, 0], [1, 1, 0], [1, 1, 0],
+            [1, 1, 0], [1, 1, 0], [1, 1, 0],
+            );
+        // Arrange the vertices into a square shape in texture space too:
+        this.indices.push(0, 1, 2, 
+                          3, 4, 5,
+                          6, 7, 8,
+                          9, 10, 11,
+                          12, 13, 14,
+                          15, 16, 17,
+                          18, 19, 20,
+                          21, 22, 23
+                          ); 
+        }   
 }
 
 class Spike extends Shape {
-  constructor() {
-    super("position", "normal");
-    // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
-    this.arrays.position = Vector3.cast(
-      [0, 0, 1],
-      [Math.sqrt(1 / 3), 0, 0],
-      [-Math.sqrt(1 / 3), 0, 0],
-      [0, 1 / 2, 1],
-      [Math.sqrt(1 / 3), 1 / 2, 0],
-      [-Math.sqrt(1 / 3), 1 / 2, 0],
-      [Math.sqrt(1 / 3), 0, 0],
-      [-Math.sqrt(1 / 3), 0, 0],
-      [Math.sqrt(1 / 3), 1 / 2, 0],
-      [Math.sqrt(1 / 3), 1 / 2, 0],
-      [-Math.sqrt(1 / 3), 0, 0],
-      [-Math.sqrt(1 / 3), 1 / 2, 0],
-      [-Math.sqrt(1 / 3), 0, 0],
-      [0, 0, 1],
-      [0, 1 / 2, 1],
-      [-Math.sqrt(1 / 3), 0, 0],
-      [-Math.sqrt(1 / 3), 1 / 2, 0],
-      [0, 1 / 2, 1],
-      [Math.sqrt(1 / 3), 0, 0],
-      [0, 0, 1],
-      [0, 1 / 2, 1],
-      [Math.sqrt(1 / 3), 0, 0],
-      [Math.sqrt(1 / 3), 1 / 2, 0],
-      [0, 1 / 2, 1]
-    );
-    this.arrays.normal = Vector3.cast(
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, -1, 0],
-      [0, 1, 0],
-      [0, 1, 0],
-      [0, 1, 0],
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-      [0, 0, -1],
-      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
-      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2]
-    );
-    // Arrange the vertices into a square shape in texture space too:
-    this.indices.push(
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23
-    );
-  }
+    constructor() {
+        super("position", "normal",);
+        // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
+        this.arrays.position = Vector3.cast(
+            [0, 0, 1], [Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 0, 0], 
+            [0, 1/2, 1], [Math.sqrt(1/3), 1/2, 0], [-Math.sqrt(1/3), 1/2, 0],
+            [Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 0, 0], [Math.sqrt(1/3), 1/2, 0],
+            [Math.sqrt(1/3), 1/2, 0], [-Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 1/2, 0],
+            [-Math.sqrt(1/3), 0, 0], [0, 0, 1], [0, 1/2, 1],
+            [-Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 1/2, 0], [0, 1/2, 1],
+            [Math.sqrt(1/3), 0, 0], [0, 0, 1], [0, 1/2, 1],
+            [Math.sqrt(1/3), 0, 0], [Math.sqrt(1/3), 1/2, 0], [0, 1/2, 1]);
+        this.arrays.normal = Vector3.cast(
+            [0, -1, 0], [0, -1, 0], [0, -1, 0],
+            [0, 1, 0], [0, 1, 0], [0, 1, 0],
+            [0, 0, -1], [0, 0, -1], [0, 0, -1],
+            [0, 0, -1], [0, 0, -1], [0, 0, -1],
+            [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2],
+            [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2],
+            [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2],
+            [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2]);
+        // Arrange the vertices into a square shape in texture space too:
+        this.indices.push(0, 1, 2, 
+                          3, 4, 5,
+                          6, 7, 8,
+                          9, 10, 11,
+                          12, 13, 14,
+                          15, 16, 17,
+                          18, 19, 20,
+                          21, 22, 23
+                          );
+    }
 }
 
 export class Project extends Scene {
@@ -429,9 +315,9 @@ export class Project extends Scene {
     if (this.difficulty == "easy") {
       this.target_r = 1.5;
     } else if (this.difficulty == "medium") {
-      this.target_r = 1;
+      this.target_r = 1.25;
     } else {
-      this.target_r = 0.5;
+      this.target_r = 1;
     }
 
     // Number of Targets
@@ -443,7 +329,7 @@ export class Project extends Scene {
     if (this.strafe) {
       this.move_factor = 2;
       if (this.target_num == 5) {
-        if (this.difficulty == "medium") this.move_factor = 1;
+        if (this.difficulty == "medium") this.move_factor = 1.25;
         else if (this.difficulty == "easy") {
           this.move_factor = 0.5;
         }
@@ -878,7 +764,7 @@ export class Project extends Scene {
       let x = coord[0],
         y = coord[1];
       let dist = Math.sqrt((ranX - x) ** 2 + (ranY - y) ** 2);
-      if (dist < 2 * this.target_r + 2) {
+      if (dist < 2 * this.target_r + 2.5) {
         // 2 times the radius + 2
         return true;
       }
@@ -906,20 +792,19 @@ export class Project extends Scene {
     if (this.target_r == 1.5) {
       size_factor = 1;
     }
+    else if (this.target_r == 1.25){
+        size_factor = 0.5;
+    }
     let strafe_speed = 0;
 
     if (this.strafe) {
       strafe_speed = Math.random() * (Math.PI + Math.PI) + -Math.PI;
     }
-    let xMin = -12 + size_factor + this.move_factor,
-      xMax = 12 - size_factor - this.move_factor;
-    let yMin = -2,
-      yMax = 6 - size_factor - this.move_factor;
+    let xMin = -15 + size_factor + this.move_factor, xMax = 15 - size_factor - this.move_factor;
+    let yMin = -2, yMax = 6 - size_factor - this.move_factor;
 
     // Generate random coordinates
-    let ranX,
-      ranY = Math.random() * 5 + -2;
-    let ranZ = Math.random() * 2 + Math.random() * 2;
+    let ranX, ranY, ranZ = Math.random() * (10) + -8;
     do {
       ranX = Math.random() * (xMax - xMin) + xMin;
       ranY = Math.random() * (yMax - yMin) + yMin;
@@ -2322,9 +2207,9 @@ export class Project extends Scene {
     );
 
     // Lights
-    const light_position = vec4(15, 12, 10, 1);
+    const light_position = vec4(0, 15, 15, 1);
     const light_position2 = vec4(0, 12, 20, 1); // to illuminate back of gun
-    const spike_light = vec4(0, -4.2, 1.2, 1); // spike illumation
+    const spike_light = vec4(0, -2, -14, 1); // spike illumation
 
     // The parameters of the Light are: position, color, size
 
@@ -2334,7 +2219,8 @@ export class Project extends Scene {
           light_position,
           color(1, 0.95, 0.8, 1),
           1000
-        ) /*new Light(light_position2, color(1,1,1,1), 1000)*/,
+        ), 
+        // new Light(spike_light, color(0.47,1,1,1), 5),
       ];
     }
 
