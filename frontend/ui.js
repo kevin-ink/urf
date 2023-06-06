@@ -1,7 +1,9 @@
 import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
+// import { widgets } from "../tiny-graphics-widgets.js";
+
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-export var DEBUG = true;
+export var DEBUG = false;
 
 //
 // SETUP
@@ -11,7 +13,8 @@ const h1 = document.getElementById("title");
 const main = document.getElementById("main");
 const canvas = document.getElementById("main-canvas");
 const topBar = document.getElementById("top-bar");
-let origTransform;
+const canvas_element = document.querySelector("#main-canvas");
+let canvas_widget; let origTransform; let gameStarted = false;
 
 // export this for use in game canvas
 export let config = {
@@ -76,13 +79,14 @@ if (DEBUG)
 {
   canvas.style.display = "block";
   main.style.display = "none";
+  gameStarted = true;
   config.timer = 100000; // bomb doesn't go boom
   // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
   // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
   const element_to_replace = document.querySelector("#main-canvas");
   // Import the file that defines a scene.
   const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
-  new Canvas_Widget(element_to_replace, scenes);
+  canvas_widget = new Canvas_Widget(element_to_replace, scenes);
   topBar.style.display = "block";
 }
 
@@ -279,10 +283,14 @@ function startGame() {
   canvas.classList.add("puff-in-center");
   topBar.style.display = "block";
   topBar.classList.add("puff-in-center");
-  // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
-  // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
-  const element_to_replace = document.querySelector("#main-canvas");
-  // Import the file that defines a scene.
+  gameStarted = true;
   const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
-  new Canvas_Widget(element_to_replace, scenes);
+  canvas_widget = new Canvas_Widget(canvas_element, scenes);
 }
+
+window.addEventListener('resize', () => {
+  if (gameStarted)
+  {
+    canvas_widget.webgl_manager.set_size();
+  }
+});

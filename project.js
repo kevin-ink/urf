@@ -1,6 +1,10 @@
 import { defs, tiny } from "./examples/common.js";
 import { config, updateBar } from "./frontend/ui.js";
 
+window.addEventListener('resize', () => {
+  
+});
+
 const {
   Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture,
 } = tiny;
