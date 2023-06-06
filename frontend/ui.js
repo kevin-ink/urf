@@ -4,12 +4,14 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 // FUNCTIONS
 //
 
-export function updateBar(points, accuracy)
+export function updateBar(points, accuracy, time)
 {
   let div = document.getElementById("points");
   div.innerHTML = `${points}<p>pts</p>`;
   div = document.getElementById("accuracy");  
   div.textContent = accuracy + "%";
+  div = document.getElementById("time");  
+  div.textContent = time;
 }
 
 function changeOpt(e) {

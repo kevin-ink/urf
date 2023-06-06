@@ -271,7 +271,7 @@ export class Project extends Scene {
         // Accuracy
         this.hits = 0;
         this.total_shots = 0;
-        this.accuracy = 1;
+        this.accuracy = 100;
 
         // Testing
         this.recoil_counter = 0;
@@ -781,8 +781,6 @@ export class Project extends Scene {
         }
         this.accuracy = this.hits/this.total_shots;
         this.accuracy = Math.round(this.accuracy*10000)/100
-        updateBar(this.points, this.accuracy);
-
         this.shot = true;
 
     }
@@ -1047,7 +1045,7 @@ export class Project extends Scene {
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
         // allows for relative start time of the game
-        if (this.iter == 1){
+        if (this.iter <= 3*60){ // modify here to stall timer and spike
             this.t_diff = t;
             // console.log(t);
             // console.log(this.t_diff);
@@ -1105,7 +1103,8 @@ export class Project extends Scene {
         }
       
         // force timer on first frame
-        if (this.iter == 1){
+        
+        if (this.iter == 1){ // we can make timer stall here for the initial countdown by setting this.iter <= 3 seconds * how many ever frames per second
             this.timer = config["timer"];
         }
         else {
@@ -1113,7 +1112,12 @@ export class Project extends Scene {
         }
         // console.log(this.timer);
         this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
+        if (this.display_timer < 0){
+            this.display_timer = "GAME OVER";
+        }
         console.log(this.display_timer);
+
+        updateBar(this.points, this.accuracy, this.display_timer);
 
         if (this.timer <= 0 && this.timer > -2){
             this.game_end = true;
