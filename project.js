@@ -526,8 +526,8 @@ export class Project extends Scene {
   draw_walls(context, program_state) {
     let left_wall_transform = Mat4.identity();
     left_wall_transform = left_wall_transform
-      .times(Mat4.scale(0.2, 7, 10))
-      .times(Mat4.translation(-68, 0, 0))
+    .times(Mat4.translation(-18, 0, 0))
+      .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(-1.5, 0, 1, 0));
     this.shapes.cube.draw(
       context,
@@ -539,8 +539,8 @@ export class Project extends Scene {
     let right_wall_transform = Mat4.identity();
 
     right_wall_transform = right_wall_transform
-      .times(Mat4.scale(0.2, 7, 10))
-      .times(Mat4.translation(68, 0, 0))
+        .times(Mat4.translation(18, 0, 0))
+      .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(1.5, 0, 1, 0));
     this.shapes.cube.draw(
       context,
@@ -551,8 +551,8 @@ export class Project extends Scene {
 
     let back_wall_transform = Mat4.identity();
     back_wall_transform = back_wall_transform
-      .times(Mat4.translation(0, 0, -10))
-      .times(Mat4.scale(20, 7, 0.2));
+      .times(Mat4.translation(0, 0, -18))
+      .times(Mat4.scale(20, 10, 0.2));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -600,7 +600,7 @@ export class Project extends Scene {
 
     let crate1_trans = Mat4.identity();
     crate1_trans = crate1_trans
-        .times(Mat4.translation(-12, -3.5, -9))
+        .times(Mat4.translation(-16, -3.5, -15))
         .times(Mat4.scale(1.5, 1.5, 1));
     this.shapes.cube.draw(
       context,
@@ -611,7 +611,7 @@ export class Project extends Scene {
 
     let crate2_trans = Mat4.identity();
     crate2_trans = crate2_trans
-      .times(Mat4.translation(11, 1, -9))
+      .times(Mat4.translation(16, 1, -15.5))
       .times(Mat4.scale(1.5, 1.5, 1))
       .times(Mat4.rotation(-0.1, 0, 1, 0));
     this.shapes.cube.draw(
@@ -623,7 +623,7 @@ export class Project extends Scene {
 
     let crate3_trans = Mat4.identity();
     crate3_trans = crate3_trans
-      .times(Mat4.translation(11, 4, -9.5))
+      .times(Mat4.translation(15.5, 4, -15.5))
       .times(Mat4.scale(1.4, 1.4, 1))
       .times(Mat4.rotation(-0.9, 0, 1, 0));
     this.shapes.cube.draw(
@@ -635,7 +635,7 @@ export class Project extends Scene {
 
     let crate4_trans = Mat4.identity();
     crate4_trans = crate4_trans
-      .times(Mat4.translation(-10, -3.5, -1))
+      .times(Mat4.translation(-14, -3.5, -6))
       .times(Mat4.scale(1.4, 1.4, 1))
       .times(Mat4.rotation(-0.9, 0, 1, 0));
     this.shapes.cube.draw(
@@ -654,7 +654,7 @@ export class Project extends Scene {
         */
     let standing_block2_trans = Mat4.identity();
     standing_block2_trans = standing_block2_trans
-      .times(Mat4.translation(10.5, -3.5, -9))
+      .times(Mat4.translation(16.5, -3.5, -16))
       .times(Mat4.scale(3, 3, 3));
     this.shapes.cube.draw(
       context,
@@ -664,7 +664,7 @@ export class Project extends Scene {
     );
     let standing_block3_trans = Mat4.identity();
     standing_block3_trans = standing_block3_trans
-        .times(Mat4.translation(12, -3.5, -5))
+        .times(Mat4.translation(16, -3.5, -10))
         .times(Mat4.scale(1.5, 1.5, 2));
     this.shapes.cube.draw(
       context,
@@ -838,8 +838,8 @@ export class Project extends Scene {
     // Wall decor - shooting guide
     let shooting_guide_trans = Mat4.identity();
     shooting_guide_trans = shooting_guide_trans
-        .times(Mat4.translation(13.2, 0, -3))
-        .times(Mat4.scale(2.5, 2.5, 1))
+        .times(Mat4.translation(17.5, 0, -10))
+        .times(Mat4.scale(4, 2.5, 1))
         .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
@@ -849,8 +849,8 @@ export class Project extends Scene {
     );
     let shooting_guide2_trans = Mat4.identity();
     shooting_guide2_trans = shooting_guide2_trans
-        .times(Mat4.translation(13.2, 0, 2))
-        .times(Mat4.scale(2.5, 2.5, 1))
+        .times(Mat4.translation(17.5, 0, -6))
+        .times(Mat4.scale(4, 2.5, 1))
         .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
@@ -1919,7 +1919,7 @@ export class Project extends Scene {
   }
   // Spike model
   draw_spike(context, program_state, t) {
-    let spike_loc_transform = Mat4.translation(0, -5, -5).times(
+    let spike_loc_transform = Mat4.translation(0, -5, -12).times(
       Mat4.scale(1.5, 1.5, 1.5)
     );
 
