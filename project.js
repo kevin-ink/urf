@@ -161,7 +161,7 @@ export class Project extends Scene {
                 texture: new Texture("assets/background/wall-texture-color.png")
             }),
             floor_texture: new Material(new defs.Textured_Phong(), {
-                color: hex_color("000000"),
+                color: hex_color("#000000"),
                 ambient: .75,
                 diffusivity: .9,
                 specularity: 0.2,
