@@ -699,6 +699,10 @@ export class Project extends Scene {
             return;
         }
 
+        if (this.game_end){
+            return;
+        }
+
         let missed = true;
 
         let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
