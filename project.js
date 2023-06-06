@@ -403,8 +403,8 @@ export class Project extends Scene {
         diffusivity: 0.5,
         specularity: 0.5,
         color: hex_color("#000000"),
-        texture: new Texture("assets/background/wooden.jpeg")
-      })
+        texture: new Texture("assets/background/wooden.jpeg"),
+      }),
     };
 
     // Sound effects
@@ -526,7 +526,7 @@ export class Project extends Scene {
   draw_walls(context, program_state) {
     let left_wall_transform = Mat4.identity();
     left_wall_transform = left_wall_transform
-    .times(Mat4.translation(-18, 0, 0))
+      .times(Mat4.translation(-18, 0, 0))
       .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(-1.5, 0, 1, 0));
     this.shapes.cube.draw(
@@ -539,7 +539,7 @@ export class Project extends Scene {
     let right_wall_transform = Mat4.identity();
 
     right_wall_transform = right_wall_transform
-        .times(Mat4.translation(18, 0, 0))
+      .times(Mat4.translation(18, 0, 0))
       .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(1.5, 0, 1, 0));
     this.shapes.cube.draw(
@@ -563,22 +563,22 @@ export class Project extends Scene {
 
   draw_pillars(context, program_state) {
     let leftPillar_trans = Mat4.identity();
-    leftPillar_trans = leftPillar_trans
-        .times(Mat4.translation(32,0,-9)
-        .times(Mat4.scale(1,7,1)));
+    leftPillar_trans = leftPillar_trans.times(
+      Mat4.translation(32, 0, -9).times(Mat4.scale(1, 7, 1))
+    );
     this.shapes.cube.draw(
-        context,
-        program_state,
-        leftPillar_trans,
-        this.materials.wooden
+      context,
+      program_state,
+      leftPillar_trans,
+      this.materials.wooden
     );
     let rightPillar_trans = Mat4.identity();
-    rightPillar_trans = leftPillar_trans.times(Mat4.translation(-64,0,0));
+    rightPillar_trans = leftPillar_trans.times(Mat4.translation(-64, 0, 0));
     this.shapes.cube.draw(
-        context,
-        program_state,
-        rightPillar_trans,
-        this.materials.wooden
+      context,
+      program_state,
+      rightPillar_trans,
+      this.materials.wooden
     );
   }
 
@@ -600,8 +600,8 @@ export class Project extends Scene {
 
     let crate1_trans = Mat4.identity();
     crate1_trans = crate1_trans
-        .times(Mat4.translation(-16, -3.5, -15))
-        .times(Mat4.scale(1.5, 1.5, 1));
+      .times(Mat4.translation(-16, -3.5, -15))
+      .times(Mat4.scale(1.5, 1.5, 1));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -664,8 +664,8 @@ export class Project extends Scene {
     );
     let standing_block3_trans = Mat4.identity();
     standing_block3_trans = standing_block3_trans
-        .times(Mat4.translation(16, -3.5, -10))
-        .times(Mat4.scale(1.5, 1.5, 2));
+      .times(Mat4.translation(16, -3.5, -10))
+      .times(Mat4.scale(1.5, 1.5, 2));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -838,9 +838,9 @@ export class Project extends Scene {
     // Wall decor - shooting guide
     let shooting_guide_trans = Mat4.identity();
     shooting_guide_trans = shooting_guide_trans
-        .times(Mat4.translation(17.5, 0, -10))
-        .times(Mat4.scale(4, 2.5, 1))
-        .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 0, -10))
+      .times(Mat4.scale(4, 2.5, 1))
+      .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
       program_state,
@@ -849,9 +849,9 @@ export class Project extends Scene {
     );
     let shooting_guide2_trans = Mat4.identity();
     shooting_guide2_trans = shooting_guide2_trans
-        .times(Mat4.translation(17.5, 0, -6))
-        .times(Mat4.scale(4, 2.5, 1))
-        .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 0, -6))
+      .times(Mat4.scale(4, 2.5, 1))
+      .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
       program_state,
@@ -1369,44 +1369,43 @@ export class Project extends Scene {
     }
     return false;
   }
-    
-            
-    // Mouse Picking 
-    my_mouse_down(e, pos, context, program_state, t) {
-        // Putting sounds here makes it faster? 
-        // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
-        // let heavy_shot = new Audio('assets/sounds/gun.mp3');
-        // let laser = new Audio('assets/sounds/laser.mp3');
-        // let water_drop = new Audio('assets/sounds/bloop.mp3');
-        // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
-        // let shatter = new Audio('assets/sounds/shatter.mp3');
-        // let first_hit = new Audio('assets/sounds/first_kill.mp3');
-        // let second_hit = new Audio('assets/sounds/second_kill.mp3');
-        // let third_hit = new Audio('assets/sounds/third_kill.mp3');
-        // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-        if (this.iter <= 3*60){
-            return;
-        }
+  // Mouse Picking
+  my_mouse_down(e, pos, context, program_state, t) {
+    // Putting sounds here makes it faster?
+    // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
+    // let heavy_shot = new Audio('assets/sounds/gun.mp3');
+    // let laser = new Audio('assets/sounds/laser.mp3');
+    // let water_drop = new Audio('assets/sounds/bloop.mp3');
+    // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+    // let shatter = new Audio('assets/sounds/shatter.mp3');
+    // let first_hit = new Audio('assets/sounds/first_kill.mp3');
+    // let second_hit = new Audio('assets/sounds/second_kill.mp3');
+    // let third_hit = new Audio('assets/sounds/third_kill.mp3');
+    // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-        if (this.game_end){
-            return;
-        }
+    if (this.iter <= 3 * 60) {
+      return;
+    }
 
-        let missed = true;
+    if (this.game_end) {
+      return;
+    }
 
-        let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
-        let pos_ndc_far  = vec4(pos[0], pos[1],  1.0, 1.0);
-        let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
-        let P = program_state.projection_transform;
-        let V = program_state.camera_inverse;
-        let pos_world_near = Mat4.inverse(P.times(V)).times(pos_ndc_near);
-        let pos_world_far  = Mat4.inverse(P.times(V)).times(pos_ndc_far);
-        let center_world_near  = Mat4.inverse(P.times(V)).times(center_ndc_near);
-        pos_world_near.scale_by(1 / pos_world_near[3]);
-        pos_world_far.scale_by(1 / pos_world_far[3]);
-        center_world_near.scale_by(1 / center_world_near[3]);
-      
+    let missed = true;
+
+    let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
+    let pos_ndc_far = vec4(pos[0], pos[1], 1.0, 1.0);
+    let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
+    let P = program_state.projection_transform;
+    let V = program_state.camera_inverse;
+    let pos_world_near = Mat4.inverse(P.times(V)).times(pos_ndc_near);
+    let pos_world_far = Mat4.inverse(P.times(V)).times(pos_ndc_far);
+    let center_world_near = Mat4.inverse(P.times(V)).times(center_ndc_near);
+    pos_world_near.scale_by(1 / pos_world_near[3]);
+    pos_world_far.scale_by(1 / pos_world_far[3]);
+    center_world_near.scale_by(1 / center_world_near[3]);
+
     // gun_with_ammo.play();
     // quite_shot.play();
     // laser.play();
