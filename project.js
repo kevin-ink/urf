@@ -1243,16 +1243,10 @@ export class Project extends Scene {
 
   // Determine if a target was hit
   hit_target(coord, pos_world, t) {
-    let t_x = coord[0],
-      t_y = coord[1]; // Target coodinates
-    if (this.strafe) {
-      t_x += this.move_factor * Math.sin(coord[3] * t);
-    }
-    let h_x = pos_world[0],
-      h_y = pos_world[1]; // Mouse click coordinates
+    let t_x = coord[0] + this.move_factor * Math.sin(coord[3] * t), t_y = coord[1]; // Target coodinates
+    let h_x = pos_world[0], h_y = pos_world[1]; // Mouse click coordinates
     let d = Math.sqrt((t_x - h_x) ** 2 + (t_y - h_y) ** 2);
-    console.log(t_x);
-    console.log(h_x);
+    // console.log(t_x);
     if (d <= this.target_r) {
       // If the mouse click is within radius length of target
       return true;
@@ -1262,7 +1256,7 @@ export class Project extends Scene {
     
             
     // Mouse Picking 
-    my_mouse_down(e, pos, context, program_state, t) {
+    my_mouse_down(e, pos, context, program_state) {
         // Putting sounds here makes it faster? 
         // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
         // let heavy_shot = new Audio('assets/sounds/gun.mp3');
@@ -1282,6 +1276,8 @@ export class Project extends Scene {
         if (this.game_end){
             return;
         }
+
+        const t = program_state.animation_time / 1000;
 
         let missed = true;
 
@@ -1313,9 +1309,9 @@ export class Project extends Scene {
       let z = coord[2],
         z1 = pos_world_near[2],
         z2 = pos_world_far[2];
-      let t = (z - z1) / (z2 - z1);
-      let x = (1 - t) * pos_world_near[0] + t * pos_world_far[0];
-      let y = (1 - t) * pos_world_near[1] + t * pos_world_far[1];
+      let t_2 = (z - z1) / (z2 - z1);
+      let x = (1 - t_2) * pos_world_near[0] + t_2 * pos_world_far[0];
+      let y = (1 - t_2) * pos_world_near[1] + t_2 * pos_world_far[1];
       let world_coord = vec4(x, y, z, 1.0);
       console.log(world_coord); // each target has its own coordinates
       if (this.hit_target(coord, world_coord, t)) {
@@ -2175,8 +2171,7 @@ export class Project extends Scene {
   }
 
   display(context, program_state) {
-    const t = program_state.animation_time / 1000,
-      dt = program_state.animation_delta_time / 1000;
+    const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
     // allows for relative start time of the game
     if (this.iter <= 3 * 60 ) {
@@ -2208,7 +2203,7 @@ export class Project extends Scene {
       canvas.addEventListener("mousedown", (e) => {
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
-        this.my_mouse_down(e, mouse_position(e), context, program_state, t);
+        this.my_mouse_down(e, mouse_position(e), context, program_state);
       });
     }
 
@@ -2283,7 +2278,7 @@ export class Project extends Scene {
     if (this.display_timer < 0) {
       this.display_timer = 0;
     }
-    console.log(this.display_timer);
+    // console.log(this.display_timer);
 
     updateBar(this.points, this.accuracy, this.display_timer);
 
