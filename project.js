@@ -1369,38 +1369,44 @@ export class Project extends Scene {
     }
     return false;
   }
+    
+            
+    // Mouse Picking 
+    my_mouse_down(e, pos, context, program_state, t) {
+        // Putting sounds here makes it faster? 
+        // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
+        // let heavy_shot = new Audio('assets/sounds/gun.mp3');
+        // let laser = new Audio('assets/sounds/laser.mp3');
+        // let water_drop = new Audio('assets/sounds/bloop.mp3');
+        // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+        // let shatter = new Audio('assets/sounds/shatter.mp3');
+        // let first_hit = new Audio('assets/sounds/first_kill.mp3');
+        // let second_hit = new Audio('assets/sounds/second_kill.mp3');
+        // let third_hit = new Audio('assets/sounds/third_kill.mp3');
+        // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-  // Mouse Picking
-  my_mouse_down(e, pos, context, program_state, t) {
-    // Putting sounds here makes it faster?
-    // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
-    // let heavy_shot = new Audio('assets/sounds/gun.mp3');
-    // let laser = new Audio('assets/sounds/laser.mp3');
-    // let water_drop = new Audio('assets/sounds/bloop.mp3');
-    // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
-    // let shatter = new Audio('assets/sounds/shatter.mp3');
-    // let first_hit = new Audio('assets/sounds/first_kill.mp3');
-    // let second_hit = new Audio('assets/sounds/second_kill.mp3');
-    // let third_hit = new Audio('assets/sounds/third_kill.mp3');
-    // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
+        if (this.iter <= 3*60){
+            return;
+        }
 
-    let missed = true;
+        if (this.game_end){
+            return;
+        }
 
-    let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
-    let pos_ndc_far = vec4(pos[0], pos[1], 1.0, 1.0);
-    let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
-    let P = program_state.projection_transform;
-    let V = program_state.camera_inverse;
-    let pos_world_near = Mat4.inverse(P.times(V)).times(pos_ndc_near);
-    let pos_world_far = Mat4.inverse(P.times(V)).times(pos_ndc_far);
-    let center_world_near = Mat4.inverse(P.times(V)).times(center_ndc_near);
-    pos_world_near.scale_by(1 / pos_world_near[3]);
-    pos_world_far.scale_by(1 / pos_world_far[3]);
-    center_world_near.scale_by(1 / center_world_near[3]);
+        let missed = true;
 
-    /* To determine if the mouse click hit any object
-           just calculate the distance between the x and y coordinates of the 
-        */
+        let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
+        let pos_ndc_far  = vec4(pos[0], pos[1],  1.0, 1.0);
+        let center_ndc_near = vec4(0.0, 0.0, -1.0, 1.0);
+        let P = program_state.projection_transform;
+        let V = program_state.camera_inverse;
+        let pos_world_near = Mat4.inverse(P.times(V)).times(pos_ndc_near);
+        let pos_world_far  = Mat4.inverse(P.times(V)).times(pos_ndc_far);
+        let center_world_near  = Mat4.inverse(P.times(V)).times(center_ndc_near);
+        pos_world_near.scale_by(1 / pos_world_near[3]);
+        pos_world_far.scale_by(1 / pos_world_far[3]);
+        center_world_near.scale_by(1 / center_world_near[3]);
+      
     // gun_with_ammo.play();
     // quite_shot.play();
     // laser.play();
