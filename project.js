@@ -205,6 +205,11 @@ export class Project extends Scene {
                 ambient: 0.8,
                 texture: new Texture("assets/background/wood-plank.jpg")
             }),
+            warning_sign: new Material(new defs.Textured_Phong(), {
+                color: hex_color("000000"),
+                ambient: 1, 
+                texture: new Texture("assets/background/warning-sign.png")
+            }),
 
             // spike materials
             spike: new Material(new defs.Phong_Shader(),
@@ -614,14 +619,24 @@ export class Project extends Scene {
 
         let building_3_transform = Mat4.identity();
         building_3_transform = building_3_transform.times(Mat4.scale(2, 4, 1))
-                                                   .times(Mat4.translation(-5.5, -0, -12.5))
-                                                   .times(Mat4.rotation(Math.PI/180 * 10, 0, 1, 0));
+                                                   .times(Mat4.translation(-5, -0, -12.5))
+                                                   .times(Mat4.rotation(Math.PI/180 * 0, 0, 1, 0));
         this.shapes.cube.draw(context, program_state, building_3_transform, this.materials.wall_2_texture);
 
         let floor_2_transform = Mat4.identity();
         floor_2_transform = floor_2_transform.times(Mat4.scale(3, 0.1, 4))
                                              .times(Mat4.translation(-3.5, -40.5, -2.));
         this.shapes.cube.draw(context, program_state, floor_2_transform, this.materials.outside_floor_texture);
+
+        // Warning sign
+        let warning_sign_1_transform = Mat4.identity();
+        warning_sign_1_transform = warning_sign_1_transform.times(Mat4.scale(1, 0.7, 0.5))
+                                                           .times(Mat4.translation(-10, -1, -22));
+        this.shapes.square.draw(context, program_state, warning_sign_1_transform, this.materials.warning_sign);
+
+        let warning_sign_stick_transform = Mat4.identity();
+        warning_sign_stick_transform = warning_sign_stick_transform.times(Mat4.scale(1, 3, 1));
+       // this.shapes.cube.draw(context, program_state, warning_sign_stick_transform, this.materials.wood_plank);
 
     }
 
