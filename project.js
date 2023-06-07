@@ -511,8 +511,13 @@ export class Project extends Scene {
 
     // Use a constant offset value to solve start time issue (very useful apparently!)
     this.iter = 0;
+
+    // to be ran once
+    this.init = false;
+
     // pregame time offset in number of frames (3 seconds * 60 frames)
     this.frames_offset = 3 * 60;
+
 
     // determine whether we should render certain models
     this.game_end = false;
@@ -1677,7 +1682,11 @@ export class Project extends Scene {
     // let third_hit = new Audio('assets/sounds/third_kill.mp3');
     // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-    if (this.iter <= this.frames_offset) {
+    // if (this.iter <= this.frames_offset) {
+    //   return;
+    // }
+
+    if (gameStarted == false){
       return;
     }
 
@@ -2582,11 +2591,12 @@ export class Project extends Scene {
       dt = program_state.animation_delta_time / 1000;
 
     // allows for relative start time of the game
-    if (this.iter <= 3 * 60) {
+    if (gameStarted && !this.init) {
       // modify here to stall timer and spike
       this.t_diff = t;
+      this.init = true;
       // console.log(t);
-      // console.log(this.t_diff);
+      console.log(this.t_diff);
     }
     this.iter++;
 
