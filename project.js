@@ -46,38 +46,89 @@ const { Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere } =
 }
 
 class Spike extends Shape {
-    constructor() {
-        super("position", "normal",);
-        // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
-        this.arrays.position = Vector3.cast(
-            [0, 0, 1], [Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 0, 0], 
-            [0, 1/2, 1], [Math.sqrt(1/3), 1/2, 0], [-Math.sqrt(1/3), 1/2, 0],
-            [Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 0, 0], [Math.sqrt(1/3), 1/2, 0],
-            [Math.sqrt(1/3), 1/2, 0], [-Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 1/2, 0],
-            [-Math.sqrt(1/3), 0, 0], [0, 0, 1], [0, 1/2, 1],
-            [-Math.sqrt(1/3), 0, 0], [-Math.sqrt(1/3), 1/2, 0], [0, 1/2, 1],
-            [Math.sqrt(1/3), 0, 0], [0, 0, 1], [0, 1/2, 1],
-            [Math.sqrt(1/3), 0, 0], [Math.sqrt(1/3), 1/2, 0], [0, 1/2, 1]);
-        this.arrays.normal = Vector3.cast(
-            [0, -1, 0], [0, -1, 0], [0, -1, 0],
-            [0, 1, 0], [0, 1, 0], [0, 1, 0],
-            [0, 0, -1], [0, 0, -1], [0, 0, -1],
-            [0, 0, -1], [0, 0, -1], [0, 0, -1],
-            [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2],
-            [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2], [-(3/2)*Math.sqrt(1/3), 0, 1/2],
-            [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2],
-            [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2], [(3/2)*Math.sqrt(1/3), 0, 1/2]);
-        // Arrange the vertices into a square shape in texture space too:
-        this.indices.push(0, 1, 2, 
-                          3, 4, 5,
-                          6, 7, 8,
-                          9, 10, 11,
-                          12, 13, 14,
-                          15, 16, 17,
-                          18, 19, 20,
-                          21, 22, 23
-                          );
-    }
+  constructor() {
+    super("position", "normal");
+    // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
+    this.arrays.position = Vector3.cast(
+      [0, 0, 1],
+      [Math.sqrt(1 / 3), 0, 0],
+      [-Math.sqrt(1 / 3), 0, 0],
+      [0, 1 / 2, 1],
+      [Math.sqrt(1 / 3), 1 / 2, 0],
+      [-Math.sqrt(1 / 3), 1 / 2, 0],
+      [Math.sqrt(1 / 3), 0, 0],
+      [-Math.sqrt(1 / 3), 0, 0],
+      [Math.sqrt(1 / 3), 1 / 2, 0],
+      [Math.sqrt(1 / 3), 1 / 2, 0],
+      [-Math.sqrt(1 / 3), 0, 0],
+      [-Math.sqrt(1 / 3), 1 / 2, 0],
+      [-Math.sqrt(1 / 3), 0, 0],
+      [0, 0, 1],
+      [0, 1 / 2, 1],
+      [-Math.sqrt(1 / 3), 0, 0],
+      [-Math.sqrt(1 / 3), 1 / 2, 0],
+      [0, 1 / 2, 1],
+      [Math.sqrt(1 / 3), 0, 0],
+      [0, 0, 1],
+      [0, 1 / 2, 1],
+      [Math.sqrt(1 / 3), 0, 0],
+      [Math.sqrt(1 / 3), 1 / 2, 0],
+      [0, 1 / 2, 1]
+    );
+    this.arrays.normal = Vector3.cast(
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [-(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2],
+      [(3 / 2) * Math.sqrt(1 / 3), 0, 1 / 2]
+    );
+    // Arrange the vertices into a square shape in texture space too:
+    this.indices.push(
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    );
+  }
 }
 
 export class Project extends Scene {
@@ -136,6 +187,10 @@ export class Project extends Scene {
       bullet_capped_cylinder: new defs.Capped_Cylinder(5, 30, [
         [0.34, 0.66],
         [0, 1],
+      ]),
+      window_cylinder: new defs.Cylindrical_Tube(5, 4, [
+        [0.34, 0.66],
+        [0, 1]
       ]),
       cylinder: new defs.Cylindrical_Tube(30, 30, [
         [0.34, 0.66],
@@ -250,6 +305,16 @@ export class Project extends Scene {
         ambient: 1,
         texture: new Texture("assets/background/shooting.png"),
       }),
+      wood_plank: new Material(new defs.Textured_Phong(), {
+        color: hex_color("000000"),
+        ambient: 0.8,
+        texture: new Texture("assets/background/wood-plank.jpg"),
+    }),
+    warning_sign: new Material(new defs.Textured_Phong(), {
+        color: hex_color("000000"),
+        ambient: 1, 
+        texture: new Texture("assets/background/warning-sign.png"),
+    }),
 
       // spike materials
       spike: new Material(new defs.Phong_Shader(), {
@@ -418,9 +483,10 @@ export class Project extends Scene {
   }
 
   draw_walls(context, program_state) {
+    /*
     let left_wall_transform = Mat4.identity();
     left_wall_transform = left_wall_transform
-      .times(Mat4.translation(-18, 0, 0))
+    .times(Mat4.translation(-18, 0, 0))
       .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(-1.5, 0, 1, 0));
     this.shapes.cube.draw(
@@ -429,7 +495,57 @@ export class Project extends Scene {
       left_wall_transform,
       this.materials.wall_texture
     );
+    */
+    
+    let left_wall_1_transform = Mat4.identity();
+    left_wall_1_transform = left_wall_1_transform
+       .times(Mat4.translation(-18, 0, -16))
+       .times(Mat4.scale(0.2, 10, 4))
+       .times(Mat4.rotation(-1.5, 0, 1, 0));
+    
+    this.shapes.cube.draw(
+        context,
+        program_state,
+        left_wall_1_transform,
+        this.materials.wall_texture
+    );
 
+    let left_wall_2_transform = Mat4.identity();
+    left_wall_2_transform = left_wall_2_transform
+       .times(Mat4.translation(-18, 0, 6))
+       .times(Mat4.scale(0.2, 10, 12))
+       .times(Mat4.rotation(-1.5, 0, 1, 0));
+    this.shapes.cube.draw(
+        context,
+        program_state,
+        left_wall_2_transform,
+        this.materials.wall_texture
+    );
+    
+    let left_wall_3_transform = left_wall_1_transform;
+    left_wall_3_transform = left_wall_3_transform
+        .times(Mat4.rotation(1.57, 0, 1, 0))
+        .times(Mat4.translation(0, -0.6, 2))
+        .times(Mat4.scale(1, 0.5, 6.5))
+        .times(Mat4.rotation(-1.57, 0, 1, 0)
+        );
+    this.shapes.cube.draw(
+        context, 
+        program_state, 
+        left_wall_3_transform, 
+        this.materials.wall_texture
+    );
+
+    let left_wall_4_transform = left_wall_3_transform
+        .times(Mat4.scale(1, 0.4, 1))
+        .times(Mat4.translation(0, 7, 0));
+    this.shapes.cube.draw(
+        context,
+        program_state,
+        left_wall_4_transform,
+        this.materials.wall_texture
+    );
+    
     let right_wall_transform = Mat4.identity();
 
     right_wall_transform = right_wall_transform
@@ -741,9 +857,9 @@ export class Project extends Scene {
     // Wall decor - shooting guide
     let shooting_guide_trans = Mat4.identity();
     shooting_guide_trans = shooting_guide_trans
-      .times(Mat4.translation(17.5, 0, -10))
-      .times(Mat4.scale(4, 2.5, 1))
-      .times(Mat4.rotation(1.55, 0, 1, 0));
+        .times(Mat4.translation(17.5, 0, -10))
+        .times(Mat4.scale(4, 2.5, 1))
+        .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
       program_state,
@@ -752,14 +868,44 @@ export class Project extends Scene {
     );
     let shooting_guide2_trans = Mat4.identity();
     shooting_guide2_trans = shooting_guide2_trans
-      .times(Mat4.translation(17.5, 0, -6))
-      .times(Mat4.scale(4, 2.5, 1))
-      .times(Mat4.rotation(1.55, 0, 1, 0));
+        .times(Mat4.translation(17.5, 0, -6))
+        .times(Mat4.scale(4, 2.5, 1))
+        .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
       program_state,
       shooting_guide2_trans,
       this.materials.shooting_guide
+    );
+    /*
+    // Window
+    let window_transfrom = Mat4.identity();
+    window_transfrom = window_transfrom
+        .times(Mat4.scale(1, 4.92, 3))
+        .times(Mat4.translation(-18, .51, -3.2))
+        .times(Mat4.rotation(Math.PI/180 * 90, 0, 1, 0))
+        .times(Mat4.rotation(Math.PI/180 * 45, 0, 0, 1))
+        .times(Mat4.rotation(Math.PI/180 * 1, 1, 0, 0));
+    this.shapes.window_cylinder.draw(
+        context,
+        program_state,
+        window_transfrom,
+        this.materials.bullet
+    );
+    */
+
+    let window_transform = Mat4.identity();
+    window_transform = window_transform
+        .times(Mat4.translation(-18, 2.5, -9.5))
+        .times(Mat4.scale(1, 4.9, 3.1))
+        .times(Mat4.rotation(Math.PI/180 * 90, 0, 1, 0))
+        .times(Mat4.rotation(Math.PI/180 * 45, 0, 0, 1))
+        .times(Mat4.rotation(Math.PI/180 * 1, 1, 0, 0));
+    this.shapes.window_cylinder.draw(
+        context,
+        program_state,
+        window_transform,
+        this.materials.bullet
     );
   }
 
