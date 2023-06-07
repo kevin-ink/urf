@@ -6,6 +6,9 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 export var DEBUG = false;
 export var gameStarted = false;
 
+// export this to be used to play audio files
+export const audioFiles = {};
+
 //
 // SETUP
 //
@@ -35,9 +38,6 @@ export let config = {
   scatter: 1,
   timer: 30,
 };
-
-// export this to be used to play audio files
-export const audioFiles = {};
 
 const options = {
   difficulty: ["easy", "medium", "hard"],
