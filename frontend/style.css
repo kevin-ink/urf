@@ -69,6 +69,7 @@ body {
 h1 {
     font-size: 4rem;
     width: 50vw;
+    cursor: default;
     justify-content: center;
     margin-left: 12vw;
     font-family: "Roboto", sans-serif;
@@ -181,7 +182,7 @@ button#start-btn:hover {
 
 button.close-btn {
     width: 3rem;
-    height: 6rem;
+    height: 3.5rem;
     margin-left: 90%;
     font-size: 3rem;
     margin-bottom: 0;
@@ -243,6 +244,7 @@ button.close-btn:hover {
     font-weight: bold;
     filter: drop-shadow(0 0 0.2rem #000000);
     font-size: 2rem;
+    cursor: default;
 }
 
 #time {
@@ -295,6 +297,12 @@ button.close-btn:hover {
     line-height: 200px;
     margin-top: -100px;
     text-align: center;
+    cursor: default;
+}
+
+.hide {
+    position: absolute;
+	left: -9999px;
 }
 
 /*
