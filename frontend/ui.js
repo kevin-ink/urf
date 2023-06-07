@@ -16,16 +16,16 @@ const canvas = document.getElementById("main-canvas");
 const topBar = document.getElementById("top-bar");
 const canvas_element = document.querySelector("#main-canvas");
 const countText = document.createElement("div");
-const audioFiles = {};
 let canvas_widget; let origTransform; 
 let count = 3;
-
 
 //
 //   LOAD AUDIO FILES
 //
 
-preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", .15);
+preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", .25);
+preloadAudio("assets/sounds/button-124476-[AudioTrimmer.com].mp3", "buttonSound", .4);
+preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
 
 // export this for use in game canvas
 export let config = {
@@ -35,6 +35,9 @@ export let config = {
   scatter: 1,
   timer: 30,
 };
+
+// export this to be used to play audio files
+export const audioFiles = {};
 
 const options = {
   difficulty: ["easy", "medium", "hard"],
@@ -155,12 +158,12 @@ function expand(id) {
       : document.getElementById("htp-popup");
   popup.classList.add("scale-in-ver-top");
   popup.addEventListener("animationend", () => {
-    const p = popup.querySelector("p");
+    const p = popup.querySelectorAll("p");
     const d = popup.querySelectorAll("div");
-    if (p) {
-      p.style.visibility = "visible";
-      p.classList.add("animate__animated", "animate__fadeIn");
-    }
+    p.forEach((text) => {
+      text.classList.add("animate__animated", "animate__fadeIn");
+      text.style.visibility = "visible";
+    });
     if (d) {
       d.forEach((div) => {
         div.style.visibility = "visible";
@@ -179,6 +182,7 @@ function rearrange(e) {
 
   // button is options or how to play
   if (btn.id === "opt-btn" || btn.id === "htp-btn") {
+    audioFiles["buttonSound"].play();
     origTransform = btn.style.transform;
     xTranslate = btn.id === "opt-btn" ? 29 : -29;
     yTranslate = -30;
@@ -218,11 +222,12 @@ function rearrange(e) {
   } // button is a close button
   else {
     const popup = btn.parentNode;
-    const p = popup.querySelector("p");
+    const p = popup.querySelectorAll("p");
     const d = popup.querySelectorAll("div");
-    if (p) {
-      p.style.visibility = "hidden";
-    }
+    p.forEach((text) => {
+      text.style.visibility = "hidden";
+      text.classList.remove("animate__animated", "animate__fadeIn");
+    });
     if (d) {
       d.forEach((div) => {
         div.style.visibility = "hidden";
@@ -325,6 +330,7 @@ function startGame() {
   topBar.classList.add("puff-in-center");
   const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
   canvas_widget = new Canvas_Widget(canvas_element, scenes);
+  audioFiles["startBtnSound"].play();
   countdown();
 }
 
