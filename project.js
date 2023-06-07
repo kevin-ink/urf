@@ -469,7 +469,7 @@ export class Project extends Scene {
     } else if (this.difficulty == "medium") {
       this.target_r = 1.25;
     } else {
-      this.target_r = 1;
+      this.target_r = 0.75;
     }
 
     // Number of Targets
@@ -481,7 +481,7 @@ export class Project extends Scene {
     if (this.strafe) {
       this.move_factor = 2;
       if (this.target_num == 5) {
-        if (this.difficulty == "medium") this.move_factor = 1.25;
+        if (this.difficulty == "medium") this.move_factor = 1;
         else if (this.difficulty == "easy") {
           this.move_factor = 0.5;
         }
@@ -786,7 +786,7 @@ export class Project extends Scene {
 
     let crate4_trans = Mat4.identity();
     crate4_trans = crate4_trans
-      .times(Mat4.translation(-14, -3.5, -6))
+      .times(Mat4.translation(-15, -3.5, -8))
       .times(Mat4.scale(1.4, 1.4, 1))
       .times(Mat4.rotation(-0.9, 0, 1, 0));
     this.shapes.cube.draw(
@@ -989,9 +989,10 @@ export class Project extends Scene {
     // Wall decor - shooting guide
     let shooting_guide_trans = Mat4.identity();
     shooting_guide_trans = shooting_guide_trans
-      .times(Mat4.translation(17.5, 0, -10))
-      .times(Mat4.scale(4, 2.5, 1))
-      .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 1, -10))
+      .times(Mat4.rotation(1.55, 0, 1, 0))
+      .times(Mat4.scale(2.5, 2.5, 1))
+      ;
     this.shapes.square.draw(
       context,
       program_state,
@@ -1000,9 +1001,9 @@ export class Project extends Scene {
     );
     let shooting_guide2_trans = Mat4.identity();
     shooting_guide2_trans = shooting_guide2_trans
-      .times(Mat4.translation(17.5, 0, -6))
-      .times(Mat4.scale(4, 2.5, 1))
-      .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 1, -6))
+      .times(Mat4.rotation(1.55, 0, 1, 0))
+      .times(Mat4.scale(2.5, 2.5, 1));
     this.shapes.square.draw(
       context,
       program_state,
@@ -1212,9 +1213,9 @@ export class Project extends Scene {
   generate_location() {
     let size_factor = 0;
     if (this.target_r == 1.5) {
-      size_factor = 1;
+      size_factor = 2;
     } else if (this.target_r == 1.25) {
-      size_factor = 0.5;
+      size_factor = 1;
     }
     let strafe_speed = 0;
 
@@ -1227,9 +1228,7 @@ export class Project extends Scene {
       yMax = 6 - size_factor - this.move_factor;
 
     // Generate random coordinates
-    let ranX,
-      ranY,
-      ranZ = Math.random() * 10 + -8;
+    let ranX, ranY, ranZ = Math.random() * (10-size_factor) + (-8+size_factor);
     do {
       ranX = Math.random() * (xMax - xMin) + xMin;
       ranY = Math.random() * (yMax - yMin) + yMin;
@@ -2274,7 +2273,7 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false || this.iter <= 3*60 + 20){ // added some padding so there is no time mismatch that causes NaN
+    if (gameStarted == false || this.iter <= 3*60 + 15){ // added some padding so there is no time mismatch that causes NaN
       spike_t = 0;
     }
     else {
