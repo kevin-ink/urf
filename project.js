@@ -2700,7 +2700,7 @@ export class Project extends Scene {
     this.draw_floor(context, program_state);
     this.draw_walls(context, program_state);
     this.draw_props(context, program_state);
-   // this.draw_pillars(context, program_state);
+    this.draw_pillars(context, program_state);
 
     // game interactives
 
