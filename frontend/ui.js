@@ -3,7 +3,8 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-export var DEBUG = true;
+export var DEBUG = false;
+export var gameStarted = false;
 
 //
 // SETUP
@@ -14,7 +15,17 @@ const main = document.getElementById("main");
 const canvas = document.getElementById("main-canvas");
 const topBar = document.getElementById("top-bar");
 const canvas_element = document.querySelector("#main-canvas");
-let canvas_widget; let origTransform; let gameStarted = false;
+const countText = document.createElement("div");
+const audioFiles = {};
+let canvas_widget; let origTransform; 
+let count = 3;
+
+
+//
+//   LOAD AUDIO FILES
+//
+
+preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", .15);
 
 // export this for use in game canvas
 export let config = {
@@ -52,6 +63,11 @@ if (h1) {
 main.classList.add("animated");
 h1.classList.add("animated");
 topBar.classList.add("animated");
+
+// for countdown
+countText.style.display = "none";
+document.body.appendChild(countText);
+countText.classList.add("countdown", "scale-in-center");
 
 // get all buttons and make them clickable
 const btns = document.querySelectorAll("button");
@@ -93,6 +109,13 @@ if (DEBUG)
 //
 // FUNCTIONS
 //
+
+export function preloadAudio(url, key, volume) {
+  const audio = new Audio();
+  audio.volume = volume;
+  audio.src = url;
+  audioFiles[key] = audio;
+}
 
 export function updateBar(points, accuracy, time)
 {
@@ -266,11 +289,28 @@ function rearrange(e) {
   }
 }
 
-function playSound(e) {
-  // if (!e.target.classList.contains("close-btn")) {
-  //     let audio = new Audio("../assets/sounds/button-pressed.mp3");
-  //     audio.play();
-  // }
+function countdown()
+{
+  const countdownInterval = setInterval(() => {
+    if (count == 3)
+    {
+      audioFiles["countdownSound"].play();
+    }
+    countText.textContent = count.toString();
+    countText.style.display = "block";
+    countText.addEventListener("animationend", () => {
+      countText.style.display = "none";
+    });
+    count--;
+    if (count < 0) {
+      clearInterval(countdownInterval); // Stop the interval when count goes below 0
+      document.body.removeChild(countText); // Remove the countText element from the DOM
+      let div = document.getElementById("time");
+      div.classList.add("animate__bounceIn", "animate__animated");
+      div.style.visibility = "visible";
+      gameStarted = true;
+    }
+  }, 1000); // Interval of 1 second (1000 milliseconds)
 }
 
 function startGame() {
@@ -283,13 +323,13 @@ function startGame() {
   canvas.classList.add("puff-in-center");
   topBar.style.display = "block";
   topBar.classList.add("puff-in-center");
-  gameStarted = true;
   const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
   canvas_widget = new Canvas_Widget(canvas_element, scenes);
+  countdown();
 }
 
 window.addEventListener('resize', () => {
-  if (gameStarted)
+  if (canvas_element.style.display == "block")
   {
     canvas_widget.webgl_manager.set_size();
   }

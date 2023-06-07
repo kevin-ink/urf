@@ -241,12 +241,12 @@ button.close-btn:hover {
     font-family: "Roboto", sans-serif;
     text-align: center;
     font-weight: bold;
-    filter: drop-shadow(0 0 0.2rem #021b79);
+    filter: drop-shadow(0 0 0.2rem #000000);
     font-size: 2rem;
 }
 
 #time {
-    background: linear-gradient(var(--angle), #aa4b6b, #3b8d99);
+    background: linear-gradient(var(--angle), #aa4b6b, #ffffff,#3b8d99);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -254,7 +254,8 @@ button.close-btn:hover {
 }
 
 #accuracy {
-    background: linear-gradient(var(--angle), #0575e6, #021b79);
+    background: linear-gradient(var(--angle), #ece9e6, #ffffff);
+    /*linear-gradient(var(--angle), #0575e6, #021b79)*/
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -265,10 +266,35 @@ button.close-btn:hover {
     margin: 0;
     padding: 0;
     font-size: 1rem;
-    color: grey;
     align-items: end;
     display: inline-block;
     filter: none;
+}
+
+#points {
+    background: linear-gradient(var(--angle), #ece9e6, #ffffff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.countdown {
+    background: linear-gradient(var(--angle), #aa4b6b, #ffffff,#3b8d99);
+    -webkit-background-clip: text;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    transform: translate(-50%, -50%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 12rem;
+    filter: drop-shadow(0 0 0.2rem #000000);
+    line-height: 200px;
+    margin-top: -100px;
+    text-align: center;
 }
 
 /*
@@ -279,6 +305,8 @@ button.close-btn:hover {
     -webkit-animation: scale-in-ver-top 0.5s cubic-bezier(.25, .46, .45, .94) 0.5s both;
     animation: scale-in-ver-top 0.5s cubic-bezier(.25, .46, .45, .94) 0.5s both
 }
+
+.scale-in-center{-webkit-animation:scale-in-center .5s cubic-bezier(.25,.46,.45,.94) both;animation:scale-in-center .5s cubic-bezier(.25,.46,.45,.94) both}
 
 .puff-out-center{-webkit-animation:puff-out-center 1s cubic-bezier(.165,.84,.44,1.000) both;animation:puff-out-center 1s cubic-bezier(.165,.84,.44,1.000) both}
 
@@ -350,3 +378,7 @@ button.close-btn:hover {
 @-webkit-keyframes puff-in-center{0%{-webkit-transform:scale(2);transform:scale(2);-webkit-filter:blur(4px);filter:blur(4px);opacity:0}100%{-webkit-transform:scale(1);transform:scale(1);-webkit-filter:blur(0);filter:blur(0);opacity:1}}@keyframes puff-in-center{0%{-webkit-transform:scale(2);transform:scale(2);-webkit-filter:blur(4px);filter:blur(4px);opacity:0}100%{-webkit-transform:scale(1);transform:scale(1);-webkit-filter:blur(0);filter:blur(0);opacity:1}}
 
 @-webkit-keyframes scale-out-ver-top{0%{-webkit-transform:scaleY(1);transform:scaleY(1);-webkit-transform-origin:100% 0;transform-origin:100% 0;opacity:1}100%{-webkit-transform:scaleY(0);transform:scaleY(0);-webkit-transform-origin:100% 0;transform-origin:100% 0;opacity:1}}@keyframes scale-out-ver-top{0%{-webkit-transform:scaleY(1);transform:scaleY(1);-webkit-transform-origin:100% 0;transform-origin:100% 0;opacity:1}100%{-webkit-transform:scaleY(0);transform:scaleY(0);-webkit-transform-origin:100% 0;transform-origin:100% 0;opacity:1}}
+
+@-webkit-keyframes tracking-in-contract-bck{0%{letter-spacing:1em;-webkit-transform:translateZ(400px);transform:translateZ(400px);opacity:0}40%{opacity:.6}100%{-webkit-transform:translateZ(0);transform:translateZ(0);opacity:1}}@keyframes tracking-in-contract-bck{0%{letter-spacing:1em;-webkit-transform:translateZ(400px);transform:translateZ(400px);opacity:0}40%{opacity:.6}100%{-webkit-transform:translateZ(0);transform:translateZ(0);opacity:1}}
+
+@-webkit-keyframes scale-in-center{0%{-webkit-transform:scale(0);transform:scale(0);opacity:1}100%{-webkit-transform:scale(1);transform:scale(1);opacity:1}}@keyframes scale-in-center{0%{-webkit-transform:scale(0);transform:scale(0);opacity:1}100%{-webkit-transform:scale(1);transform:scale(1);opacity:1}}

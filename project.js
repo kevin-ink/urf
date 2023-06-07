@@ -1,5 +1,5 @@
 import { defs, tiny } from "./examples/common.js";
-import { config, updateBar } from "./frontend/ui.js";
+import { config, updateBar, gameStarted } from "./frontend/ui.js";
 
 const {
   Vector,
@@ -205,7 +205,7 @@ export class Project extends Scene {
       torus2: new defs.Torus(3, 15),
       sphere: new defs.Subdivision_Sphere(4),
       circle: new defs.Regular_2D_Polygon(1, 15),
-
+      floor: new defs.Cube(),
       triangle: new defs.Triangle(),
       windmill: new Windmill(),
       square: new defs.Square(),
@@ -234,7 +234,6 @@ export class Project extends Scene {
         [0.34, 0.66],
         [0, 1],
       ]),
-
       // shapes for environment
       square: new defs.Square(),
       cube: new defs.Cube(),
@@ -270,7 +269,17 @@ export class Project extends Scene {
         [0, 1],
       ]),
       bot_tri: new RectPyramid(),
+
+      // wall
+      wall: new defs.Cube(),
     };
+
+    this.shapes.wall.arrays.texture_coord.forEach(
+      (v, i, l) => {
+          v[0] = v[0] * 2;
+          v[1] = v[1] * 2;
+      } 
+  );
 
     // *** Materials
     this.materials = {
@@ -329,39 +338,39 @@ export class Project extends Scene {
         specularity: 0.5,
         // texture: new Texture("assets/background/sky.jpg")
       }),
-      wall_texture: new Material(new defs.Phong_Shader(), {
-        color: hex_color("#dcb594"),
-        ambient: 0.5,
-        diffusivity: 0.5,
-        specularity: 0.5,
-        // texture: new Texture("assets/background/wall-texture-color.png")
+      wall_texture: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 1,
+        specularity: .8,
+        diffuse: .8,
+        texture: new Texture("assets/background/Dirty_Concrete.png", "LINEAR")
       }),
-      floor_texture: new Material(new defs.Phong_Shader(), {
-        color: hex_color("#b7a496"),
-        ambient: 0.5,
-        diffusivity: 0.5,
-        specularity: 0.5,
-        // texture: new Texture("assets/background/wall-texture-color.png")
+      floor_texture: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: .8,
+        specularity: .5,
+        diffuse: .5,
+        texture: new Texture("assets/background/Dirty_Concrete.png",  "LINEAR")
       }),
       crates_texture: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/crate.png"),
+        texture: new Texture("assets/background/crate.png",  "LINEAR"),
       }),
       reverse_crate: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/reverse-crate.png"),
+        texture: new Texture("assets/background/reverse-crate.png" ,  "LINEAR"),
       }),
       locked_box: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/locked-box.png"),
+        texture: new Texture("assets/background/locked-box.png",  "LINEAR"),
       }),
       shooting_guide: new Material(new defs.Textured_Phong(), {
         color: hex_color("000000"),
         ambient: 1,
-        texture: new Texture("assets/background/shooting.png"),
+        texture: new Texture("assets/background/shooting.png", "LINEAR"),
       }),
 
       // spike materials
@@ -403,7 +412,7 @@ export class Project extends Scene {
         diffusivity: 0.5,
         specularity: 0.5,
         color: hex_color("#000000"),
-        texture: new Texture("assets/background/wooden.jpeg"),
+        texture: new Texture("assets/background/wooden.jpeg", "LINEAR"),
       }),
     };
 
@@ -518,7 +527,7 @@ export class Project extends Scene {
     floor_transform = floor_transform
       .times(Mat4.translation(0, -this.view_dist / 4, 0)) // floor is at y = -5
       .times(Mat4.scale(20, 0.2, 20));
-    this.shapes.cube.draw(
+    this.shapes.floor.draw(
       context,
       program_state,
       floor_transform,
@@ -532,7 +541,7 @@ export class Project extends Scene {
       .times(Mat4.translation(-18, 0, 0))
       .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(-1.5, 0, 1, 0));
-    this.shapes.cube.draw(
+    this.shapes.wall.draw(
       context,
       program_state,
       left_wall_transform,
@@ -545,7 +554,7 @@ export class Project extends Scene {
       .times(Mat4.translation(18, 0, 0))
       .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(1.5, 0, 1, 0));
-    this.shapes.cube.draw(
+    this.shapes.wall.draw(
       context,
       program_state,
       right_wall_transform,
@@ -556,7 +565,7 @@ export class Project extends Scene {
     back_wall_transform = back_wall_transform
       .times(Mat4.translation(0, 0, -18))
       .times(Mat4.scale(20, 10, 0.2));
-    this.shapes.cube.draw(
+    this.shapes.wall.draw(
       context,
       program_state,
       back_wall_transform,
@@ -712,8 +721,8 @@ export class Project extends Scene {
         */
     let standing_block2_trans = Mat4.identity();
     standing_block2_trans = standing_block2_trans
-      .times(Mat4.translation(16.5, -3.5, -16))
-      .times(Mat4.scale(3, 3, 3));
+      .times(Mat4.translation(15, -3, -16))
+      .times(Mat4.scale(2.5, 2.5, 2.5));
     this.shapes.cube.draw(
       context,
       program_state,
