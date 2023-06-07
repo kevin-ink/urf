@@ -10,7 +10,7 @@ export var gameStarted = false;
 export const audioFiles = {};
 
 //
-// SETUP
+// DECLARATIONS
 //
 
 const h1 = document.getElementById("title");
@@ -19,16 +19,25 @@ const canvas = document.getElementById("main-canvas");
 const topBar = document.getElementById("top-bar");
 const canvas_element = document.querySelector("#main-canvas");
 const countText = document.createElement("div");
-let canvas_widget; let origTransform; 
+let canvas_widget;
+let origTransform;
 let count = 3;
 
 //
 //   LOAD AUDIO FILES
 //
 
-preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", .25);
-preloadAudio("assets/sounds/button-124476-[AudioTrimmer.com].mp3", "buttonSound", .4);
+preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", 0.25);
+preloadAudio(
+  "assets/sounds/button-124476-[AudioTrimmer.com].mp3",
+  "buttonSound",
+  0.4
+);
 preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
+
+//
+// SETUP
+//
 
 // export this for use in game canvas
 export let config = {
@@ -39,6 +48,7 @@ export let config = {
   timer: 30,
 };
 
+// edit this to include more options
 const options = {
   difficulty: ["easy", "medium", "hard"],
   strafe: [false, true],
@@ -94,8 +104,7 @@ if (btns.length !== 0) {
 // END OF SETUP
 //
 
-if (DEBUG)
-{
+if (DEBUG) {
   canvas.style.display = "block";
   main.style.display = "none";
   gameStarted = true;
@@ -120,13 +129,12 @@ export function preloadAudio(url, key, volume) {
   audioFiles[key] = audio;
 }
 
-export function updateBar(points, accuracy, time)
-{
+export function updateBar(points, accuracy, time) {
   let div = document.getElementById("points");
   div.innerHTML = `${points}<p>pts</p>`;
-  div = document.getElementById("accuracy");  
+  div = document.getElementById("accuracy");
   div.textContent = accuracy + "%";
-  div = document.getElementById("time");  
+  div = document.getElementById("time");
   div.textContent = time;
 }
 
@@ -147,7 +155,7 @@ function changeOpt(e) {
     newOpt = newOpt === false ? "OFF" : "ON";
   }
   p.textContent = newOpt;
-  console.log(config);
+  // console.log(config);
 }
 
 // expands menu for options and how to play
@@ -294,11 +302,9 @@ function rearrange(e) {
   }
 }
 
-function countdown()
-{
+function countdown() {
   const countdownInterval = setInterval(() => {
-    if (count == 3)
-    {
+    if (count == 3) {
       audioFiles["countdownSound"].play();
     }
     countText.textContent = count.toString();
@@ -334,9 +340,8 @@ function startGame() {
   countdown();
 }
 
-window.addEventListener('resize', () => {
-  if (canvas_element.style.display == "block")
-  {
+window.addEventListener("resize", () => {
+  if (canvas_element.style.display == "block") {
     canvas_widget.webgl_manager.set_size();
   }
 });
