@@ -1,5 +1,5 @@
 import { defs, tiny } from "./examples/common.js";
-import { config, updateBar, gameStarted, preloadAudio } from "./frontend/ui.js";
+import { config, updateBar, gameStarted, preloadAudio, audioFiles } from "./frontend/ui.js";
 
 const {
   Vector,
