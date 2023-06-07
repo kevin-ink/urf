@@ -1,5 +1,11 @@
 import { defs, tiny } from "./examples/common.js";
-import { config, updateBar, gameStarted, preloadAudio, audioFiles } from "./frontend/ui.js";
+import {
+  config,
+  updateBar,
+  gameStarted,
+  preloadAudio,
+  audioFiles,
+} from "./frontend/ui.js";
 
 const {
   Vector,
@@ -252,7 +258,7 @@ export class Project extends Scene {
       ]),
       window_cylinder: new defs.Cylindrical_Tube(5, 4, [
         [0.34, 0.66],
-        [0, 1]
+        [0, 1],
       ]),
       cylinder: new defs.Cylindrical_Tube(30, 30, [
         [0.34, 0.66],
@@ -278,12 +284,10 @@ export class Project extends Scene {
       wall: new defs.Cube(),
     };
 
-    this.shapes.wall.arrays.texture_coord.forEach(
-      (v, i, l) => {
-          v[0] = v[0] * 2;
-          v[1] = v[1] * 2;
-      } 
-  );
+    this.shapes.wall.arrays.texture_coord.forEach((v, i, l) => {
+      v[0] = v[0] * 2;
+      v[1] = v[1] * 2;
+    });
 
     // *** Materials
     this.materials = {
@@ -346,31 +350,31 @@ export class Project extends Scene {
       wall_texture: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 1,
-        specularity: .8,
-        diffuse: .8,
-        texture: new Texture("assets/background/Dirty_Concrete.png", "LINEAR")
+        specularity: 0.8,
+        diffuse: 0.8,
+        texture: new Texture("assets/background/Dirty_Concrete.png", "LINEAR"),
       }),
       floor_texture: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
-        ambient: .8,
-        specularity: .5,
-        diffuse: .5,
-        texture: new Texture("assets/background/Dirty_Concrete.png",  "LINEAR")
+        ambient: 0.8,
+        specularity: 0.5,
+        diffuse: 0.5,
+        texture: new Texture("assets/background/Dirty_Concrete.png", "LINEAR"),
       }),
       crates_texture: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/crate.png",  "LINEAR"),
+        texture: new Texture("assets/background/crate.png", "LINEAR"),
       }),
       reverse_crate: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/reverse-crate.png" ,  "LINEAR"),
+        texture: new Texture("assets/background/reverse-crate.png", "LINEAR"),
       }),
       locked_box: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/locked-box.png",  "LINEAR"),
+        texture: new Texture("assets/background/locked-box.png", "LINEAR"),
       }),
       shooting_guide: new Material(new defs.Textured_Phong(), {
         color: hex_color("000000"),
@@ -381,12 +385,12 @@ export class Project extends Scene {
         color: hex_color("000000"),
         ambient: 0.6,
         texture: new Texture("assets/background/wood-plank.jpg"),
-    }),
-    warning_sign: new Material(new defs.Textured_Phong(), {
+      }),
+      warning_sign: new Material(new defs.Textured_Phong(), {
         color: hex_color("000000"),
-        ambient: 1, 
+        ambient: 1,
         texture: new Texture("assets/background/warning-sign.png"),
-    }),
+      }),
 
       // spike materials
       spike: new Material(new defs.Phong_Shader(), {
@@ -414,14 +418,22 @@ export class Project extends Scene {
         diffusivity: 0.8,
         specularity: 0.4,
         color: hex_color("#4a4b4d"),
-        texture: new Texture("assets/background/target_dark_gray.jpg")
+        texture: new Texture("assets/background/target_dark_gray.jpg"),
       }),
       gray: new Material(new defs.Textured_Phong(), {
         ambient: 0.2,
         diffusivity: 0.8,
         specularity: 0.4,
         color: hex_color("#989a9c"),
-        texture: new Texture("assets/background/target_gray.jpg")
+        texture: new Texture("assets/background/target_gray.jpg"),
+      }),
+
+      // Currently use untextured shape 
+      untextured_gray: new Material(new defs.Phong_Shader(), {
+        ambient: 0.2,
+        diffusivity: 0.8,
+        specularity: 0.4,
+        color: hex_color("#989a9c"),
       }),
 
       wooden: new Material(new defs.Textured_Phong(), {
@@ -507,8 +519,13 @@ export class Project extends Scene {
 
     // Use a constant offset value to solve start time issue (very useful apparently!)
     this.iter = 0;
+
+    // to be ran once
+    this.init = false;
+
     // pregame time offset in number of frames (3 seconds * 60 frames)
     this.frames_offset = 3 * 60;
+
 
     // determine whether we should render certain models
     this.game_end = false;
@@ -566,56 +583,55 @@ export class Project extends Scene {
       this.materials.wall_texture
     );
     */
-    
+
     let left_wall_1_transform = Mat4.identity();
     left_wall_1_transform = left_wall_1_transform
-       .times(Mat4.translation(-18, 0, -16))
-       .times(Mat4.scale(0.2, 10, 4))
-       .times(Mat4.rotation(-1.5, 0, 1, 0));
-    
+      .times(Mat4.translation(-18, 0, -16))
+      .times(Mat4.scale(0.2, 10, 4))
+      .times(Mat4.rotation(-1.5, 0, 1, 0));
+
     this.shapes.cube.draw(
-        context,
-        program_state,
-        left_wall_1_transform,
-        this.materials.wall_texture
+      context,
+      program_state,
+      left_wall_1_transform,
+      this.materials.wall_texture
     );
 
     let left_wall_2_transform = Mat4.identity();
     left_wall_2_transform = left_wall_2_transform
-       .times(Mat4.translation(-18, 0, 6))
-       .times(Mat4.scale(0.2, 10, 12))
-       .times(Mat4.rotation(-1.5, 0, 1, 0));
+      .times(Mat4.translation(-18, 0, 6))
+      .times(Mat4.scale(0.2, 10, 12))
+      .times(Mat4.rotation(-1.5, 0, 1, 0));
     this.shapes.cube.draw(
-        context,
-        program_state,
-        left_wall_2_transform,
-        this.materials.wall_texture
+      context,
+      program_state,
+      left_wall_2_transform,
+      this.materials.wall_texture
     );
-    
+
     let left_wall_3_transform = left_wall_1_transform;
     left_wall_3_transform = left_wall_3_transform
-        .times(Mat4.rotation(1.57, 0, 1, 0))
-        .times(Mat4.translation(0, -0.6, 2))
-        .times(Mat4.scale(1, 0.5, 6.5))
-        .times(Mat4.rotation(-1.57, 0, 1, 0)
-        );
+      .times(Mat4.rotation(1.57, 0, 1, 0))
+      .times(Mat4.translation(0, -0.6, 2))
+      .times(Mat4.scale(1, 0.5, 6.5))
+      .times(Mat4.rotation(-1.57, 0, 1, 0));
     this.shapes.cube.draw(
-        context, 
-        program_state, 
-        left_wall_3_transform, 
-        this.materials.wall_texture
+      context,
+      program_state,
+      left_wall_3_transform,
+      this.materials.wall_texture
     );
 
     let left_wall_4_transform = left_wall_3_transform
-        .times(Mat4.scale(1, 0.4, 1))
-        .times(Mat4.translation(0, 7, 0));
+      .times(Mat4.scale(1, 0.4, 1))
+      .times(Mat4.translation(0, 7, 0));
     this.shapes.cube.draw(
-        context,
-        program_state,
-        left_wall_4_transform,
-        this.materials.wall_texture
+      context,
+      program_state,
+      left_wall_4_transform,
+      this.materials.wall_texture
     );
-    
+
     let right_wall_transform = Mat4.identity();
 
     right_wall_transform = right_wall_transform
@@ -665,7 +681,7 @@ export class Project extends Scene {
     // long into camera block
     let leftPillar_3_trans = Mat4.identity()
       .times(Mat4.translation(-12, 9.25, -17))
-      .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(0.75, 18, 0.75));
     this.shapes.cube.draw(
       context,
@@ -696,7 +712,7 @@ export class Project extends Scene {
     // long into camera block
     let rightPillar_3_trans = Mat4.identity()
       .times(Mat4.translation(12, 9.25, -17))
-      .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(0.75, 18, 0.75));
     this.shapes.cube.draw(
       context,
@@ -706,9 +722,9 @@ export class Project extends Scene {
     );
     // horizontal block
     let horizPillar_trans = Mat4.identity()
-    .times(Mat4.translation(0,9.25, -6))
-    .times(Mat4.rotation(Math.PI/2, 0, 0, 1))
-    .times(Mat4.scale(0.75, 12, 0.75));
+      .times(Mat4.translation(0, 9.25, -6))
+      .times(Mat4.rotation(Math.PI / 2, 0, 0, 1))
+      .times(Mat4.scale(0.75, 12, 0.75));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -973,9 +989,9 @@ export class Project extends Scene {
     // Wall decor - shooting guide
     let shooting_guide_trans = Mat4.identity();
     shooting_guide_trans = shooting_guide_trans
-        .times(Mat4.translation(17.5, 0, -10))
-        .times(Mat4.scale(4, 2.5, 1))
-        .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 0, -10))
+      .times(Mat4.scale(4, 2.5, 1))
+      .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
       program_state,
@@ -984,9 +1000,9 @@ export class Project extends Scene {
     );
     let shooting_guide2_trans = Mat4.identity();
     shooting_guide2_trans = shooting_guide2_trans
-        .times(Mat4.translation(17.5, 0, -6))
-        .times(Mat4.scale(4, 2.5, 1))
-        .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 0, -6))
+      .times(Mat4.scale(4, 2.5, 1))
+      .times(Mat4.rotation(1.55, 0, 1, 0));
     this.shapes.square.draw(
       context,
       program_state,
@@ -997,171 +1013,158 @@ export class Project extends Scene {
     // Window
     let window_transform = Mat4.identity();
     window_transform = window_transform
-        .times(Mat4.translation(-18, 2.5, -9.5))
-        .times(Mat4.scale(1, 4.9, 3.1))
-        .times(Mat4.rotation(Math.PI/180 * 90, 0, 1, 0))
-        .times(Mat4.rotation(Math.PI/180 * 45, 0, 0, 1))
-        .times(Mat4.rotation(Math.PI/180 * 1, 1, 0, 0));
+      .times(Mat4.translation(-18, 2.5, -9.5))
+      .times(Mat4.scale(1, 4.9, 3.1))
+      .times(Mat4.rotation((Math.PI / 180) * 90, 0, 1, 0))
+      .times(Mat4.rotation((Math.PI / 180) * 45, 0, 0, 1))
+      .times(Mat4.rotation((Math.PI / 180) * 1, 1, 0, 0));
     this.shapes.window_cylinder.draw(
-        context,
-        program_state,
-        window_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      window_transform,
+      this.materials.bullet
     );
 
     // Wooden planks over window
     let plank_1_transform = Mat4.identity();
     plank_1_transform = plank_1_transform
-        .times(Mat4.translation(-17, 0.5, -8.5))
-        .times(Mat4.scale(0.1, 0.5, 3))
-        .times(Mat4.rotation(-1.5, 0, 1, 0));
+      .times(Mat4.translation(-17, 0.5, -8.5))
+      .times(Mat4.scale(0.1, 0.5, 3))
+      .times(Mat4.rotation(-1.5, 0, 1, 0));
     this.shapes.cube.draw(
-        context,
-        program_state,
-        plank_1_transform,
-        this.materials.wood_plank
+      context,
+      program_state,
+      plank_1_transform,
+      this.materials.wood_plank
     );
 
     let plank_2_transform = plank_1_transform;
-    plank_2_transform = plank_2_transform
-        .times(Mat4.translation(0, 5.5, 0));
+    plank_2_transform = plank_2_transform.times(Mat4.translation(0, 5.5, 0));
     this.shapes.cube.draw(
-        context,
-        program_state,
-        plank_2_transform,
-        this.materials.wood_plank
+      context,
+      program_state,
+      plank_2_transform,
+      this.materials.wood_plank
     );
 
     let plank_3_transform = plank_1_transform;
-    plank_3_transform = plank_3_transform
-        .times(Mat4.translation(0, 8, 0));
+    plank_3_transform = plank_3_transform.times(Mat4.translation(0, 8, 0));
     this.shapes.cube.draw(
-        context,
-        program_state,
-        plank_3_transform,
-        this.materials.wood_plank
+      context,
+      program_state,
+      plank_3_transform,
+      this.materials.wood_plank
     );
 
     let bolt_1_transform = Mat4.identity();
     bolt_1_transform = bolt_1_transform
-        .times(Mat4.translation(-16, 0.2, -4.5))
-        .times(Mat4.rotation(Math.PI/180 * 100, 0, 1, 0))
-        .times(Mat4.scale(0.05, 0.05, 0.05));
+      .times(Mat4.translation(-16, 0.2, -4.5))
+      .times(Mat4.rotation((Math.PI / 180) * 100, 0, 1, 0))
+      .times(Mat4.scale(0.05, 0.05, 0.05));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_1_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_1_transform,
+      this.materials.bullet
     );
 
     let bolt_2_transform = bolt_1_transform;
-    bolt_2_transform = bolt_2_transform
-        .times(Mat4.translation(0, 11, 0));
+    bolt_2_transform = bolt_2_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_2_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_2_transform,
+      this.materials.bullet
     );
 
     let bolt_3_transform = bolt_1_transform;
-    bolt_3_transform = bolt_3_transform
-        .times(Mat4.translation(0, 0, 52));
+    bolt_3_transform = bolt_3_transform.times(Mat4.translation(0, 0, 52));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_3_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_3_transform,
+      this.materials.bullet
     );
 
     let bolt_4_transform = bolt_3_transform;
-    bolt_4_transform = bolt_4_transform
-        .times(Mat4.translation(0, 9, 0));
+    bolt_4_transform = bolt_4_transform.times(Mat4.translation(0, 9, 0));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_4_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_4_transform,
+      this.materials.bullet
     );
 
     let bolt_5_transform = bolt_1_transform;
-    bolt_5_transform = bolt_5_transform
-        .times(Mat4.translation(0, 53, 0));
+    bolt_5_transform = bolt_5_transform.times(Mat4.translation(0, 53, 0));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_5_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_5_transform,
+      this.materials.bullet
     );
 
     let bolt_6_transform = bolt_5_transform;
-    bolt_6_transform = bolt_6_transform
-        .times(Mat4.translation(0, 10, 0));
+    bolt_6_transform = bolt_6_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_6_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_6_transform,
+      this.materials.bullet
     );
 
     let bolt_7_transform = bolt_5_transform;
-    bolt_7_transform = bolt_7_transform
-        .times(Mat4.translation(0, -8, 52));
+    bolt_7_transform = bolt_7_transform.times(Mat4.translation(0, -8, 52));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_7_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_7_transform,
+      this.materials.bullet
     );
 
     let bolt_8_transform = bolt_6_transform;
-    bolt_8_transform = bolt_8_transform
-        .times(Mat4.translation(0, -10, 52));
+    bolt_8_transform = bolt_8_transform.times(Mat4.translation(0, -10, 52));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_8_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_8_transform,
+      this.materials.bullet
     );
 
     let bolt_9_transform = bolt_5_transform;
-    bolt_9_transform = bolt_9_transform
-        .times(Mat4.translation(0, 23, 0));
+    bolt_9_transform = bolt_9_transform.times(Mat4.translation(0, 23, 0));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_9_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_9_transform,
+      this.materials.bullet
     );
 
     let bolt_10_transform = bolt_9_transform;
-    bolt_10_transform = bolt_10_transform
-        .times(Mat4.translation(0, 10, 0));
+    bolt_10_transform = bolt_10_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_10_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_10_transform,
+      this.materials.bullet
     );
 
     let bolt_11_transform = bolt_9_transform;
-    bolt_11_transform = bolt_11_transform
-        .times(Mat4.translation(0, -12, 52));
+    bolt_11_transform = bolt_11_transform.times(Mat4.translation(0, -12, 52));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_11_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_11_transform,
+      this.materials.bullet
     );
 
     let bolt_12_transform = bolt_11_transform;
-    bolt_12_transform = bolt_12_transform
-        .times(Mat4.translation(0, 9, 0));
+    bolt_12_transform = bolt_12_transform.times(Mat4.translation(0, 9, 0));
     this.shapes.rounded_capped_cylinder.draw(
-        context,
-        program_state,
-        bolt_12_transform,
-        this.materials.bullet
+      context,
+      program_state,
+      bolt_12_transform,
+      this.materials.bullet
     );
   }
 
@@ -1439,7 +1442,7 @@ export class Project extends Scene {
       context,
       program_state,
       target_tri_transform,
-      this.materials.gray
+      this.materials.untextured_gray
     );
 
     let target_tri_2_transform = target_loc_transform
@@ -1450,7 +1453,7 @@ export class Project extends Scene {
       context,
       program_state,
       target_tri_2_transform,
-      this.materials.gray
+      this.materials.untextured_gray
     );
 
     let target_outline_transform = target_loc_transform
@@ -1687,7 +1690,11 @@ export class Project extends Scene {
     // let third_hit = new Audio('assets/sounds/third_kill.mp3');
     // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-    if (this.iter <= this.frames_offset) {
+    // if (this.iter <= this.frames_offset) {
+    //   return;
+    // }
+
+    if (gameStarted == false){
       return;
     }
 
@@ -2245,9 +2252,17 @@ export class Project extends Scene {
       this.materials.spike
     );
 
-    let spike_up =
-      0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
+    let spike_up;
+    
+    if (gameStarted == false){
+      spike_up = -0.2;
+    }
 
+    else {
+      spike_up = 0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
+    }
+
+    
     let r_spike = 0.2 * Math.sin((Math.PI * (t - this.t_diff)) / 2) + 0.47;
     let g_spike = 1;
     let b_spike = 1;
@@ -2258,7 +2273,13 @@ export class Project extends Scene {
 
     // currently brute forced
 
-    let spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+    let spike_t;
+    if (gameStarted == false || this.iter <= 3*60 + 20){ // added some padding so there is no time mismatch that causes NaN
+      spike_t = 0;
+    }
+    else {
+      spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+    } 
 
     let spike_cylinder_base_transform = spike_loc_transform
       .times(Mat4.translation(0, spike_up, 1 / 3))
@@ -2592,11 +2613,12 @@ export class Project extends Scene {
       dt = program_state.animation_delta_time / 1000;
 
     // allows for relative start time of the game
-    if (this.iter <= 3 * 60) {
+    if (gameStarted && !this.init) {
       // modify here to stall timer and spike
       this.t_diff = t;
+      this.init = true;
       // console.log(t);
-      // console.log(this.t_diff);
+      console.log(this.t_diff);
     }
     this.iter++;
 
@@ -2635,13 +2657,13 @@ export class Project extends Scene {
     // Lights
     const light_position = vec4(0, 10, 20, 1);
     const gun_light = vec4(0, 6, 20, 1); // to illuminate back of gun
-    const spike_light = vec4(0, -2, -12, 1); // spike illumation
+    const spike_light = vec4(0, -3.2, -12, 1); // spike illumation
 
-    let spike_light_size = 10;
+    let spike_light_size = 12;
     if (this.iter <= this.frames_offset) {
       spike_light_size = 0;
     } else if (this.iter > this.frames_offset && this.iter <= 6 * 60) {
-      spike_light_size = ((this.iter - 180) / 180) * 10;
+      spike_light_size = ((this.iter - 180) / 180) * 12;
     }
     // The parameters of the Light are: position, color, size
 
