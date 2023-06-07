@@ -2686,7 +2686,7 @@ export class Project extends Scene {
     // console.log(this.timer);
     this.display_timer = Math.trunc(this.timer); // this will be passed to the scoreboard
     if (this.display_timer < 0) {
-      this.display_timer = 0;
+      this.display_timer = "GAME OVER"
     }
     // console.log(this.display_timer);
 
