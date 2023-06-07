@@ -429,6 +429,14 @@ export class Project extends Scene {
         texture: new Texture("assets/background/target_gray.jpg"),
       }),
 
+      // Currently use untextured shape 
+      untextured_gray: new Material(new defs.Phong_Shader(), {
+        ambient: 0.2,
+        diffusivity: 0.8,
+        specularity: 0.4,
+        color: hex_color("#989a9c"),
+      }),
+
       wooden: new Material(new defs.Textured_Phong(), {
         ambient: 0.5,
         diffusivity: 0.5,
@@ -1434,7 +1442,7 @@ export class Project extends Scene {
       context,
       program_state,
       target_tri_transform,
-      this.materials.gray
+      this.materials.untextured_gray
     );
 
     let target_tri_2_transform = target_loc_transform
@@ -1445,7 +1453,7 @@ export class Project extends Scene {
       context,
       program_state,
       target_tri_2_transform,
-      this.materials.gray
+      this.materials.untextured_gray
     );
 
     let target_outline_transform = target_loc_transform
@@ -2244,9 +2252,17 @@ export class Project extends Scene {
       this.materials.spike
     );
 
-    let spike_up =
-      0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
+    let spike_up;
+    
+    if (gameStarted == false){
+      spike_up = -0.2;
+    }
 
+    else {
+      spike_up = 0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
+    }
+
+    
     let r_spike = 0.2 * Math.sin((Math.PI * (t - this.t_diff)) / 2) + 0.47;
     let g_spike = 1;
     let b_spike = 1;
@@ -2257,7 +2273,13 @@ export class Project extends Scene {
 
     // currently brute forced
 
-    let spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+    let spike_t;
+    if (gameStarted == false){
+      spike_t = 0;
+    }
+    else {
+      spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+    } 
 
     let spike_cylinder_base_transform = spike_loc_transform
       .times(Mat4.translation(0, spike_up, 1 / 3))
