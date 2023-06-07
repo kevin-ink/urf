@@ -1,4 +1,90 @@
 import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
+// set DEBUG to true to enable debugging mode (skips menu)
+// textures will appear red at first cause its loading, its normal
+export var DEBUG = true;
+
+//
+// SETUP
+//
+
+const h1 = document.getElementById("title");
+const main = document.getElementById("main");
+const canvas = document.getElementById("main-canvas");
+const topBar = document.getElementById("top-bar");
+let origTransform;
+
+// export this for use in game canvas
+export let config = {
+  // default values
+  difficulty: "easy",
+  strafe: false,
+  scatter: 1,
+  timer: 30,
+};
+
+const options = {
+  difficulty: ["easy", "medium", "hard"],
+  strafe: [false, true],
+  scatter: [1, 3, 5],
+  timer: [30, 60, 90, 120],
+};
+
+const indexes = {};
+const opts = document.querySelectorAll("h3");
+opts.forEach((opt) => {
+  indexes[opt.id] = 0;
+});
+
+// ticking "_"
+if (h1) {
+  const change_ = setInterval(() => {
+    h1.textContent =
+      h1.textContent == "ULTRA RAPID FIRE_"
+        ? "ULTRA RAPID FIRE "
+        : "ULTRA RAPID FIRE_";
+  }, 500);
+}
+
+// hide topBar and start animating (gradient) of header and main
+main.classList.add("animated");
+h1.classList.add("animated");
+topBar.classList.add("animated");
+
+// get all buttons and make them clickable
+const btns = document.querySelectorAll("button");
+if (btns.length !== 0) {
+  btns.forEach((btn) => {
+    btn.classList.add("animate__animated");
+    btn.classList.add("cue");
+    // btn.addEventListener("click", playSound);
+    if (btn.id === "start-btn") {
+      btn.addEventListener("click", startGame);
+    } else if (btn.classList.contains("arrow")) {
+      btn.addEventListener("click", changeOpt);
+      btn.classList.remove("animate__animated");
+    } else {
+      btn.addEventListener("click", rearrange);
+    }
+  });
+}
+
+//
+// END OF SETUP
+//
+
+if (DEBUG)
+{
+  canvas.style.display = "block";
+  main.style.display = "none";
+  config.timer = 100000; // bomb doesn't go boom
+  // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
+  // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
+  const element_to_replace = document.querySelector("#main-canvas");
+  // Import the file that defines a scene.
+  const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
+  new Canvas_Widget(element_to_replace, scenes);
+  topBar.style.display = "block";
+}
 
 //
 // FUNCTIONS
@@ -200,71 +286,3 @@ function startGame() {
   const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
   new Canvas_Widget(element_to_replace, scenes);
 }
-
-//
-// SETUP
-//
-const h1 = document.getElementById("title");
-const main = document.getElementById("main");
-const canvas = document.getElementById("main-canvas");
-const topBar = document.getElementById("top-bar");
-let origTransform;
-
-// export this for use in game canvas
-export let config = {
-  // default values
-  difficulty: "easy",
-  strafe: false,
-  scatter: 1,
-  timer: 30,
-};
-
-const options = {
-  difficulty: ["easy", "medium", "hard"],
-  strafe: [false, true],
-  scatter: [1, 3, 5],
-  timer: [30, 60, 90, 120],
-};
-
-const indexes = {};
-const opts = document.querySelectorAll("h3");
-opts.forEach((opt) => {
-  indexes[opt.id] = 0;
-});
-
-// ticking "_"
-if (h1) {
-  const change_ = setInterval(() => {
-    h1.textContent =
-      h1.textContent == "ULTRA RAPID FIRE_"
-        ? "ULTRA RAPID FIRE "
-        : "ULTRA RAPID FIRE_";
-  }, 500);
-}
-
-// hide topBar and start animating (gradient) of header and main
-main.classList.add("animated");
-h1.classList.add("animated");
-topBar.classList.add("animated");
-
-// get all buttons and make them clickable
-const btns = document.querySelectorAll("button");
-if (btns.length !== 0) {
-  btns.forEach((btn) => {
-    btn.classList.add("animate__animated");
-    btn.classList.add("cue");
-    // btn.addEventListener("click", playSound);
-    if (btn.id === "start-btn") {
-      btn.addEventListener("click", startGame);
-    } else if (btn.classList.contains("arrow")) {
-      btn.addEventListener("click", changeOpt);
-      btn.classList.remove("animate__animated");
-    } else {
-      btn.addEventListener("click", rearrange);
-    }
-  });
-}
-
-//
-// END OF SETUP
-//
