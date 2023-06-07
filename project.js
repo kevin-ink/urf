@@ -2274,7 +2274,7 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false){
+    if (gameStarted == false || this.iter <= 3*60 + 20){ // added some padding so there is no time mismatch that causes NaN
       spike_t = 0;
     }
     else {
@@ -2657,13 +2657,13 @@ export class Project extends Scene {
     // Lights
     const light_position = vec4(0, 10, 20, 1);
     const gun_light = vec4(0, 6, 20, 1); // to illuminate back of gun
-    const spike_light = vec4(0, -2, -12, 1); // spike illumation
+    const spike_light = vec4(0, -3.2, -12, 1); // spike illumation
 
-    let spike_light_size = 10;
+    let spike_light_size = 12;
     if (this.iter <= this.frames_offset) {
       spike_light_size = 0;
     } else if (this.iter > this.frames_offset && this.iter <= 6 * 60) {
-      spike_light_size = ((this.iter - 180) / 180) * 10;
+      spike_light_size = ((this.iter - 180) / 180) * 12;
     }
     // The parameters of the Light are: position, color, size
 
