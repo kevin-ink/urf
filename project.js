@@ -379,7 +379,7 @@ export class Project extends Scene {
       }),
       wood_plank: new Material(new defs.Textured_Phong(), {
         color: hex_color("000000"),
-        ambient: 0.8,
+        ambient: 0.6,
         texture: new Texture("assets/background/wood-plank.jpg"),
     }),
     warning_sign: new Material(new defs.Textured_Phong(), {
@@ -993,23 +993,8 @@ export class Project extends Scene {
       shooting_guide2_trans,
       this.materials.shooting_guide
     );
-    /*
-    // Window
-    let window_transfrom = Mat4.identity();
-    window_transfrom = window_transfrom
-        .times(Mat4.scale(1, 4.92, 3))
-        .times(Mat4.translation(-18, .51, -3.2))
-        .times(Mat4.rotation(Math.PI/180 * 90, 0, 1, 0))
-        .times(Mat4.rotation(Math.PI/180 * 45, 0, 0, 1))
-        .times(Mat4.rotation(Math.PI/180 * 1, 1, 0, 0));
-    this.shapes.window_cylinder.draw(
-        context,
-        program_state,
-        window_transfrom,
-        this.materials.bullet
-    );
-    */
 
+    // Window
     let window_transform = Mat4.identity();
     window_transform = window_transform
         .times(Mat4.translation(-18, 2.5, -9.5))
@@ -1021,6 +1006,161 @@ export class Project extends Scene {
         context,
         program_state,
         window_transform,
+        this.materials.bullet
+    );
+
+    // Wooden planks over window
+    let plank_1_transform = Mat4.identity();
+    plank_1_transform = plank_1_transform
+        .times(Mat4.translation(-17, 0.5, -8.5))
+        .times(Mat4.scale(0.1, 0.5, 3))
+        .times(Mat4.rotation(-1.5, 0, 1, 0));
+    this.shapes.cube.draw(
+        context,
+        program_state,
+        plank_1_transform,
+        this.materials.wood_plank
+    );
+
+    let plank_2_transform = plank_1_transform;
+    plank_2_transform = plank_2_transform
+        .times(Mat4.translation(0, 5.5, 0));
+    this.shapes.cube.draw(
+        context,
+        program_state,
+        plank_2_transform,
+        this.materials.wood_plank
+    );
+
+    let plank_3_transform = plank_1_transform;
+    plank_3_transform = plank_3_transform
+        .times(Mat4.translation(0, 8, 0));
+    this.shapes.cube.draw(
+        context,
+        program_state,
+        plank_3_transform,
+        this.materials.wood_plank
+    );
+
+    let bolt_1_transform = Mat4.identity();
+    bolt_1_transform = bolt_1_transform
+        .times(Mat4.translation(-16, 0.2, -4.5))
+        .times(Mat4.rotation(Math.PI/180 * 100, 0, 1, 0))
+        .times(Mat4.scale(0.05, 0.05, 0.05));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_1_transform,
+        this.materials.bullet
+    );
+
+    let bolt_2_transform = bolt_1_transform;
+    bolt_2_transform = bolt_2_transform
+        .times(Mat4.translation(0, 11, 0));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_2_transform,
+        this.materials.bullet
+    );
+
+    let bolt_3_transform = bolt_1_transform;
+    bolt_3_transform = bolt_3_transform
+        .times(Mat4.translation(0, 0, 52));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_3_transform,
+        this.materials.bullet
+    );
+
+    let bolt_4_transform = bolt_3_transform;
+    bolt_4_transform = bolt_4_transform
+        .times(Mat4.translation(0, 9, 0));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_4_transform,
+        this.materials.bullet
+    );
+
+    let bolt_5_transform = bolt_1_transform;
+    bolt_5_transform = bolt_5_transform
+        .times(Mat4.translation(0, 53, 0));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_5_transform,
+        this.materials.bullet
+    );
+
+    let bolt_6_transform = bolt_5_transform;
+    bolt_6_transform = bolt_6_transform
+        .times(Mat4.translation(0, 10, 0));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_6_transform,
+        this.materials.bullet
+    );
+
+    let bolt_7_transform = bolt_5_transform;
+    bolt_7_transform = bolt_7_transform
+        .times(Mat4.translation(0, -8, 52));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_7_transform,
+        this.materials.bullet
+    );
+
+    let bolt_8_transform = bolt_6_transform;
+    bolt_8_transform = bolt_8_transform
+        .times(Mat4.translation(0, -10, 52));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_8_transform,
+        this.materials.bullet
+    );
+
+    let bolt_9_transform = bolt_5_transform;
+    bolt_9_transform = bolt_9_transform
+        .times(Mat4.translation(0, 23, 0));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_9_transform,
+        this.materials.bullet
+    );
+
+    let bolt_10_transform = bolt_9_transform;
+    bolt_10_transform = bolt_10_transform
+        .times(Mat4.translation(0, 10, 0));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_10_transform,
+        this.materials.bullet
+    );
+
+    let bolt_11_transform = bolt_9_transform;
+    bolt_11_transform = bolt_11_transform
+        .times(Mat4.translation(0, -12, 52));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_11_transform,
+        this.materials.bullet
+    );
+
+    let bolt_12_transform = bolt_11_transform;
+    bolt_12_transform = bolt_12_transform
+        .times(Mat4.translation(0, 9, 0));
+    this.shapes.rounded_capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_12_transform,
         this.materials.bullet
     );
   }
