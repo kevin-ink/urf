@@ -1058,7 +1058,7 @@ export class Project extends Scene {
 
     let bolt_1_transform = Mat4.identity();
     bolt_1_transform = bolt_1_transform
-      .times(Mat4.translation(-16, 0.2, -4.5))
+      .times(Mat4.translation(-16.9, 0.3, -6))
       .times(Mat4.rotation((Math.PI / 180) * 100, 0, 1, 0))
       .times(Mat4.scale(0.05, 0.05, 0.05));
     this.shapes.rounded_capped_cylinder.draw(
@@ -1069,7 +1069,7 @@ export class Project extends Scene {
     );
 
     let bolt_2_transform = bolt_1_transform;
-    bolt_2_transform = bolt_2_transform.times(Mat4.translation(0, 11, 0));
+    bolt_2_transform = bolt_2_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1078,7 +1078,8 @@ export class Project extends Scene {
     );
 
     let bolt_3_transform = bolt_1_transform;
-    bolt_3_transform = bolt_3_transform.times(Mat4.translation(0, 0, 52));
+    bolt_3_transform = bolt_3_transform.times(Mat4.rotation(Math.PI/180 * -100, 0, 1, 0))
+                                        .times(Mat4.translation(0, 0, -105));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1087,7 +1088,7 @@ export class Project extends Scene {
     );
 
     let bolt_4_transform = bolt_3_transform;
-    bolt_4_transform = bolt_4_transform.times(Mat4.translation(0, 9, 0));
+    bolt_4_transform = bolt_4_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1104,8 +1105,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_6_transform = bolt_5_transform;
-    bolt_6_transform = bolt_6_transform.times(Mat4.translation(0, 10, 0));
+    let bolt_6_transform = bolt_1_transform;
+    bolt_6_transform = bolt_6_transform.times(Mat4.translation(0, 64, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1113,8 +1114,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_7_transform = bolt_5_transform;
-    bolt_7_transform = bolt_7_transform.times(Mat4.translation(0, -8, 52));
+    let bolt_7_transform = bolt_3_transform;
+    bolt_7_transform = bolt_7_transform.times(Mat4.translation(0, 53, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1122,8 +1123,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_8_transform = bolt_6_transform;
-    bolt_8_transform = bolt_8_transform.times(Mat4.translation(0, -10, 52));
+    let bolt_8_transform = bolt_7_transform;
+    bolt_8_transform = bolt_8_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1131,8 +1132,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_9_transform = bolt_5_transform;
-    bolt_9_transform = bolt_9_transform.times(Mat4.translation(0, 23, 0));
+    let bolt_9_transform = bolt_6_transform;
+    bolt_9_transform = bolt_9_transform.times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1141,7 +1142,7 @@ export class Project extends Scene {
     );
 
     let bolt_10_transform = bolt_9_transform;
-    bolt_10_transform = bolt_10_transform.times(Mat4.translation(0, 10, 0));
+    bolt_10_transform = bolt_10_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1149,8 +1150,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_11_transform = bolt_9_transform;
-    bolt_11_transform = bolt_11_transform.times(Mat4.translation(0, -12, 52));
+    let bolt_11_transform = bolt_8_transform;
+    bolt_11_transform = bolt_11_transform.times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1159,7 +1160,7 @@ export class Project extends Scene {
     );
 
     let bolt_12_transform = bolt_11_transform;
-    bolt_12_transform = bolt_12_transform.times(Mat4.translation(0, 9, 0));
+    bolt_12_transform = bolt_12_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -2687,7 +2688,7 @@ export class Project extends Scene {
     this.draw_floor(context, program_state);
     this.draw_walls(context, program_state);
     this.draw_props(context, program_state);
-    this.draw_pillars(context, program_state);
+   // this.draw_pillars(context, program_state);
 
     // game interactives
 
