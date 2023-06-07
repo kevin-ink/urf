@@ -172,11 +172,12 @@ export class Project extends Scene {
         color: hex_color("#70B2E7"),
       }),
 
-      gun: new Material(new defs.Phong_Shader(), {
+      gun: new Material(new defs.Textured_Phong(), {
         ambient: 0.5,
         diffusivity: 1,
         specularity: 1,
         color: hex_color("#222222"),
+        texture: new Texture("assets/background/gun_texture_2.jpg"),
       }),
       gun2: new Material(new defs.Phong_Shader(), {
         ambient: 0.5,
@@ -271,17 +272,19 @@ export class Project extends Scene {
       }),
 
       // target materials
-      dark_gray: new Material(new defs.Phong_Shader(), {
+      dark_gray: new Material(new defs.Textured_Phong(), {
         ambient: 0.2,
         diffusivity: 0.8,
         specularity: 0.4,
         color: hex_color("#4a4b4d"),
+        texture: new Texture("assets/background/target_dark_gray.jpg")
       }),
-      gray: new Material(new defs.Phong_Shader(), {
+      gray: new Material(new defs.Textured_Phong(), {
         ambient: 0.2,
         diffusivity: 0.8,
         specularity: 0.4,
         color: hex_color("#989a9c"),
+        texture: new Texture("assets/background/target_gray.jpg")
       }),
 
       wooden: new Material(new defs.Textured_Phong(), {
