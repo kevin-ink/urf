@@ -1670,6 +1670,9 @@ export class Project extends Scene {
     // console.log(t_x);
     if (d <= this.target_r) {
       // If the mouse click is within radius length of target
+      if (d <= this.target_r/4){
+        this.points += 2000;
+      }
       return true;
     }
     return false;
@@ -1752,20 +1755,24 @@ export class Project extends Scene {
             break;
           case 2:
             this.second_hit.play();
+            this.points += 200;
             // console.log("second");
             break;
           case 3:
             this.third_hit.play();
+            this.points += 500;
             // console.log("third");
             break;
           case 4:
             this.fourth_hit.play();
+            this.points += 1000;
             // console.log("fourth");
             break;
           default:
             this.fifth_hit.play();
+            this.points += 1800;
             // console.log("ace");
-            this.cont_hits = 0;
+            // this.cont_hits = 0; // use this to repeat the ace sound
             break;
         }
         this.points += 1000;
@@ -1777,6 +1784,9 @@ export class Project extends Scene {
       }
     }
     if (missed) {
+      if (this.points >= 500){ // cannot get negative points
+        this.points -= 500;
+      }
       this.cont_hits = 0;
       this.cont_misses++;
       // easter egg :)
