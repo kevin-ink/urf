@@ -1786,6 +1786,9 @@ export class Project extends Scene {
     }
     this.accuracy = this.hits / this.total_shots;
     this.accuracy = Math.round(this.accuracy * 10000) / 100;
+    if (this.accuracy != 100){
+      this.accuracy = this.accuracy.toFixed(2);
+    }
     this.shot = true;
   }
 
