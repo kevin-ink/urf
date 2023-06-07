@@ -27,13 +27,31 @@ let count = 3;
 //   LOAD AUDIO FILES
 //
 
-preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", 0.25);
+preloadAudio("assets/sounds/mariostart_2.mp3", "countdownSound", 0.1);
 preloadAudio(
   "assets/sounds/button-124476-[AudioTrimmer.com].mp3",
   "buttonSound",
   0.4
 );
 preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
+
+// gun shot
+preloadAudio("assets/sounds/gun.mp3", "gunSound1", 0.8);
+
+// hit shot
+preloadAudio("assets/sounds/first_kill.mp3", "killSound1", 0.1);
+preloadAudio("assets/sounds/first_kill.mp3", "killSound1.1", 0.1);
+
+preloadAudio("assets/sounds/second_kill.mp3", "killSound2", 0.06);
+preloadAudio("assets/sounds/third_kill.mp3", "killSound3", 0.06);
+preloadAudio("assets/sounds/fourth_kill.mp3", "killSound4", 0.2);
+
+// spike sounds
+
+preloadAudio("assets/sounds/spike_explode.mp3", "spike_explode", 0.6);
+
+
+
 
 //
 // SETUP
@@ -307,6 +325,9 @@ function countdown() {
     if (count == 3) {
       audioFiles["countdownSound"].play();
     }
+    if (count == 0) {
+      audioFiles["startBtnSound"].play();
+    }
     countText.textContent = count.toString();
     countText.style.display = "block";
     countText.addEventListener("animationend", () => {
@@ -336,7 +357,6 @@ function startGame() {
   topBar.classList.add("puff-in-center");
   const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
   canvas_widget = new Canvas_Widget(canvas_element, scenes);
-  audioFiles["startBtnSound"].play();
   countdown();
 }
 
