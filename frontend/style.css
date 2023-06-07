@@ -261,7 +261,6 @@ button.close-btn:hover {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    
 }
 
 #points > p {
@@ -303,6 +302,25 @@ button.close-btn:hover {
 .hide {
     position: absolute;
 	left: -9999px;
+}
+
+#stats-popup > h4
+{
+    font-size: 3rem;
+    margin: 0;
+    text-align: center;
+    background: linear-gradient(var(--angle), #0575e6, #021b79);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 0.2rem #021b79);
+}
+
+#stats-popup > div
+{
+    margin: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 /*

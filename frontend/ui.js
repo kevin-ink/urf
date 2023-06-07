@@ -17,7 +17,9 @@ export var gameStarted = false;
 // alternatively Leo can call endGame() only once
 let end = false;
 // game end stats "points" and "accuracy"
-const stats = {};
+let stats = {};
+//
+let scoreInterval;
 
 // get all important elements
 const h1 = document.getElementById("title");
@@ -50,7 +52,7 @@ const options = {
   difficulty: ["easy", "medium", "hard"],
   strafe: [false, true],
   scatter: [1, 3, 5],
-  timer: [15, 30, 60, 90, 120],
+  timer: [15, 30, 60, 90, 120, 5],
 };
 
 // for options
@@ -71,18 +73,12 @@ const opts = document.querySelectorAll("h3");
 //  add audio files as necessary to this function
 function preloadAudioFiles() {
   preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", 0.25);
-  preloadAudio(
-    "assets/sounds/button-124476-[AudioTrimmer.com].mp3",
-    "buttonSound",
-    0.4
-  );
+  preloadAudio("assets/sounds/button-124476.mp3", "buttonSound", 0.4);
   preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
   preloadAudio("assets/sounds/click-button-140881.mp3", "changeOptSound", 1);
-  preloadAudio(
-    "assets/sounds/interface-soft-abbreviated-click-131438.mp3",
-    "cancelSound",
-    1
-  );
+  preloadAudio("assets/sounds/soft-click.mp3", "cancelSound", 1);
+  preloadAudio("assets/sounds/computer-calculating.mp3", "calculateSound", 0.5);
+  preloadAudio("assets/sounds/valorantLobby.mp3", "statsScreenSound", 0.5);
 }
 
 //
@@ -125,6 +121,8 @@ function setup() {
       } else if (btn.classList.contains("arrow")) {
         btn.addEventListener("click", changeOpt);
         btn.classList.remove("animate__animated");
+      } else if (btn.id === "close-stats") {
+        btn.addEventListener("click", closeStats);
       } else {
         btn.addEventListener("click", rearrange);
       }
@@ -139,6 +137,7 @@ function setup() {
   });
 }
 
+// start game as debug if debug is on
 function getDebug() {
   if (DEBUG) {
     canvas.style.display = "block";
@@ -205,12 +204,53 @@ export function endGame() {
     canvas.addEventListener(
       "animationend",
       () => {
+        // rewrite current settings ahead of time (before display)
+        const settingsElement = document.getElementById("settingsText");
+        const timer = config["timer"];
+        const scatter = config["scatter"];
+        const difficulty = config["difficulty"];
+        const strafe = config["strafe"] == true ? "on" : "off";
+        settingsElement.textContent = `Settings for this round: ${timer} seconds,
+        strafe ${strafe}, ${difficulty} difficulty, scatter ${scatter}.`;
+
+        // fade out header
+        h1.classList.add("animate__fadeOutUp", "animate__animated");
+        h1.addEventListener(
+          "animationend",
+          () => {
+            h1.style.visibility = "hidden";
+            h1.classList.remove("animate__fadeOutUp", "animate__animated");
+          },
+          { once: true }
+        );
+        h1.classList.remove("animated");
+
+        // hide buttons
+        const btns = document.querySelectorAll("button");
+        btns.forEach((iter) => {
+          iter.classList.remove("cue");
+          if (
+            !iter.classList.contains("close-btn") &&
+            !iter.classList.contains("arrow")
+          ) {
+            iter.classList.remove("animate__fadeInUp");
+            iter.classList.add("animate__fadeOutDown");
+          }
+          iter.disabled =
+            iter.classList.contains("close-btn") ||
+            iter.classList.contains("arrow")
+              ? false
+              : true;
+        });
+        // change background but keep header
+        main.classList.add("darken");
         main.classList.remove("hide");
         main.classList.add("puff-in-center");
         main.addEventListener(
           "animationend",
           () => {
             main.classList.remove("puff-in-center");
+            expand();
           },
           { once: true }
         );
@@ -224,12 +264,107 @@ export function endGame() {
   }
 }
 
+function showStats() {
+  audioFiles["statsScreenSound"].play();
+  const statElements = document.querySelectorAll("h5");
+  let accuracyStat;
+  const finalScore = stats["points"];
+  let scoreAccumulate = 0;
+  statElements.forEach((stat) => {
+    if (stat.classList.contains("accuracy")) {
+      accuracyStat = stat;
+    } else {
+      audioFiles["calculateSound"].play();
+      scoreInterval = setInterval(() => {
+        if (scoreAccumulate < finalScore) {
+          scoreAccumulate += 100;
+          stat.textContent = scoreAccumulate;
+        } else {
+          clearInterval(scoreInterval); // Stop the interval when score reached
+          audioFiles["calculateSound"].pause();
+          audioFiles["calculateSound"].currentTime = 0;
+          accuracyStat.classList.add("puff-in-center");
+          accuracyStat.style.visibility = "visible";
+          accuracyStat.addEventListener(
+            "animationend",
+            () => {
+              accuracyStat.classList.remove("puff-in-center");
+            },
+            {
+              once: true,
+            }
+          );
+        }
+      }, 10);
+    }
+  });
+}
+
+function closeStats(e) {
+  if (scoreInterval) {
+    clearInterval(scoreInterval);
+  }
+  audioFiles["statsScreenSound"].pause();
+  audioFiles["statsScreenSound"].currentTime = 0;
+  audioFiles["calculateSound"].pause();
+  audioFiles["calculateSound"].currentTime = 0;
+  audioFiles["cancelSound"].play();
+  const popup = e.target.parentNode;
+  const p = popup.querySelectorAll("p");
+  p.forEach((text) => {
+    text.style.visibility = "hidden";
+  });
+  popup.classList.add("scale-out-ver-top");
+  popup.addEventListener("animationend", () => {
+    // remove popup from render
+    popup.style.display = "none";
+    popup.classList.remove("scale-out-ver-top");
+    const btns = document.querySelectorAll("button");
+    btns.forEach((iter) => {
+      iter.classList.add("cue");
+      if (
+        !iter.classList.contains("close-btn") &&
+        !iter.classList.contains("arrow")
+      ) {
+        iter.classList.add("animate__fadeInUp", "animate__faster");
+        iter.addEventListener(
+          "animationend",
+          () => {
+            iter.classList.remove("animate__fadeInUp", "animate__faster");
+            iter.disabled = false;
+          },
+          { once: true }
+        );
+        iter.classList.remove("animate__fadeOutDown");
+      }
+    });
+    main.classList.remove("darken");
+    h1.style.visibility = "visible";
+    h1.classList.remove("animate__fadeOutUp");
+    h1.classList.add("animate__fadeInDown");
+    h1.addEventListener(
+      "animationend",
+      () => h1.classList.add("animated", "fadeInDown"),
+      { once: true }
+    );
+  });
+}
+
 // expands menu for options and how to play
-function expand(id) {
-  const popup =
-    id === "opt-btn"
-      ? document.getElementById("opt-popup")
-      : document.getElementById("htp-popup");
+// default
+function expand(id = "gameOver") {
+  let popup;
+  switch (id) {
+    case "opt-btn":
+      popup = document.getElementById("opt-popup");
+      break;
+    case "htp-btn":
+      popup = document.getElementById("htp-popup");
+      break;
+    default:
+      // default game over popup
+      popup = document.getElementById("stats-popup");
+  }
   popup.classList.add("scale-in-ver-top");
   popup.style.display = "block";
   popup.addEventListener(
@@ -244,7 +379,9 @@ function expand(id) {
       d.forEach((div) => {
         div.style.visibility = "visible";
       });
-      // popup.style.display = "flex";
+      if (id == "gameOver") {
+        showStats();
+      }
     },
     { once: true }
   );
@@ -361,7 +498,7 @@ function rearrange(e) {
         h1.classList.add("animate__fadeInDown");
         h1.addEventListener(
           "animationend",
-          () => h1.classList.add("animated"),
+          () => h1.classList.add("animated", "fadeInDown"),
           { once: true }
         );
         main.classList.remove("darken");
