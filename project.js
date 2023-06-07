@@ -2252,9 +2252,17 @@ export class Project extends Scene {
       this.materials.spike
     );
 
-    let spike_up =
-      0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
+    let spike_up;
+    
+    if (gameStarted == false){
+      spike_up = -0.2;
+    }
 
+    else {
+      spike_up = 0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
+    }
+
+    
     let r_spike = 0.2 * Math.sin((Math.PI * (t - this.t_diff)) / 2) + 0.47;
     let g_spike = 1;
     let b_spike = 1;
@@ -2265,7 +2273,13 @@ export class Project extends Scene {
 
     // currently brute forced
 
-    let spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+    let spike_t;
+    if (gameStarted == false){
+      spike_t = 0;
+    }
+    else {
+      spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+    } 
 
     let spike_cylinder_base_transform = spike_loc_transform
       .times(Mat4.translation(0, spike_up, 1 / 3))
