@@ -516,7 +516,7 @@ export class Project extends Scene {
     this.timer = config["timer"];
     // this.timer = 5;
     this.time = 0;
-
+  
     // Use a constant offset value to solve start time issue (very useful apparently!)
     this.iter = 0;
 
@@ -2287,12 +2287,16 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false || this.iter <= 3*60 + 15){ // added some padding so there is no time mismatch that causes NaN
+    if (gameStarted == false || this.iter <= 3*60 + 20){ // added some padding so there is no time mismatch that causes NaN
+      spike_t = 0;
+    }
+    else if (t-this.diff > 120*60){
       spike_t = 0;
     }
     else {
-      spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+      spike_t = 10*((config["timer"] - this.timer)/(config["timer"])) * (t - this.t_diff);
     } 
+    
 
     let spike_cylinder_base_transform = spike_loc_transform
       .times(Mat4.translation(0, spike_up, 1 / 3))
