@@ -470,7 +470,7 @@ export class Project extends Scene {
     } else if (this.difficulty == "medium") {
       this.target_r = 1.25;
     } else {
-      this.target_r = 1;
+      this.target_r = 0.75;
     }
 
     // Number of Targets
@@ -482,7 +482,7 @@ export class Project extends Scene {
     if (this.strafe) {
       this.move_factor = 2;
       if (this.target_num == 5) {
-        if (this.difficulty == "medium") this.move_factor = 1.25;
+        if (this.difficulty == "medium") this.move_factor = 1;
         else if (this.difficulty == "easy") {
           this.move_factor = 0.5;
         }
@@ -786,7 +786,7 @@ export class Project extends Scene {
 
     let crate4_trans = Mat4.identity();
     crate4_trans = crate4_trans
-      .times(Mat4.translation(-14, -3.5, -6))
+      .times(Mat4.translation(-15, -3.5, -8))
       .times(Mat4.scale(1.4, 1.4, 1))
       .times(Mat4.rotation(-0.9, 0, 1, 0));
     this.shapes.cube.draw(
@@ -989,9 +989,9 @@ export class Project extends Scene {
     // Wall decor - shooting guide
     let shooting_guide_trans = Mat4.identity();
     shooting_guide_trans = shooting_guide_trans
-      .times(Mat4.translation(17.5, 0, -10))
-      .times(Mat4.scale(4, 2.5, 1))
-      .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 1, -10))
+      .times(Mat4.rotation(1.55, 0, 1, 0))
+      .times(Mat4.scale(2.5, 2.5, 1));
     this.shapes.square.draw(
       context,
       program_state,
@@ -1000,9 +1000,9 @@ export class Project extends Scene {
     );
     let shooting_guide2_trans = Mat4.identity();
     shooting_guide2_trans = shooting_guide2_trans
-      .times(Mat4.translation(17.5, 0, -6))
-      .times(Mat4.scale(4, 2.5, 1))
-      .times(Mat4.rotation(1.55, 0, 1, 0));
+      .times(Mat4.translation(17.5, 1, -6))
+      .times(Mat4.rotation(1.55, 0, 1, 0))
+      .times(Mat4.scale(2.5, 2.5, 1));
     this.shapes.square.draw(
       context,
       program_state,
@@ -1058,7 +1058,7 @@ export class Project extends Scene {
 
     let bolt_1_transform = Mat4.identity();
     bolt_1_transform = bolt_1_transform
-      .times(Mat4.translation(-16, 0.2, -4.5))
+      .times(Mat4.translation(-16.9, 0.3, -6))
       .times(Mat4.rotation((Math.PI / 180) * 100, 0, 1, 0))
       .times(Mat4.scale(0.05, 0.05, 0.05));
     this.shapes.rounded_capped_cylinder.draw(
@@ -1069,7 +1069,7 @@ export class Project extends Scene {
     );
 
     let bolt_2_transform = bolt_1_transform;
-    bolt_2_transform = bolt_2_transform.times(Mat4.translation(0, 11, 0));
+    bolt_2_transform = bolt_2_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1078,7 +1078,9 @@ export class Project extends Scene {
     );
 
     let bolt_3_transform = bolt_1_transform;
-    bolt_3_transform = bolt_3_transform.times(Mat4.translation(0, 0, 52));
+    bolt_3_transform = bolt_3_transform
+      .times(Mat4.rotation((Math.PI / 180) * -100, 0, 1, 0))
+      .times(Mat4.translation(0, 0, -105));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1087,7 +1089,7 @@ export class Project extends Scene {
     );
 
     let bolt_4_transform = bolt_3_transform;
-    bolt_4_transform = bolt_4_transform.times(Mat4.translation(0, 9, 0));
+    bolt_4_transform = bolt_4_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1104,8 +1106,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_6_transform = bolt_5_transform;
-    bolt_6_transform = bolt_6_transform.times(Mat4.translation(0, 10, 0));
+    let bolt_6_transform = bolt_1_transform;
+    bolt_6_transform = bolt_6_transform.times(Mat4.translation(0, 64, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1113,8 +1115,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_7_transform = bolt_5_transform;
-    bolt_7_transform = bolt_7_transform.times(Mat4.translation(0, -8, 52));
+    let bolt_7_transform = bolt_3_transform;
+    bolt_7_transform = bolt_7_transform.times(Mat4.translation(0, 53, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1122,8 +1124,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_8_transform = bolt_6_transform;
-    bolt_8_transform = bolt_8_transform.times(Mat4.translation(0, -10, 52));
+    let bolt_8_transform = bolt_7_transform;
+    bolt_8_transform = bolt_8_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1131,8 +1133,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_9_transform = bolt_5_transform;
-    bolt_9_transform = bolt_9_transform.times(Mat4.translation(0, 23, 0));
+    let bolt_9_transform = bolt_6_transform;
+    bolt_9_transform = bolt_9_transform.times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1141,7 +1143,7 @@ export class Project extends Scene {
     );
 
     let bolt_10_transform = bolt_9_transform;
-    bolt_10_transform = bolt_10_transform.times(Mat4.translation(0, 10, 0));
+    bolt_10_transform = bolt_10_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1149,8 +1151,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bolt_11_transform = bolt_9_transform;
-    bolt_11_transform = bolt_11_transform.times(Mat4.translation(0, -12, 52));
+    let bolt_11_transform = bolt_8_transform;
+    bolt_11_transform = bolt_11_transform.times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1159,7 +1161,7 @@ export class Project extends Scene {
     );
 
     let bolt_12_transform = bolt_11_transform;
-    bolt_12_transform = bolt_12_transform.times(Mat4.translation(0, 9, 0));
+    bolt_12_transform = bolt_12_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1212,9 +1214,9 @@ export class Project extends Scene {
   generate_location() {
     let size_factor = 0;
     if (this.target_r == 1.5) {
-      size_factor = 1;
+      size_factor = 2;
     } else if (this.target_r == 1.25) {
-      size_factor = 0.5;
+      size_factor = 1;
     }
     let strafe_speed = 0;
 
@@ -1229,7 +1231,7 @@ export class Project extends Scene {
     // Generate random coordinates
     let ranX,
       ranY,
-      ranZ = Math.random() * 10 + -8;
+      ranZ = Math.random() * (10 - size_factor) + (-8 + size_factor);
     do {
       ranX = Math.random() * (xMax - xMin) + xMin;
       ranY = Math.random() * (yMax - yMin) + yMin;
@@ -1671,6 +1673,9 @@ export class Project extends Scene {
     // console.log(t_x);
     if (d <= this.target_r) {
       // If the mouse click is within radius length of target
+      if (d <= this.target_r / 4) {
+        this.points += 2000;
+      }
       return true;
     }
     return false;
@@ -1753,20 +1758,24 @@ export class Project extends Scene {
             break;
           case 2:
             this.second_hit.play();
+            this.points += 200;
             // console.log("second");
             break;
           case 3:
             this.third_hit.play();
+            this.points += 500;
             // console.log("third");
             break;
           case 4:
             this.fourth_hit.play();
+            this.points += 1000;
             // console.log("fourth");
             break;
           default:
             this.fifth_hit.play();
+            this.points += 1800;
             // console.log("ace");
-            this.cont_hits = 0;
+            // this.cont_hits = 0; // use this to repeat the ace sound
             break;
         }
         this.points += 1000;
@@ -1778,6 +1787,10 @@ export class Project extends Scene {
       }
     }
     if (missed) {
+      if (this.points >= 500) {
+        // cannot get negative points
+        this.points -= 500;
+      }
       this.cont_hits = 0;
       this.cont_misses++;
       // easter egg :)
@@ -1787,6 +1800,9 @@ export class Project extends Scene {
     }
     this.accuracy = this.hits / this.total_shots;
     this.accuracy = Math.round(this.accuracy * 10000) / 100;
+    if (this.accuracy != 100) {
+      this.accuracy = this.accuracy.toFixed(2);
+    }
     this.shot = true;
   }
 
@@ -2272,10 +2288,16 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false) {
+    if (gameStarted == false || this.iter <= 3 * 60 + 20) {
+      // added some padding so there is no time mismatch that causes NaN
+      spike_t = 0;
+    } else if (t - this.diff > 120 * 60) {
       spike_t = 0;
     } else {
-      spike_t = ((config["timer"] - this.timer) * (t - this.t_diff)) / 4;
+      spike_t =
+        10 *
+        ((config["timer"] - this.timer) / config["timer"]) *
+        (t - this.t_diff);
     }
 
     let spike_cylinder_base_transform = spike_loc_transform
@@ -2654,13 +2676,13 @@ export class Project extends Scene {
     // Lights
     const light_position = vec4(0, 10, 20, 1);
     const gun_light = vec4(0, 6, 20, 1); // to illuminate back of gun
-    const spike_light = vec4(0, -2, -12, 1); // spike illumation
+    const spike_light = vec4(0, -3.2, -12, 1); // spike illumation
 
-    let spike_light_size = 10;
+    let spike_light_size = 12;
     if (this.iter <= this.frames_offset) {
       spike_light_size = 0;
     } else if (this.iter > this.frames_offset && this.iter <= 6 * 60) {
-      spike_light_size = ((this.iter - 180) / 180) * 10;
+      spike_light_size = ((this.iter - 180) / 180) * 12;
     }
     // The parameters of the Light are: position, color, size
 
