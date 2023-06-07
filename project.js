@@ -5,6 +5,7 @@ import {
   gameStarted,
   preloadAudio,
   audioFiles,
+  endGame,
 } from "./frontend/ui.js";
 
 const {
@@ -517,7 +518,6 @@ export class Project extends Scene {
 
     // pregame time offset in number of frames (3 seconds * 60 frames)
     this.frames_offset = 3 * 60;
-
 
     // determine whether we should render certain models
     this.game_end = false;
@@ -1686,7 +1686,7 @@ export class Project extends Scene {
     //   return;
     // }
 
-    if (gameStarted == false){
+    if (gameStarted == false) {
       return;
     }
 
@@ -2693,6 +2693,7 @@ export class Project extends Scene {
     updateBar(this.points, this.accuracy, this.display_timer);
 
     if (this.timer <= 0 && this.timer > -2) {
+      endGame();
       this.game_end = true;
       this.time += dt;
       this.R_explode = 40 * Math.sin(this.time);

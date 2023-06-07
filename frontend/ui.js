@@ -3,15 +3,18 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-export var DEBUG = false;
-export var gameStarted = false;
-
-// export this to be used to play audio files
-export const audioFiles = {};
+var DEBUG = true;
 
 //
 // DECLARATIONS
 //
+
+// export this to be used to play audio files
+export const audioFiles = {};
+// export this to tell canvas game has started
+export var gameStarted = false;
+// game end stats "points" and "accuracy"
+const stats = {};
 
 const h1 = document.getElementById("title");
 const main = document.getElementById("main");
@@ -21,6 +24,8 @@ const canvas_element = document.querySelector("#main-canvas");
 const countText = document.createElement("div");
 let canvas_widget;
 let origTransform;
+
+// countdown number
 let count = 3;
 
 //
@@ -45,7 +50,7 @@ export let config = {
   difficulty: "easy",
   strafe: false,
   scatter: 1,
-  timer: 30,
+  timer: 15,
 };
 
 // edit this to include more options
@@ -53,7 +58,7 @@ const options = {
   difficulty: ["easy", "medium", "hard"],
   strafe: [false, true],
   scatter: [1, 3, 5],
-  timer: [30, 60, 90, 120],
+  timer: [15, 30, 60, 90, 120],
 };
 
 const indexes = {};
@@ -108,7 +113,9 @@ if (DEBUG) {
   canvas.style.display = "block";
   main.style.display = "none";
   gameStarted = true;
-  config.timer = 100000; // bomb doesn't go boom
+  let div = document.getElementById("time");
+  div.style.visibility = "visible";
+  config.timer = 5; // bomb doesn't go boom
   // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
   // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
   const element_to_replace = document.querySelector("#main-canvas");
@@ -122,6 +129,16 @@ if (DEBUG) {
 // FUNCTIONS
 //
 
+export function endGame() {
+  topBar.style.display = "none";
+  main.classList.remove("puff-out-center");
+  canvas.classList.add("animate__animated", "animate__fadeOut");
+  canvas.addEventListener("animationend", () => {
+    canvas.style.display = "none";
+    main.style.display = "block";
+  });
+}
+
 export function preloadAudio(url, key, volume) {
   const audio = new Audio();
   audio.volume = volume;
@@ -130,6 +147,8 @@ export function preloadAudio(url, key, volume) {
 }
 
 export function updateBar(points, accuracy, time) {
+  stats["points"] = points;
+  stats["accuracy"] = accuracy;
   let div = document.getElementById("points");
   div.innerHTML = `${points}<p>pts</p>`;
   div = document.getElementById("accuracy");
