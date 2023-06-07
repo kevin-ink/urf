@@ -1,48 +1,111 @@
 import { defs, tiny } from "./examples/common.js";
-import { config, updateBar } from "./frontend/ui.js";
+import { config, updateBar, gameStarted, preloadAudio } from "./frontend/ui.js";
 
 const {
-  Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture,
+  Vector,
+  Vector3,
+  vec,
+  vec3,
+  vec4,
+  color,
+  hex_color,
+  Shader,
+  Matrix,
+  Mat4,
+  Light,
+  Shape,
+  Material,
+  Scene,
+  Texture,
 } = tiny;
 
 const { Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere } =
   defs;
 
-  class RectPyramid extends Shape {
-    constructor() {
-        super("position", "normal",);
-        // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
-        this.arrays.position = Vector3.cast(
-            [1, 0, 0], [0, 4/3, 0], [0, 0, 0], 
-            [1, 0, 1/3], [0, 4/3, 1/3], [0, 0, 1/3],
-            [0, 0, 0], [0, 4/3, 0], [0, 0, 1/3],
-            [0, 0, 1/3], [0, 4/3, 1/3], [0, 4/3, 0],
-            [0, 0, 0], [0, 0, 1/3], [1, 0, 0],
-            [0, 0, 1/3], [1, 0, 1/3], [1, 0, 0],
-            [1, 0, 0], [1, 0, 1/3], [0, 4/3, 1/3],
-            [1, 0, 0], [0, 4/3, 0], [0, 4/3, 1/3],
-            );
-        this.arrays.normal = Vector3.cast(
-            [0, 0, -1], [0, 0, -1], [0, 0, -1],
-            [0, 0, 1], [0, 0, 1], [0, 0, 1],
-            [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
-            [-1, 0, 0], [-1, 0, 0], [-1, 0, 0],
-            [0, -1, 0], [0, -1, 0], [0, -1, 0],
-            [0, -1, 0], [0, -1, 0], [0, -1, 0],
-            [1, 1, 0], [1, 1, 0], [1, 1, 0],
-            [1, 1, 0], [1, 1, 0], [1, 1, 0],
-            );
-        // Arrange the vertices into a square shape in texture space too:
-        this.indices.push(0, 1, 2, 
-                          3, 4, 5,
-                          6, 7, 8,
-                          9, 10, 11,
-                          12, 13, 14,
-                          15, 16, 17,
-                          18, 19, 20,
-                          21, 22, 23
-                          ); 
-        }   
+class RectPyramid extends Shape {
+  constructor() {
+    super("position", "normal");
+    // Loop 3 times (for each axis), and inside loop twice (for opposing cube sides):
+    this.arrays.position = Vector3.cast(
+      [1, 0, 0],
+      [0, 4 / 3, 0],
+      [0, 0, 0],
+      [1, 0, 1 / 3],
+      [0, 4 / 3, 1 / 3],
+      [0, 0, 1 / 3],
+      [0, 0, 0],
+      [0, 4 / 3, 0],
+      [0, 0, 1 / 3],
+      [0, 0, 1 / 3],
+      [0, 4 / 3, 1 / 3],
+      [0, 4 / 3, 0],
+      [0, 0, 0],
+      [0, 0, 1 / 3],
+      [1, 0, 0],
+      [0, 0, 1 / 3],
+      [1, 0, 1 / 3],
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 1 / 3],
+      [0, 4 / 3, 1 / 3],
+      [1, 0, 0],
+      [0, 4 / 3, 0],
+      [0, 4 / 3, 1 / 3]
+    );
+    this.arrays.normal = Vector3.cast(
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [0, -1, 0],
+      [1, 1, 0],
+      [1, 1, 0],
+      [1, 1, 0],
+      [1, 1, 0],
+      [1, 1, 0],
+      [1, 1, 0]
+    );
+    // Arrange the vertices into a square shape in texture space too:
+    this.indices.push(
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    );
+  }
 }
 
 class Spike extends Shape {
@@ -142,7 +205,7 @@ export class Project extends Scene {
       torus2: new defs.Torus(3, 15),
       sphere: new defs.Subdivision_Sphere(4),
       circle: new defs.Regular_2D_Polygon(1, 15),
-
+      floor: new defs.Cube(),
       triangle: new defs.Triangle(),
       windmill: new Windmill(),
       square: new defs.Square(),
@@ -171,7 +234,6 @@ export class Project extends Scene {
         [0.34, 0.66],
         [0, 1],
       ]),
-
       // shapes for environment
       square: new defs.Square(),
       cube: new defs.Cube(),
@@ -211,7 +273,17 @@ export class Project extends Scene {
         [0, 1],
       ]),
       bot_tri: new RectPyramid(),
+
+      // wall
+      wall: new defs.Cube(),
     };
+
+    this.shapes.wall.arrays.texture_coord.forEach(
+      (v, i, l) => {
+          v[0] = v[0] * 2;
+          v[1] = v[1] * 2;
+      } 
+  );
 
     // *** Materials
     this.materials = {
@@ -271,39 +343,39 @@ export class Project extends Scene {
         specularity: 0.5,
         // texture: new Texture("assets/background/sky.jpg")
       }),
-      wall_texture: new Material(new defs.Phong_Shader(), {
-        color: hex_color("#dcb594"),
-        ambient: 0.5,
-        diffusivity: 0.5,
-        specularity: 0.5,
-        // texture: new Texture("assets/background/wall-texture-color.png")
+      wall_texture: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 1,
+        specularity: .8,
+        diffuse: .8,
+        texture: new Texture("assets/background/Dirty_Concrete.png", "LINEAR")
       }),
-      floor_texture: new Material(new defs.Phong_Shader(), {
-        color: hex_color("#b7a496"),
-        ambient: 0.5,
-        diffusivity: 0.5,
-        specularity: 0.5,
-        // texture: new Texture("assets/background/wall-texture-color.png")
+      floor_texture: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: .8,
+        specularity: .5,
+        diffuse: .5,
+        texture: new Texture("assets/background/Dirty_Concrete.png",  "LINEAR")
       }),
       crates_texture: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/crate.png"),
+        texture: new Texture("assets/background/crate.png",  "LINEAR"),
       }),
       reverse_crate: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/reverse-crate.png"),
+        texture: new Texture("assets/background/reverse-crate.png" ,  "LINEAR"),
       }),
       locked_box: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
-        texture: new Texture("assets/background/locked-box.png"),
+        texture: new Texture("assets/background/locked-box.png",  "LINEAR"),
       }),
       shooting_guide: new Material(new defs.Textured_Phong(), {
         color: hex_color("000000"),
         ambient: 1,
-        texture: new Texture("assets/background/shooting.png"),
+        texture: new Texture("assets/background/shooting.png", "LINEAR"),
       }),
       wood_plank: new Material(new defs.Textured_Phong(), {
         color: hex_color("000000"),
@@ -357,7 +429,7 @@ export class Project extends Scene {
         diffusivity: 0.5,
         specularity: 0.5,
         color: hex_color("#000000"),
-        texture: new Texture("assets/background/wooden.jpeg"),
+        texture: new Texture("assets/background/wooden.jpeg", "LINEAR"),
       }),
     };
 
@@ -436,12 +508,10 @@ export class Project extends Scene {
     // Use a constant offset value to solve start time issue (very useful apparently!)
     this.iter = 0;
     // pregame time offset in number of frames (3 seconds * 60 frames)
-    this.frames_offset = 3*60;
+    this.frames_offset = 3 * 60;
 
     // determine whether we should render certain models
     this.game_end = false;
-
-
 
     this.view_dist = 20;
 
@@ -474,7 +544,7 @@ export class Project extends Scene {
     floor_transform = floor_transform
       .times(Mat4.translation(0, -this.view_dist / 4, 0)) // floor is at y = -5
       .times(Mat4.scale(20, 0.2, 20));
-    this.shapes.cube.draw(
+    this.shapes.floor.draw(
       context,
       program_state,
       floor_transform,
@@ -489,7 +559,7 @@ export class Project extends Scene {
     .times(Mat4.translation(-18, 0, 0))
       .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(-1.5, 0, 1, 0));
-    this.shapes.cube.draw(
+    this.shapes.wall.draw(
       context,
       program_state,
       left_wall_transform,
@@ -552,7 +622,7 @@ export class Project extends Scene {
       .times(Mat4.translation(18, 0, 0))
       .times(Mat4.scale(0.2, 10, 18))
       .times(Mat4.rotation(1.5, 0, 1, 0));
-    this.shapes.cube.draw(
+    this.shapes.wall.draw(
       context,
       program_state,
       right_wall_transform,
@@ -563,7 +633,7 @@ export class Project extends Scene {
     back_wall_transform = back_wall_transform
       .times(Mat4.translation(0, 0, -18))
       .times(Mat4.scale(20, 10, 0.2));
-    this.shapes.cube.draw(
+    this.shapes.wall.draw(
       context,
       program_state,
       back_wall_transform,
@@ -572,33 +642,79 @@ export class Project extends Scene {
   }
 
   draw_pillars(context, program_state) {
-    let leftPillar_trans = Mat4.identity()
-      .times(Mat4.translation(-9, 0, -17.5)
-      .times(Mat4.scale(0.75, 10, 0.5)));
+    let leftPillar_trans = Mat4.identity().times(
+      Mat4.translation(-12, 0, -17.5).times(Mat4.scale(0.75, 10, 0.5))
+    );
     this.shapes.cube.draw(
       context,
       program_state,
       leftPillar_trans,
       this.materials.wooden
     );
+    // angled block
+    let leftPillar_2_trans = Mat4.identity()
+      .times(Mat4.translation(-12, 5, -17))
+      .times(Mat4.rotation(Math.PI / 3, 1, 0, 0))
+      .times(Mat4.scale(0.75, 8.5, 0.75));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      leftPillar_2_trans,
+      this.materials.wooden
+    );
+    // long into camera block
+    let leftPillar_3_trans = Mat4.identity()
+      .times(Mat4.translation(-12, 9.25, -17))
+      .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+      .times(Mat4.scale(0.75, 18, 0.75));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      leftPillar_3_trans,
+      this.materials.wooden
+    );
     let rightPillar_trans = Mat4.identity()
-      .times(Mat4.translation(9, 0, -17.5))
-      .times(Mat4.scale(0.75,10,0.5));
+      .times(Mat4.translation(12, 0, -17.5))
+      .times(Mat4.scale(0.75, 10, 0.5));
     this.shapes.cube.draw(
       context,
       program_state,
       rightPillar_trans,
       this.materials.wooden
     );
+    // angled block
     let rightPillar_2_trans = Mat4.identity()
-      .times(Mat4.translation(9,0,0))
-      .times(Mat4.rotation(Math.PI/4,1,0,0));
-      this.shapes.cube.draw(
-        context,
-        program_state,
-        rightPillar_2_trans,
-        this.materials.wooden
-      );
+      .times(Mat4.translation(12, 5, -17))
+      .times(Mat4.rotation(Math.PI / 3, 1, 0, 0))
+      .times(Mat4.scale(0.75, 8.5, 0.75));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      rightPillar_2_trans,
+      this.materials.wooden
+    );
+    // long into camera block
+    let rightPillar_3_trans = Mat4.identity()
+      .times(Mat4.translation(12, 9.25, -17))
+      .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+      .times(Mat4.scale(0.75, 18, 0.75));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      rightPillar_3_trans,
+      this.materials.wooden
+    );
+    // horizontal block
+    let horizPillar_trans = Mat4.identity()
+    .times(Mat4.translation(0,9.25, -6))
+    .times(Mat4.rotation(Math.PI/2, 0, 0, 1))
+    .times(Mat4.scale(0.75, 12, 0.75));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      horizPillar_trans,
+      this.materials.wooden
+    );
   }
 
   draw_props(context, program_state) {
@@ -673,8 +789,8 @@ export class Project extends Scene {
         */
     let standing_block2_trans = Mat4.identity();
     standing_block2_trans = standing_block2_trans
-      .times(Mat4.translation(16.5, -3.5, -16))
-      .times(Mat4.scale(3, 3, 3));
+      .times(Mat4.translation(15, -3, -16))
+      .times(Mat4.scale(2.5, 2.5, 2.5));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -954,20 +1070,23 @@ export class Project extends Scene {
     let size_factor = 0;
     if (this.target_r == 1.5) {
       size_factor = 1;
-    }
-    else if (this.target_r == 1.25){
-        size_factor = 0.5;
+    } else if (this.target_r == 1.25) {
+      size_factor = 0.5;
     }
     let strafe_speed = 0;
 
     if (this.strafe) {
       strafe_speed = Math.random() * (Math.PI + Math.PI) + -Math.PI;
     }
-    let xMin = -15 + size_factor + this.move_factor, xMax = 15 - size_factor - this.move_factor;
-    let yMin = -2, yMax = 6 - size_factor - this.move_factor;
+    let xMin = -15 + size_factor + this.move_factor,
+      xMax = 15 - size_factor - this.move_factor;
+    let yMin = -2,
+      yMax = 6 - size_factor - this.move_factor;
 
     // Generate random coordinates
-    let ranX, ranY, ranZ = Math.random() * (10) + -8;
+    let ranX,
+      ranY,
+      ranZ = Math.random() * 10 + -8;
     do {
       ranX = Math.random() * (xMax - xMin) + xMin;
       ranY = Math.random() * (yMax - yMin) + yMin;
@@ -1401,8 +1520,10 @@ export class Project extends Scene {
 
   // Determine if a target was hit
   hit_target(coord, pos_world, t) {
-    let t_x = coord[0] + this.move_factor * Math.sin(coord[3] * t), t_y = coord[1]; // Target coodinates
-    let h_x = pos_world[0], h_y = pos_world[1]; // Mouse click coordinates
+    let t_x = coord[0] + this.move_factor * Math.sin(coord[3] * t),
+      t_y = coord[1]; // Target coodinates
+    let h_x = pos_world[0],
+      h_y = pos_world[1]; // Mouse click coordinates
     let d = Math.sqrt((t_x - h_x) ** 2 + (t_y - h_y) ** 2);
     // console.log(t_x);
     if (d <= this.target_r) {
@@ -1411,33 +1532,32 @@ export class Project extends Scene {
     }
     return false;
   }
-    
-            
-    // Mouse Picking 
-    my_mouse_down(e, pos, context, program_state) {
-        // Putting sounds here makes it faster? 
-        // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
-        // let heavy_shot = new Audio('assets/sounds/gun.mp3');
-        // let laser = new Audio('assets/sounds/laser.mp3');
-        // let water_drop = new Audio('assets/sounds/bloop.mp3');
-        // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
-        // let shatter = new Audio('assets/sounds/shatter.mp3');
-        // let first_hit = new Audio('assets/sounds/first_kill.mp3');
-        // let second_hit = new Audio('assets/sounds/second_kill.mp3');
-        // let third_hit = new Audio('assets/sounds/third_kill.mp3');
-        // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
 
-        if (this.iter <= this.frames_offset){
-            return;
-        }
+  // Mouse Picking
+  my_mouse_down(e, pos, context, program_state) {
+    // Putting sounds here makes it faster?
+    // let gun_with_ammo = new Audio('assets/sounds/gun_with_ammo.mp3');
+    // let heavy_shot = new Audio('assets/sounds/gun.mp3');
+    // let laser = new Audio('assets/sounds/laser.mp3');
+    // let water_drop = new Audio('assets/sounds/bloop.mp3');
+    // let quite_shot = new Audio('assets/sounds/quite_gun.mp3');
+    // let shatter = new Audio('assets/sounds/shatter.mp3');
+    // let first_hit = new Audio('assets/sounds/first_kill.mp3');
+    // let second_hit = new Audio('assets/sounds/second_kill.mp3');
+    // let third_hit = new Audio('assets/sounds/third_kill.mp3');
+    // let fourth_hit = new Audio('assets/sounds/fourth_kill.mp3');
+
+    if (this.iter <= this.frames_offset) {
+      return;
+    }
 
     if (this.game_end) {
       return;
     }
 
-        const t = program_state.animation_time / 1000;
+    const t = program_state.animation_time / 1000;
 
-        let missed = true;
+    let missed = true;
 
     let pos_ndc_near = vec4(pos[0], pos[1], -1.0, 1.0);
     let pos_ndc_far = vec4(pos[0], pos[1], 1.0, 1.0);
@@ -2287,52 +2407,52 @@ export class Project extends Scene {
     );
 
     let opacity = 0.08;
-    if (this.iter <= this.frames_offset){
-        opacity = 0;
-    }
-    else if (this.iter > this.frames_offset && this.iter <= 6*60){
-        // 180 to 360 to 0 -> 0.08
-        opacity = (this.iter-180)/180 * (0.08);
+    if (this.iter <= this.frames_offset) {
+      opacity = 0;
+    } else if (this.iter > this.frames_offset && this.iter <= 6 * 60) {
+      // 180 to 360 to 0 -> 0.08
+      opacity = ((this.iter - 180) / 180) * 0.08;
     }
     let spike_sphere_r_2 = 0.05 * Math.sin(spike_t / 1.1) + 0.7;
     let spike_sphere_transform_2 = spike_loc_transform
-    .times(Mat4.translation(0, spike_up, 0))
-    .times(Mat4.scale(spike_sphere_r_2, spike_sphere_r_2, spike_sphere_r_2));
+      .times(Mat4.translation(0, spike_up, 0))
+      .times(Mat4.scale(spike_sphere_r_2, spike_sphere_r_2, spike_sphere_r_2));
     this.shapes.spike_sphere.draw(
-    context,
-    program_state,
-    spike_sphere_transform_2,
-    this.materials.test.override({ color: color(1, 1, 1, opacity+0.02) })
+      context,
+      program_state,
+      spike_sphere_transform_2,
+      this.materials.test.override({ color: color(1, 1, 1, opacity + 0.02) })
     );
 
     let spike_sphere_r_3 = 0.05 * Math.sin(spike_t / 1.1) + 1;
     let spike_sphere_transform_3 = spike_loc_transform
-    .times(Mat4.translation(0, spike_up, 0))
-    .times(Mat4.scale(spike_sphere_r_3, spike_sphere_r_3, spike_sphere_r_3));
+      .times(Mat4.translation(0, spike_up, 0))
+      .times(Mat4.scale(spike_sphere_r_3, spike_sphere_r_3, spike_sphere_r_3));
     this.shapes.spike_sphere.draw(
-    context,
-    program_state,
-    spike_sphere_transform_3,
-    this.materials.test.override({ color: color(0, 0, 0, opacity) })
+      context,
+      program_state,
+      spike_sphere_transform_3,
+      this.materials.test.override({ color: color(0, 0, 0, opacity) })
     );
 
     let spike_sphere_r = 0.05 * Math.sin(spike_t / 1.1) + 1.4;
     let spike_sphere_transform = spike_loc_transform
-    .times(Mat4.translation(0, spike_up, 0))
-    .times(Mat4.scale(spike_sphere_r, spike_sphere_r, spike_sphere_r));
+      .times(Mat4.translation(0, spike_up, 0))
+      .times(Mat4.scale(spike_sphere_r, spike_sphere_r, spike_sphere_r));
     this.shapes.spike_sphere.draw(
-    context,
-    program_state,
-    spike_sphere_transform,
-    this.materials.test.override({ color: color(1, 1, 1, opacity) })
+      context,
+      program_state,
+      spike_sphere_transform,
+      this.materials.test.override({ color: color(1, 1, 1, opacity) })
     );
   }
 
   display(context, program_state) {
-    const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+    const t = program_state.animation_time / 1000,
+      dt = program_state.animation_delta_time / 1000;
 
     // allows for relative start time of the game
-    if (this.iter <= 3 * 60 ) {
+    if (this.iter <= 3 * 60) {
       // modify here to stall timer and spike
       this.t_diff = t;
       // console.log(t);
@@ -2378,31 +2498,23 @@ export class Project extends Scene {
     const spike_light = vec4(0, -2, -12, 1); // spike illumation
 
     let spike_light_size = 10;
-    if (this.iter <= this.frames_offset){
+    if (this.iter <= this.frames_offset) {
       spike_light_size = 0;
-    }
-    else if (this.iter > this.frames_offset && this.iter <= 6*60){
-      spike_light_size = (this.iter-180)/180 * 10;
+    } else if (this.iter > this.frames_offset && this.iter <= 6 * 60) {
+      spike_light_size = ((this.iter - 180) / 180) * 10;
     }
     // The parameters of the Light are: position, color, size
 
     if (!this.game_end) {
-        program_state.lights = [
-          new Light(
-            light_position,
-            color(1, 0.95, 0.8, 1),
-            1000
-          ), 
-          new Light(spike_light, color(0.47,1,1,1), spike_light_size)
-        ];
-    }
-    else {
-      program_state.lights = [new Light(
-        light_position,
-        color(1, 0.95, 0.8, 1),
-        0
-      ), 
-      new Light(spike_light, color(0.47,1,1,1), 0)];
+      program_state.lights = [
+        new Light(light_position, color(1, 0.95, 0.8, 1), 1000),
+        new Light(spike_light, color(0.47, 1, 1, 1), spike_light_size),
+      ];
+    } else {
+      program_state.lights = [
+        new Light(light_position, color(1, 0.95, 0.8, 1), 0),
+        new Light(spike_light, color(0.47, 1, 1, 1), 0),
+      ];
     }
 
     // need to figure out how to add another light source
