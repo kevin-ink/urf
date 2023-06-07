@@ -428,6 +428,14 @@ export class Project extends Scene {
         texture: new Texture("assets/background/target_gray.jpg"),
       }),
 
+      // Currently use untextured shape 
+      untextured_gray: new Material(new defs.Phong_Shader(), {
+        ambient: 0.2,
+        diffusivity: 0.8,
+        specularity: 0.4,
+        color: hex_color("#989a9c"),
+      }),
+
       wooden: new Material(new defs.Textured_Phong(), {
         ambient: 0.5,
         diffusivity: 0.5,
@@ -1434,7 +1442,7 @@ export class Project extends Scene {
       context,
       program_state,
       target_tri_transform,
-      this.materials.gray
+      this.materials.untextured_gray
     );
 
     let target_tri_2_transform = target_loc_transform
@@ -1445,7 +1453,7 @@ export class Project extends Scene {
       context,
       program_state,
       target_tri_2_transform,
-      this.materials.gray
+      this.materials.untextured_gray
     );
 
     let target_outline_transform = target_loc_transform
