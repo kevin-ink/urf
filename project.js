@@ -5,6 +5,7 @@ import {
   gameStarted,
   preloadAudio,
   audioFiles,
+  endGame,
 } from "./frontend/ui.js";
 
 const {
@@ -428,7 +429,7 @@ export class Project extends Scene {
         texture: new Texture("assets/background/target_gray.jpg"),
       }),
 
-      // Currently use untextured shape 
+      // Currently use untextured shape
       untextured_gray: new Material(new defs.Phong_Shader(), {
         ambient: 0.2,
         diffusivity: 0.8,
@@ -514,7 +515,7 @@ export class Project extends Scene {
     this.timer = config["timer"];
     // this.timer = 5;
     this.time = 0;
-  
+
     // Use a constant offset value to solve start time issue (very useful apparently!)
     this.iter = 0;
 
@@ -523,7 +524,6 @@ export class Project extends Scene {
 
     // pregame time offset in number of frames (3 seconds * 60 frames)
     this.frames_offset = 3 * 60;
-
 
     // determine whether we should render certain models
     this.game_end = false;
@@ -989,8 +989,7 @@ export class Project extends Scene {
     shooting_guide_trans = shooting_guide_trans
       .times(Mat4.translation(17.5, 1, -10))
       .times(Mat4.rotation(1.55, 0, 1, 0))
-      .times(Mat4.scale(2.5, 2.5, 1))
-      ;
+      .times(Mat4.scale(2.5, 2.5, 1));
     this.shapes.square.draw(
       context,
       program_state,
@@ -1077,8 +1076,9 @@ export class Project extends Scene {
     );
 
     let bolt_3_transform = bolt_1_transform;
-    bolt_3_transform = bolt_3_transform.times(Mat4.rotation(Math.PI/180 * -100, 0, 1, 0))
-                                        .times(Mat4.translation(0, 0, -105));
+    bolt_3_transform = bolt_3_transform
+      .times(Mat4.rotation((Math.PI / 180) * -100, 0, 1, 0))
+      .times(Mat4.translation(0, 0, -105));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1227,7 +1227,9 @@ export class Project extends Scene {
       yMax = 6 - size_factor - this.move_factor;
 
     // Generate random coordinates
-    let ranX, ranY, ranZ = Math.random() * (10-size_factor) + (-8+size_factor);
+    let ranX,
+      ranY,
+      ranZ = Math.random() * (10 - size_factor) + (-8 + size_factor);
     do {
       ranX = Math.random() * (xMax - xMin) + xMin;
       ranY = Math.random() * (yMax - yMin) + yMin;
@@ -1669,7 +1671,7 @@ export class Project extends Scene {
     // console.log(t_x);
     if (d <= this.target_r) {
       // If the mouse click is within radius length of target
-      if (d <= this.target_r/4){
+      if (d <= this.target_r / 4) {
         this.points += 2000;
       }
       return true;
@@ -1695,7 +1697,7 @@ export class Project extends Scene {
     //   return;
     // }
 
-    if (gameStarted == false){
+    if (gameStarted == false) {
       return;
     }
 
@@ -1810,7 +1812,8 @@ export class Project extends Scene {
       }
     }
     if (missed) {
-      if (this.points >= 500){ // cannot get negative points
+      if (this.points >= 500) {
+        // cannot get negative points
         this.points -= 500;
       }
       this.cont_hits = 0;
@@ -1823,7 +1826,7 @@ export class Project extends Scene {
     }
     this.accuracy = this.hits / this.total_shots;
     this.accuracy = Math.round(this.accuracy * 10000) / 100;
-    if (this.accuracy != 100){
+    if (this.accuracy != 100) {
       this.accuracy = this.accuracy.toFixed(2);
     }
     this.shot = true;
@@ -2292,16 +2295,14 @@ export class Project extends Scene {
     );
 
     let spike_up;
-    
-    if (gameStarted == false){
+
+    if (gameStarted == false) {
       spike_up = -0.2;
+    } else {
+      spike_up =
+        0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
     }
 
-    else {
-      spike_up = 0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
-    }
-
-    
     let r_spike = 0.2 * Math.sin((Math.PI * (t - this.t_diff)) / 2) + 0.47;
     let g_spike = 1;
     let b_spike = 1;
@@ -2315,14 +2316,14 @@ export class Project extends Scene {
     let spike_t;
     if (gameStarted == false || this.iter <= 3*60 + 15){ // added some padding so there is no time mismatch that causes NaN
       spike_t = 0;
-    }
-    else if (t-this.diff > 120*60){
+    } else if (t - this.diff > 120 * 60) {
       spike_t = 0;
+    } else {
+      spike_t =
+        10 *
+        ((config["timer"] - this.timer) / config["timer"]) *
+        (t - this.t_diff);
     }
-    else {
-      spike_t = 10*((config["timer"] - this.timer)/(config["timer"])) * (t - this.t_diff);
-    } 
-    
 
     let spike_cylinder_base_transform = spike_loc_transform
       .times(Mat4.translation(0, spike_up, 1 / 3))
@@ -2761,6 +2762,7 @@ export class Project extends Scene {
         audioFiles["spike_explode"].play();
     }
     if (this.timer <= 0 && this.timer > -2) {
+      endGame();
       this.game_end = true;
       this.time += dt;
       this.R_explode = 40 * Math.sin(this.time);
