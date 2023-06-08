@@ -702,7 +702,9 @@ export class Project extends Scene {
   }
 
   draw_backWindow(context, program_state) {
-    let window_translation = Mat4.translation(4.5,0,0).times(Mat4.scale(0.9,0.9,1));
+    let window_translation = Mat4.translation(4.5, 0, 0).times(
+      Mat4.scale(0.9, 0.9, 1)
+    );
     let windowTop_trans = window_translation
       .times(Mat4.translation(0, 4, -17.5))
       .times(Mat4.scale(2.5, 3, 1));
@@ -779,9 +781,9 @@ export class Project extends Scene {
     //   this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     // );
 
-    let bolt_size = Mat4.scale(0.08,0.08,0.05);
+    let bolt_size = Mat4.scale(0.08, 0.08, 0.05);
 
-    let bolt_11_transform = Mat4.translation(-2,-0.34,-16.1)
+    let bolt_11_transform = Mat4.translation(-2, -0.34, -16.1)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -791,7 +793,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_12_transform = Mat4.translation(-2,0.27,-16.1)
+    let bolt_12_transform = Mat4.translation(-2, 0.27, -16.1)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -801,7 +803,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_13_transform = Mat4.translation(2,-0.26,-16.1)
+    let bolt_13_transform = Mat4.translation(2, -0.26, -16.1)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -811,7 +813,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_14_transform = Mat4.translation(2,0.35,-16)
+    let bolt_14_transform = Mat4.translation(2, 0.35, -16)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -821,7 +823,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_15_transform = Mat4.translation(2,5,-16.1)
+    let bolt_15_transform = Mat4.translation(2, 5, -16.1)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -831,7 +833,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_16_transform = Mat4.translation(-2,5.1,-16.1)
+    let bolt_16_transform = Mat4.translation(-2, 5.1, -16.1)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -841,7 +843,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_17_transform = Mat4.translation(-2,4.6,-16.1)
+    let bolt_17_transform = Mat4.translation(-2, 4.6, -16.1)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -851,7 +853,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_18_transform = Mat4.translation(-2,1.4,-16)
+    let bolt_18_transform = Mat4.translation(-2, 1.4, -16)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -861,7 +863,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let bolt_19_transform = Mat4.translation(-2.1,0.9,-16)
+    let bolt_19_transform = Mat4.translation(-2.1, 0.9, -16)
       .times(window_translation)
       .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
@@ -870,11 +872,6 @@ export class Project extends Scene {
       bolt_19_transform,
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
-
-    
-    
-
-
 
     let windowPlanks = window_translation
       .times(Mat4.translation(0, 5.4, -16.3))
@@ -1592,7 +1589,9 @@ export class Project extends Scene {
     );
 
     let plank_2_transform = plank_1_transform;
-    plank_2_transform = plank_2_transform.times(Mat4.translation(0, 5.5, 0));
+    plank_2_transform = plank_2_transform
+      .times(Mat4.translation(0, 5.5, 0))
+      .times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
     this.shapes.cube.draw(
       context,
       program_state,

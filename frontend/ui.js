@@ -171,10 +171,11 @@ function getDebug() {
   if (DEBUG) {
     canvas.style.display = "block";
     main.classList.add("hide");
+    img.classList.add("hide");
     gameStarted = true;
     const div = document.getElementById("time");
     div.style.visibility = "visible";
-    config.timer = 100000; // adjust as necessary
+    config.timer = 5; // adjust as necessary
     const element_to_replace = document.querySelector("#main-canvas");
     const scenes = [Main_Scene].map((scene) => new scene());
     canvas_widget = new Canvas_Widget(element_to_replace, scenes);
@@ -320,9 +321,6 @@ export function endGame() {
         main.addEventListener(
           "animationend",
           () => {
-            // bring back mr urf
-            img.classList.remove("hide");
-
             main.classList.remove("puff-in-center");
             expand();
           },
@@ -362,7 +360,7 @@ function showStats() {
           setTimeout(() => {
             audioFiles["statsScreenSound"].pause();
             audioFiles["statsScreenSound"].currentTime = 0;
-          }, 5250);
+          }, 5350);
           audioFiles["calculateSound"].pause();
           audioFiles["calculateSound"].currentTime = 0;
           accuracyStat.classList.add("puff-in-center");
@@ -430,8 +428,8 @@ function closeStats(e) {
           stat.textContent = 0;
         }
       });
-
       main.classList.remove("darken");
+      img.classList.remove("hide");
       h1.classList.remove("animate__fadeOutUp");
       h1.classList.add("animate__fadeInDown");
       h1.classList.add("animate__animated");
