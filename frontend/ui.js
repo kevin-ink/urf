@@ -284,6 +284,8 @@ function showStats() {
           audioFiles["calculateSound"].pause();
           audioFiles["calculateSound"].currentTime = 0;
           accuracyStat.classList.add("puff-in-center");
+          const accuracy = stats["accuracy"];
+          accuracyStat.textContent = `${accuracy}%`;
           accuracyStat.style.visibility = "visible";
           accuracyStat.addEventListener(
             "animationend",
@@ -310,44 +312,55 @@ function closeStats(e) {
   audioFiles["calculateSound"].currentTime = 0;
   audioFiles["cancelSound"].play();
   const popup = e.target.parentNode;
-  const p = popup.querySelectorAll("p");
-  p.forEach((text) => {
-    text.style.visibility = "hidden";
-  });
   popup.classList.add("scale-out-ver-top");
-  popup.addEventListener("animationend", () => {
-    // remove popup from render
-    popup.style.display = "none";
-    popup.classList.remove("scale-out-ver-top");
-    const btns = document.querySelectorAll("button");
-    btns.forEach((iter) => {
-      iter.classList.add("cue");
-      if (
-        !iter.classList.contains("close-btn") &&
-        !iter.classList.contains("arrow")
-      ) {
-        iter.classList.add("animate__fadeInUp", "animate__faster");
-        iter.addEventListener(
-          "animationend",
-          () => {
-            iter.classList.remove("animate__fadeInUp", "animate__faster");
-            iter.disabled = false;
-          },
-          { once: true }
-        );
-        iter.classList.remove("animate__fadeOutDown");
-      }
-    });
-    main.classList.remove("darken");
-    h1.style.visibility = "visible";
-    h1.classList.remove("animate__fadeOutUp");
-    h1.classList.add("animate__fadeInDown");
-    h1.addEventListener(
-      "animationend",
-      () => h1.classList.add("animated", "fadeInDown"),
-      { once: true }
-    );
-  });
+  popup.addEventListener(
+    "animationend",
+    () => {
+      // remove popup from render
+      popup.style.display = "none";
+      popup.classList.remove("scale-out-ver-top");
+      const btns = document.querySelectorAll("button");
+      btns.forEach((iter) => {
+        iter.classList.add("cue");
+        if (
+          !iter.classList.contains("close-btn") &&
+          !iter.classList.contains("arrow")
+        ) {
+          iter.classList.add("animate__fadeInUp", "animate__faster");
+          iter.addEventListener(
+            "animationend",
+            () => {
+              iter.classList.remove("animate__fadeInUp", "animate__faster");
+              iter.disabled = false;
+            },
+            { once: true }
+          );
+          iter.classList.remove("animate__fadeOutDown");
+        }
+      });
+
+      // for stats elements reset
+      const statElements = document.querySelectorAll("h5");
+      statElements.forEach((stat) => {
+        if (stat.classList.contains("accuracy")) {
+          stat.style.visibility = "hidden";
+        } else {
+          stat.textContent = 0;
+        }
+      });
+
+      main.classList.remove("darken");
+      h1.style.visibility = "visible";
+      h1.classList.remove("animate__fadeOutUp");
+      h1.classList.add("animate__fadeInDown");
+      h1.addEventListener(
+        "animationend",
+        () => h1.classList.add("animated", "fadeInDown"),
+        { once: true }
+      );
+    },
+    { once: true }
+  );
 }
 
 // expands menu for options and how to play
@@ -518,10 +531,14 @@ function countdown() {
       countText.textContent = count.toString();
       countText.classList.add("scale-in-center");
       countText.style.visibility = "visible";
-      countText.addEventListener("animationend", () => {
-        countText.style.visibility = "hidden";
-        countText.classList.remove("scale-in-center");
-      });
+      countText.addEventListener(
+        "animationend",
+        () => {
+          countText.style.visibility = "hidden";
+          countText.classList.remove("scale-in-center");
+        },
+        { once: true }
+      );
       count--;
     } else {
       clearInterval(countdownInterval); // Stop the interval when count goes below 0
