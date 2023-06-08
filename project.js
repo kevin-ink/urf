@@ -448,19 +448,16 @@ export class Project extends Scene {
 
     // Sound effects
     this.gun_with_ammo = new Audio("assets/sounds/gun_with_ammo.mp3");
-    this.shot_odd = new Audio("assets/sounds/gun.mp3");
-    this.shot_even = new Audio("assets/sounds/gun.mp3");
     this.laser = new Audio("assets/sounds/laser.mp3");
     this.water_drop = new Audio("assets/sounds/bloop.mp3");
     this.quite_shot = new Audio("assets/sounds/quite_gun.mp3");
     this.shatter = new Audio("assets/sounds/shatter.mp3");
-    this.first_hit = new Audio("assets/sounds/first_kill.mp3");
-    this.second_hit = new Audio("assets/sounds/second_kill.mp3");
-    this.third_hit = new Audio("assets/sounds/third_kill.mp3");
-    this.fourth_hit = new Audio("assets/sounds/fourth_kill.mp3");
-    this.fifth_hit = new Audio("assets/sounds/fifth_kill.mp3");
+    // this.first_hit = new Audio("assets/sounds/first_kill.mp3");
+    // this.second_hit = new Audio("assets/sounds/second_kill.mp3");
+    // this.third_hit = new Audio("assets/sounds/third_kill.mp3");
+    // this.fourth_hit = new Audio("assets/sounds/fourth_kill.mp3");
+    // this.fifth_hit = new Audio("assets/sounds/fifth_kill.mp3");
     this.spectrum = new Audio("assets/sounds/spectrum_valorant.mp3");
-    this.terrible = new Audio("assets/sounds/terrible_voiceline.mp3");
 
     // Used for difficulty
     // Set the radius size of targets
@@ -500,6 +497,7 @@ export class Project extends Scene {
 
     // How many hits in a row to coordinate sound effect
     this.cont_hits = 0;
+    this.cont_hits_2 = 0;
     this.cont_misses = 0;
 
     // Point system
@@ -1727,11 +1725,19 @@ export class Project extends Scene {
     // quite_shot.play();
     // laser.play();
     // Two of the same sounds to allow overlap
-    if (this.hits % 2 == 1) {
-      this.shot_odd.play();
-    } else {
-      this.shot_even.play();
-    }
+    // if (this.total_shots % 3 == 0) {
+    //   audioFiles["gunSound1"].play();
+    //   console.log("one");
+    // } else if (this.total_shots % 3 == 1) {
+    //   audioFiles["gunSound2"].play();
+    //   console.log("two");
+    // }
+    // else {
+    //   audioFiles["gunSound3"].play();
+    //   console.log("three");
+    // }
+    audioFiles["gunSound1"].currentTime = 0;
+    audioFiles["gunSound1"].play();
 
     this.total_shots++;
     for (const coord of this.target_locations) {
@@ -1747,42 +1753,61 @@ export class Project extends Scene {
       if (this.hit_target(coord, world_coord, t)) {
         missed = false;
         this.cont_hits++;
+        this.cont_hits_2++;
         this.cont_misses = 0;
         // console.log(this.cont_hits);
         // Valorant kill sounds with different sound for more hits
-        switch (this.cont_hits) {
+        switch (this.cont_hits_2) {
           case 1:
-            this.first_hit.play();
-            console.log("first");
-            // console.log(this.cont_hits);
+            if (this.hits % 2 == 1){
+              audioFiles["killSound1"].play();
+            }
+            else {
+              audioFiles["killSound1.1"].play();
+            }
+            // this.first_hit.play();
+            // console.log("first");
             break;
           case 2:
-            this.second_hit.play();
-            this.points += 200;
+            audioFiles["killSound2"].play();
+            // this.second_hit.play();
             // console.log("second");
             break;
           case 3:
-            this.third_hit.play();
-            this.points += 500;
+            audioFiles["killSound3"].play();
+            // this.third_hit.play();
             // console.log("third");
+            this.cont_hits_2 = 0;
+            break;
+          // default:
+          //   audioFiles["killSound4"].play();
+          //   // this.fifth_hit.play();
+          //   // console.log("fourth");
+          //   this.cont_hits_2 = 0; 
+          //   break;
+        }
+        switch (this.cont_hits) { // for points
+          case 1:
+            break;
+          case 2:
+            this.points += 200;
+            break;
+          case 3:
+            this.points += 500;
             break;
           case 4:
-            this.fourth_hit.play();
             this.points += 1000;
-            // console.log("fourth");
             break;
           default:
-            this.fifth_hit.play();
             this.points += 1800;
-            // console.log("ace");
-            // this.cont_hits = 0; // use this to repeat the ace sound
             break;
         }
+
+
         this.points += 1000;
         this.hits++;
         this.target_locations.delete(coord);
         this.target_locations.add(this.generate_location());
-
         break;
       }
     }
@@ -1792,10 +1817,11 @@ export class Project extends Scene {
         this.points -= 500;
       }
       this.cont_hits = 0;
+      this.cont_hits_2 = 0;
       this.cont_misses++;
       // easter egg :)
       if (this.cont_misses == 4) {
-        this.terrible.play();
+        audioFiles["terrible"].play();
       }
     }
     this.accuracy = this.hits / this.total_shots;
@@ -2288,8 +2314,7 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false || this.iter <= 3 * 60 + 20) {
-      // added some padding so there is no time mismatch that causes NaN
+    if (gameStarted == false || this.iter <= 3*60 + 15){ // added some padding so there is no time mismatch that causes NaN
       spike_t = 0;
     } else if (t - this.diff > 120 * 60) {
       spike_t = 0;
@@ -2733,6 +2758,9 @@ export class Project extends Scene {
 
     updateBar(this.points, this.accuracy, this.display_timer);
 
+    if (!this.game_end && this.timer <= 1 && this.timer > 0){
+        audioFiles["spike_explode"].play();
+    }
     if (this.timer <= 0 && this.timer > -2) {
       endGame();
       this.game_end = true;

@@ -32,11 +32,16 @@ const countFrom = 3;
 let count = countFrom;
 const countText = document.createElement("div");
 
+//
+// SETUP
+//
+
 // replace this with canvas
 const canvas_element = document.querySelector("#main-canvas");
 
 let canvas_widget; // Canvas_Widget
 let origTransform; // stores the previous transformation so to revert
+
 
 // export this for use in game canvas
 export let config = {
@@ -72,13 +77,34 @@ const opts = document.querySelectorAll("h3");
 //  LOAD AUDIO FILES
 //  add audio files as necessary to this function
 function preloadAudioFiles() {
-  preloadAudio("assets/sounds/mariostart.mp3", "countdownSound", 0.25);
   preloadAudio("assets/sounds/button-124476.mp3", "buttonSound", 0.4);
   preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
   preloadAudio("assets/sounds/click-button-140881.mp3", "changeOptSound", 1);
   preloadAudio("assets/sounds/soft-click.mp3", "cancelSound", 1);
   preloadAudio("assets/sounds/computer-calculating.mp3", "calculateSound", 0.5);
   preloadAudio("assets/sounds/valorantLobby.mp3", "statsScreenSound", 0.5);
+  preloadAudio("assets/sounds/mariostart_2.mp3", "countdownSound", 0.1);
+
+  // gun shot
+  preloadAudio("assets/sounds/gun.mp3", "gunSound1", 0.6);
+
+  // hit shot
+  preloadAudio("assets/sounds/first_kill.mp3", "killSound1", 0.1);
+  preloadAudio("assets/sounds/first_kill.mp3", "killSound1.1", 0.1);
+
+  preloadAudio("assets/sounds/second_kill.mp3", "killSound2", 0.06);
+  preloadAudio("assets/sounds/third_kill.mp3", "killSound3", 0.06);
+  preloadAudio("assets/sounds/fourth_kill.mp3", "killSound4", 0.2);
+
+  // spike sounds
+  preloadAudio("assets/sounds/spike_beep_30.mp3", "spike_beep_30", 0.2);
+  preloadAudio("assets/sounds/spike_beep_60.mp3", "spike_beep_60", 0.2);
+  preloadAudio("assets/sounds/spike_beep_90.mp3", "spike_beep_90", 0.2);
+  preloadAudio("assets/sounds/spike_beep_120.mp3", "spike_beep_120", 0.2);
+  preloadAudio("assets/sounds/spike_explode.mp3", "spike_explode", 0.6);
+
+  // easter egg
+  preloadAudio("assets/sounds/terrible_voiceline.mp3", "terrible", 0.2);
 }
 
 //
@@ -190,7 +216,7 @@ function startGame() {
   );
   const scenes = [Main_Scene].map((scene) => new scene());
   canvas_widget = new Canvas_Widget(canvas_element, scenes);
-  audioFiles["startBtnSound"].play();
+  audioFiles["buttonSound"].play();
   countdown();
   end = false;
 }
@@ -564,6 +590,14 @@ function countdown() {
     if (count == 3) {
       audioFiles["countdownSound"].play();
     }
+    if (count == 0) {
+      audioFiles["startBtnSound"].play();
+    }
+    countText.textContent = count.toString();
+    countText.style.display = "block";
+    countText.addEventListener("animationend", () => {
+      countText.style.display = "none";
+    });
     if (count > 0) {
       countText.textContent = count.toString();
       countText.classList.add("scale-in-center");
@@ -577,7 +611,20 @@ function countdown() {
         { once: true }
       );
       count--;
-    } else {
+    }
+     else {
+        if (config["timer"] == 30){
+          audioFiles["spike_beep_30"].play();
+        }
+        else if (config["timer"] == 60){
+          audioFiles["spike_beep_60"].play();
+        }
+        else if (config["timer"] == 90){
+          audioFiles["spike_beep_90"].play();
+        }
+        else {
+          audioFiles["spike_beep_120"].play();
+        }
       clearInterval(countdownInterval); // Stop the interval when count goes below 0
       countText.visibility = "hidden";
       const div = document.getElementById("time");
