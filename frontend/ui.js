@@ -42,7 +42,6 @@ const canvas_element = document.querySelector("#main-canvas");
 let canvas_widget; // Canvas_Widget
 let origTransform; // stores the previous transformation so to revert
 
-
 // export this for use in game canvas
 export let config = {
   // default values
@@ -224,7 +223,22 @@ function startGame() {
 // performs game ended functions
 export function endGame() {
   if (!end) {
+    // stop sounds
+    if (config["timer"] == 30) {
+      audioFiles["spike_beep_30"].pause();
+      audioFiles["spike_beep_30"].currentTime = 0;
+    } else if (config["timer"] == 60) {
+      audioFiles["spike_beep_60"].pause();
+      audioFiles["spike_beep_60"].currentTime = 0;
+    } else if (config["timer"] == 90) {
+      audioFiles["spike_beep_90"].pause();
+      audioFiles["spike_beep_90"].currentTime = 0;
+    } else {
+      audioFiles["spike_beep_120"].pause();
+      audioFiles["spike_beep_120"].currentTime = 0;
+    }
     end = true;
+    gameStarted = false;
     topBar.style.display = "none";
     canvas.classList.add("animate__animated", "animate__fadeOut");
     canvas.addEventListener(
@@ -306,7 +320,6 @@ export function endGame() {
         canvas.style.display = "none";
         canvas.classList.remove("animate__animated", "animate__fadeOut");
         canvas_element.innerHTML = "";
-        gameStarted = false;
       },
       { once: true }
     );
@@ -449,7 +462,7 @@ function expand(id = "gameOver") {
       d.forEach((div) => {
         div.style.visibility = "visible";
       });
-      if (id == "gameOver") {
+      if (id === "gameOver") {
         showStats();
       }
     },
@@ -595,9 +608,13 @@ function countdown() {
     }
     countText.textContent = count.toString();
     countText.style.display = "block";
-    countText.addEventListener("animationend", () => {
-      countText.style.display = "none";
-    });
+    countText.addEventListener(
+      "animationend",
+      () => {
+        countText.style.display = "none";
+      },
+      { once: true }
+    );
     if (count > 0) {
       countText.textContent = count.toString();
       countText.classList.add("scale-in-center");
@@ -611,20 +628,16 @@ function countdown() {
         { once: true }
       );
       count--;
-    }
-     else {
-        if (config["timer"] == 30){
-          audioFiles["spike_beep_30"].play();
-        }
-        else if (config["timer"] == 60){
-          audioFiles["spike_beep_60"].play();
-        }
-        else if (config["timer"] == 90){
-          audioFiles["spike_beep_90"].play();
-        }
-        else {
-          audioFiles["spike_beep_120"].play();
-        }
+    } else {
+      if (config["timer"] == 30) {
+        audioFiles["spike_beep_30"].play();
+      } else if (config["timer"] == 60) {
+        audioFiles["spike_beep_60"].play();
+      } else if (config["timer"] == 90) {
+        audioFiles["spike_beep_90"].play();
+      } else {
+        audioFiles["spike_beep_120"].play();
+      }
       clearInterval(countdownInterval); // Stop the interval when count goes below 0
       countText.visibility = "hidden";
       const div = document.getElementById("time");
