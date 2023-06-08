@@ -323,6 +323,14 @@ button.close-btn:hover {
     margin-bottom: 1rem;
 }
 
+img {
+    position: absolute;
+    opacity: 0.2;
+    height: 150vh;
+    width: auto;
+    right: 12%;
+}
+
 /*
 // Animista classes
 */

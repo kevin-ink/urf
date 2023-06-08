@@ -3,7 +3,7 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-var DEBUG = true;
+var DEBUG = false;
 
 //
 // DECLARATIONS
@@ -25,6 +25,7 @@ const h1 = document.getElementById("title");
 const main = document.getElementById("main");
 const canvas = document.getElementById("main-canvas");
 const topBar = document.getElementById("top-bar");
+const img = document.getElementById("urf");
 
 // countdown, change countFrom if needed
 const countFrom = 3;
@@ -188,6 +189,7 @@ function startGame() {
     "animationend",
     () => {
       main.classList.add("hide");
+      img.classList.add("hide");
       main.classList.remove("puff-out-center");
     },
     { once: true }
@@ -269,6 +271,8 @@ export function endGame() {
           h4.textContent = "ACTUALLY TRY?";
         }
 
+        // bring back mr urf
+        img.classList.remove("hide");
         // rewrite current settings ahead of time (before display)
         const settingsElement = document.getElementById("settingsText");
         const timer = config["timer"];

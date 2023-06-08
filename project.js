@@ -1032,7 +1032,104 @@ export class Project extends Scene {
       right_support_pillar_trans,
       this.materials.wooden
     );
+
+    // steel scaffold
+    let steelBeam_trans = Mat4.identity()
+      .times(Mat4.translation(7, 9.5, -11))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(0.15, 4.3, 0.75));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelBeam_trans,
+      this.materials.steel_beam
+    );
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelBeam_trans.times(Mat4.translation(-90, 0, 0)),
+      this.materials.steel_beam
+    );
+    let steelBeam_diagonal = Mat4.identity()
+      .times(Mat4.translation(-6.8, 9.5, -16.5))
+      .times(Mat4.rotation(Math.PI / 4, 0, 1, 0))
+      .times(Mat4.scale(0.15, 0.6, 14));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelBeam_diagonal,
+      this.materials.steel_beam
+    );
+    let steelBeam_diagonal2 = Mat4.identity()
+      .times(Mat4.translation(7.3, 9.5, -16.5))
+      .times(Mat4.rotation(-Math.PI / 4, 0, 1, 0))
+      .times(Mat4.scale(0.15, 0.6, 14));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelBeam_diagonal2,
+      this.materials.steel_beam
+    );
+    // steel supports
+    let steelSupport = Mat4.identity()
+      .times(Mat4.translation(-10.5, 5, -17.5))
+      .times(Mat4.scale(0.6, 0.5, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelSupport,
+      this.materials.steel_beam
+    );
+    let steelSupport2 = Mat4.identity()
+      .times(Mat4.translation(-10.5, 5.3, -15.5))
+      .times(Mat4.rotation(-Math.PI / 6, 1, 0, 0))
+      .times(Mat4.scale(0.4, 0.2, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelSupport2,
+      this.materials.steel_beam
+    );
+    let steelSupportR = Mat4.identity()
+      .times(Mat4.translation(10.5, 5, -17.5))
+      .times(Mat4.scale(0.6, 0.5, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelSupportR,
+      this.materials.steel_beam
+    );
+    let steelSupportR2 = Mat4.identity()
+      .times(Mat4.translation(10.5, 5.3, -15.5))
+      .times(Mat4.rotation(-Math.PI / 6, 1, 0, 0))
+      .times(Mat4.scale(0.4, 0.2, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelSupportR2,
+      this.materials.steel_beam
+    );
+    let steelSupportT = Mat4.identity()
+      .times(Mat4.translation(10.5, 8.9, -9.5))
+      .times(Mat4.scale(0.7, 0.55, 0.5));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelSupportT,
+      this.materials.steel_beam
+    );
+    let steelSupportT2 = Mat4.identity()
+      .times(Mat4.translation(-10.5, 8.9, -9.5))
+      .times(Mat4.scale(0.7, 0.55, 0.5));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      steelSupportT2,
+      this.materials.steel_beam
+    );
   }
+
+  draw_floorLines(context, program_state) {}
 
   draw_props(context, program_state, t) {
     // Roof
