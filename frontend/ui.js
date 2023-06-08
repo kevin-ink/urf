@@ -31,12 +31,12 @@ preloadAudio("assets/sounds/mariostart_2.mp3", "countdownSound", 0.1);
 preloadAudio(
   "assets/sounds/button-124476-[AudioTrimmer.com].mp3",
   "buttonSound",
-  0.4
+  0.3
 );
 preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
 
 // gun shot
-preloadAudio("assets/sounds/gun.mp3", "gunSound1", 0.8);
+preloadAudio("assets/sounds/gun.mp3", "gunSound1", 0.6);
 
 // hit shot
 preloadAudio("assets/sounds/first_kill.mp3", "killSound1", 0.1);
@@ -47,8 +47,15 @@ preloadAudio("assets/sounds/third_kill.mp3", "killSound3", 0.06);
 preloadAudio("assets/sounds/fourth_kill.mp3", "killSound4", 0.2);
 
 // spike sounds
-
+preloadAudio("assets/sounds/spike_beep_30.mp3", "spike_beep_30", 0.2);
+preloadAudio("assets/sounds/spike_beep_60.mp3", "spike_beep_60", 0.2);
+preloadAudio("assets/sounds/spike_beep_90.mp3", "spike_beep_90", 0.2);
+preloadAudio("assets/sounds/spike_beep_120.mp3", "spike_beep_120", 0.2);
 preloadAudio("assets/sounds/spike_explode.mp3", "spike_explode", 0.6);
+
+// easter egg
+preloadAudio("assets/sounds/terrible_voiceline.mp3", "terrible", 0.2);
+
 
 
 
@@ -335,6 +342,18 @@ function countdown() {
     });
     count--;
     if (count < 0) {
+      if (config["timer"] == 30){
+        audioFiles["spike_beep_30"].play();
+      }
+      else if (config["timer"] == 60){
+        audioFiles["spike_beep_60"].play();
+      }
+      else if (config["timer"] == 90){
+        audioFiles["spike_beep_90"].play();
+      }
+      else {
+        audioFiles["spike_beep_120"].play();
+      }
       clearInterval(countdownInterval); // Stop the interval when count goes below 0
       document.body.removeChild(countText); // Remove the countText element from the DOM
       let div = document.getElementById("time");
@@ -357,6 +376,7 @@ function startGame() {
   topBar.classList.add("puff-in-center");
   const scenes = [Main_Scene, ...Additional_Scenes].map((scene) => new scene());
   canvas_widget = new Canvas_Widget(canvas_element, scenes);
+  audioFiles["buttonSound"].play();
   countdown();
 }
 

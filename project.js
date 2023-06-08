@@ -447,19 +447,16 @@ export class Project extends Scene {
 
     // Sound effects
     this.gun_with_ammo = new Audio("assets/sounds/gun_with_ammo.mp3");
-    this.shot_odd = new Audio("assets/sounds/gun.mp3");
-    this.shot_even = new Audio("assets/sounds/gun.mp3");
     this.laser = new Audio("assets/sounds/laser.mp3");
     this.water_drop = new Audio("assets/sounds/bloop.mp3");
     this.quite_shot = new Audio("assets/sounds/quite_gun.mp3");
     this.shatter = new Audio("assets/sounds/shatter.mp3");
-    this.first_hit = new Audio("assets/sounds/first_kill.mp3");
-    this.second_hit = new Audio("assets/sounds/second_kill.mp3");
-    this.third_hit = new Audio("assets/sounds/third_kill.mp3");
-    this.fourth_hit = new Audio("assets/sounds/fourth_kill.mp3");
-    this.fifth_hit = new Audio("assets/sounds/fifth_kill.mp3");
+    // this.first_hit = new Audio("assets/sounds/first_kill.mp3");
+    // this.second_hit = new Audio("assets/sounds/second_kill.mp3");
+    // this.third_hit = new Audio("assets/sounds/third_kill.mp3");
+    // this.fourth_hit = new Audio("assets/sounds/fourth_kill.mp3");
+    // this.fifth_hit = new Audio("assets/sounds/fifth_kill.mp3");
     this.spectrum = new Audio("assets/sounds/spectrum_valorant.mp3");
-    this.terrible = new Audio("assets/sounds/terrible_voiceline.mp3");
 
     // Used for difficulty
     // Set the radius size of targets
@@ -1821,7 +1818,7 @@ export class Project extends Scene {
       this.cont_misses++;
       // easter egg :)
       if (this.cont_misses == 4) {
-        this.terrible.play();
+        audioFiles["terrible"].play();
       }
     }
     this.accuracy = this.hits / this.total_shots;
