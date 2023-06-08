@@ -254,6 +254,10 @@ export class Project extends Scene {
         [0.34, 0.66],
         [0, 1],
       ]),
+      rounded_uncapped_cylinder: new defs.Cylindrical_Tube(30, 30, [
+        [0.34, 0.66],
+        [0, 1],
+      ]),
       bullet_capped_cylinder: new defs.Capped_Cylinder(5, 30, [
         [0.34, 0.66],
         [0, 1],
@@ -268,7 +272,6 @@ export class Project extends Scene {
       ]),
       spider: new Shape_From_File("assets/background/spider.obj"),
       grass: new Shape_From_File("assets/background/grass.obj"),
-      // flower: new Shape_From_File("assets/background/flower.obj"),
 
       // spike shapes
       spike: new Spike(),
@@ -306,6 +309,14 @@ export class Project extends Scene {
         ambient: 0.4,
         diffusivity: 0.6,
         color: hex_color("#70B2E7"),
+      }),
+
+      barrel: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 0.5,
+        diffusivity: 1,
+        specularity: 0,
+        texture: new Texture("assets/background/rusty.jpg", "LINEAR"),
       }),
 
       gun: new Material(new defs.Textured_Phong(), {
@@ -356,14 +367,14 @@ export class Project extends Scene {
         color: hex_color("#000000"),
         ambient: 1,
         specularity: 0.8,
-        diffuse: 0.8,
+        diffusivity: 0.8,
         texture: new Texture("assets/background/Dirty_Concrete.png", "LINEAR"),
       }),
       floor_texture: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
         ambient: 0.8,
         specularity: 0.5,
-        diffuse: 0.5,
+        diffusivity: 0.5,
         texture: new Texture("assets/background/Dirty_Concrete.png", "LINEAR"),
       }),
       crates_texture: new Material(new defs.Textured_Phong(), {
@@ -488,7 +499,12 @@ export class Project extends Scene {
         ambient: 0.8,
         diffusivity: 0.5,
         specularity: 0.5,
-        texture: new Texture("assets/background/woodBoardTex.jpeg"),
+        texture: new Texture("assets/background/woodBoardTex.jpeg", "LINEAR"),
+      }),
+
+      floor_strip: new Material(new defs.Phong_Shader(), {
+        color: hex_color("#D2B48C"),
+        ambient: 1,
       }),
     };
 
@@ -600,6 +616,109 @@ export class Project extends Scene {
   // }
 
   // Background functions
+  draw_props2(context, program_state) {
+    // let barrel_trans = Mat4.identity()
+    //   .times(Mat4.translation(-10, -3.5, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1, 1, 3));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans,
+    //   this.materials.barrel
+    // );
+    // let barrel_trans2 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -4.8, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.05, 1.05, 0.15));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans2,
+    //   this.materials.dark_gray
+    // );
+    // let barrel_trans3 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -2.02, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.01, 1.01, 0.08));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans3,
+    //   this.materials.gray
+    // );
+    // let barrel_trans4 = Mat4.identity()
+    //   .times(Mat4.translation(-10.5, -1.9, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(0.1, 0.1, 0.1));
+    // this.shapes.rounded_capped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans4,
+    //   this.materials.dark_gray.override({ ambient: 0.7 })
+    // );
+    // let barrel_trans5 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -2, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.0, 1.0, 0.05));
+    // this.shapes.rounded_capped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans5,
+    //   this.materials.barrel
+    // );
+    let barrel2_trans = Mat4.identity()
+      .times(Mat4.translation(11, -3.5, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1, 1, 3));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel2_trans,
+      this.materials.barrel
+    );
+    let barrel2_trans2 = Mat4.identity()
+      .times(Mat4.translation(11, -4.8, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.01, 1.01, 0.15));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel2_trans2,
+      this.materials.dark_gray
+    );
+    let barrel2_trans3 = Mat4.identity()
+      .times(Mat4.translation(11, -2.02, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.01, 1.01, 0.08));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel2_trans3,
+      this.materials.gray
+    );
+    let barrel2_trans4 = Mat4.identity()
+      .times(Mat4.translation(10.5, -1.9, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(0.1, 0.1, 0.1));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel2_trans4,
+      this.materials.dark_gray.override({ ambient: 0.7 })
+    );
+    let barrel2_trans5 = Mat4.identity()
+      .times(Mat4.translation(11, -2, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.0, 1.0, 0.05));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel2_trans5,
+      this.materials.barrel
+    );
+  }
+
   draw_floor(context, program_state) {
     let floor_transform = Mat4.identity();
     floor_transform = floor_transform
@@ -610,6 +729,67 @@ export class Project extends Scene {
       program_state,
       floor_transform,
       this.materials.floor_texture
+    );
+
+    let floorDiagonal = Mat4.identity()
+      .times(Mat4.translation(-10.5, -4.8, -17))
+      .times(Mat4.rotation(Math.PI / 10, 0, 1, 0))
+      .times(Mat4.scale(0.08, 0.3, 57));
+    this.shapes.capped_cylinder.draw(
+      context,
+      program_state,
+      floorDiagonal,
+      this.materials.floor_strip
+    );
+    let floorDiagonal2 = Mat4.identity()
+      .times(Mat4.translation(10.5, -4.8, -17))
+      .times(Mat4.rotation(-Math.PI / 10, 0, 1, 0))
+      .times(Mat4.scale(0.08, 0.3, 57));
+    this.shapes.capped_cylinder.draw(
+      context,
+      program_state,
+      floorDiagonal2,
+      this.materials.floor_strip
+    );
+    let floorDiagonal3 = Mat4.identity()
+      .times(Mat4.translation(-10.5, -4.9, -17))
+      .times(Mat4.rotation(Math.PI / 10, 0, 1, 0))
+      .times(Mat4.scale(0.1, 0.3, 57));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      floorDiagonal3,
+      this.materials.spike_aura.override({ ambient: 0.6 })
+    );
+    let floorDiagonal4 = Mat4.identity()
+      .times(Mat4.translation(10.5, -4.9, -17))
+      .times(Mat4.rotation(-Math.PI / 10, 0, 1, 0))
+      .times(Mat4.scale(0.1, 0.3, 57));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      floorDiagonal4,
+      this.materials.spike_aura.override({ ambient: 0.6 })
+    );
+    let floorDiagonal5 = Mat4.identity()
+      .times(Mat4.translation(-10.45, -5, -17))
+      .times(Mat4.rotation(Math.PI / 10, 0, 1, 0))
+      .times(Mat4.scale(0.2, 0.3, 57));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      floorDiagonal5,
+      this.materials.dark_gray
+    );
+    let floorDiagonal6 = Mat4.identity()
+      .times(Mat4.translation(10.45, -5, -17))
+      .times(Mat4.rotation(-Math.PI / 10, 0, 1, 0))
+      .times(Mat4.scale(0.2, 0.3, 57));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      floorDiagonal6,
+      this.materials.dark_gray
     );
   }
 
@@ -1224,8 +1404,6 @@ export class Project extends Scene {
     );
   }
 
-  draw_floorLines(context, program_state) {}
-
   draw_props(context, program_state, t) {
     // Roof
     // let roof_trans = Mat4.identity();
@@ -1289,6 +1467,17 @@ export class Project extends Scene {
       this.materials.reverse_crate
     );
 
+    let crate5_trans = Mat4.identity()
+      .times(Mat4.translation(15, -3.5, -3))
+      .times(Mat4.scale(1.4, 1.4, 1))
+      .times(Mat4.rotation(-0.2, 0, 1, 0));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      crate5_trans,
+      this.materials.crates_texture
+    );
+
     // Locked boxes
     /*
         let standing_block1_trans = Mat4.identity();
@@ -1308,7 +1497,7 @@ export class Project extends Scene {
     );
     let standing_block3_trans = Mat4.identity();
     standing_block3_trans = standing_block3_trans
-      .times(Mat4.translation(16, -3.5, -10))
+      .times(Mat4.translation(16, -3.3, -10))
       .times(Mat4.scale(1.5, 1.5, 2));
     this.shapes.cube.draw(
       context,
@@ -1367,7 +1556,7 @@ export class Project extends Scene {
     let bullet_body3_trans = Mat4.identity();
     bullet_body3_trans = bullet_body3_trans
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
-      .times(Mat4.translation(-15, -58, 80))
+      .times(Mat4.translation(-8, -58, 80))
       .times(Mat4.rotation(1, 0, 1, 0))
       .times(Mat4.scale(0.75, 0.75, 0.75));
     this.shapes.bullet_capped_cylinder.draw(
@@ -3403,6 +3592,7 @@ export class Project extends Scene {
     this.draw_floor(context, program_state);
     this.draw_walls(context, program_state);
     this.draw_props(context, program_state, t);
+    this.draw_props2(context, program_state);
     this.draw_pillars(context, program_state);
     this.draw_backWindow(context, program_state);
 
@@ -3447,7 +3637,7 @@ export class Project extends Scene {
         program_state,
         sphere_transform,
         this.materials.test.override({
-          diffuse: 0,
+          diffusivity: 0,
           specularity: 0,
           color: color(1, 1, 1, 0.6),
         })
@@ -3467,7 +3657,7 @@ export class Project extends Scene {
         program_state,
         sphere_transform,
         this.materials.test.override({
-          diffuse: 0,
+          diffusivity: 0,
           specularity: 0,
           color: color(1, 1, 1, 0.6),
         })

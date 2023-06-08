@@ -3,7 +3,7 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-var DEBUG = false;
+var DEBUG = true;
 
 //
 // DECLARATIONS
@@ -175,7 +175,7 @@ function getDebug() {
     gameStarted = true;
     const div = document.getElementById("time");
     div.style.visibility = "visible";
-    config.timer = 5; // adjust as necessary
+    config.timer = 100000; // adjust as necessary
     const element_to_replace = document.querySelector("#main-canvas");
     const scenes = [Main_Scene].map((scene) => new scene());
     canvas_widget = new Canvas_Widget(element_to_replace, scenes);
