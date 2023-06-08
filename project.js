@@ -342,12 +342,12 @@ export class Project extends Scene {
       bullet: new Material(new defs.Phong_Shader(), {
         ambient: 1,
         diffusivity: 1,
-        specularity: 1,
+        specularity: 0.2,
         color: hex_color("#212121"),
       }),
       sky: new Material(new Texture_Scroll_X(), {
         color: hex_color("#8CBDD6"),
-        ambient: 0.5,
+        ambient: 0.25,
         diffusivity: 0.5,
         specularity: 0.5,
         texture: new Texture("assets/background/sky.jpg", "LINEAR"),
@@ -702,7 +702,8 @@ export class Project extends Scene {
   }
 
   draw_backWindow(context, program_state) {
-    let windowTop_trans = Mat4.identity()
+    let window_translation = Mat4.translation(4.5,0,0).times(Mat4.scale(0.9,0.9,1));
+    let windowTop_trans = window_translation
       .times(Mat4.translation(0, 4, -17.5))
       .times(Mat4.scale(2.5, 3, 1));
     this.shapes.circle.draw(
@@ -711,7 +712,7 @@ export class Project extends Scene {
       windowTop_trans,
       this.materials.bullet
     );
-    let windowSquare_trans = Mat4.identity()
+    let windowSquare_trans = window_translation
       .times(Mat4.translation(0, 2, -17.5))
       .times(Mat4.scale(2.41, 3, 1));
     this.shapes.square.draw(
@@ -720,7 +721,7 @@ export class Project extends Scene {
       windowSquare_trans,
       this.materials.bullet
     );
-    let windowTop_sky = Mat4.identity()
+    let windowTop_sky = window_translation
       .times(Mat4.translation(0, 4, -16.5))
       .times(Mat4.scale(2, 2.5, 1));
     this.shapes.circle.draw(
@@ -729,7 +730,7 @@ export class Project extends Scene {
       windowTop_sky,
       this.materials.sky
     );
-    let windowSquare_sky = Mat4.identity()
+    let windowSquare_sky = window_translation
       .times(Mat4.translation(0, 2, -16.5))
       .times(Mat4.scale(2, 2.5, 1));
     this.shapes.square.draw(
@@ -739,7 +740,7 @@ export class Project extends Scene {
       this.materials.sky
     );
 
-    let windowBigBoard = Mat4.identity()
+    let windowBigBoard = window_translation
       .times(Mat4.translation(0, 3, -16.4))
       .times(Mat4.rotation(-Math.PI / 2.1, 0, 0, 1))
       .times(Mat4.scale(1.75, 3, 0.2));
@@ -750,7 +751,7 @@ export class Project extends Scene {
       this.materials.wood_board
     );
 
-    let bolt_trans = Mat4.identity()
+    let bolt_trans = window_translation
       .times(Mat4.translation(-2.8, 4, -16.1))
       .times(Mat4.scale(0.1, 0.1, 0.05));
     this.shapes.rounded_capped_cylinder.draw(
@@ -778,7 +779,7 @@ export class Project extends Scene {
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
 
-    let windowPlanks = Mat4.identity()
+    let windowPlanks = window_translation
       .times(Mat4.translation(0, 5.4, -16.3))
       .times(Mat4.rotation(Math.PI / 2.02, 0, 0, 1))
       .times(Mat4.scale(0.5, 2.5, 0.2));
@@ -789,7 +790,7 @@ export class Project extends Scene {
       this.materials.wood_plank.override({ ambient: 0.7 })
     );
 
-    let windowPlanks2 = Mat4.identity()
+    let windowPlanks2 = window_translation
       .times(Mat4.translation(0, 0, -16.3))
       .times(Mat4.rotation(-Math.PI / 2.02, 0, 0, 1))
       .times(Mat4.scale(0.5, 2.5, 0.2));
@@ -800,7 +801,7 @@ export class Project extends Scene {
       this.materials.wood_plank.override({ ambient: 0.7 })
     );
 
-    let windowPlanks3 = Mat4.identity()
+    let windowPlanks3 = window_translation
       .times(Mat4.translation(0, 1, -16.2))
       .times(Mat4.rotation(Math.PI / 2.2, 0, 0, 1))
       .times(Mat4.scale(0.5, 2.5, 0.2));
