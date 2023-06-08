@@ -216,7 +216,7 @@ function startGame() {
   );
   const scenes = [Main_Scene].map((scene) => new scene());
   canvas_widget = new Canvas_Widget(canvas_element, scenes);
-  audioFiles["startBtnSound"].play();
+  audioFiles["buttonSound"].play();
   countdown();
   end = false;
 }
@@ -565,20 +565,6 @@ function countdown() {
     countText.addEventListener("animationend", () => {
       countText.style.display = "none";
     });
-    count--;
-    if (count < 0) {
-      if (config["timer"] == 30){
-        audioFiles["spike_beep_30"].play();
-      }
-      else if (config["timer"] == 60){
-        audioFiles["spike_beep_60"].play();
-      }
-      else if (config["timer"] == 90){
-        audioFiles["spike_beep_90"].play();
-      }
-      else {
-        audioFiles["spike_beep_120"].play();
-      }
     if (count > 0) {
       countText.textContent = count.toString();
       countText.classList.add("scale-in-center");
@@ -592,7 +578,20 @@ function countdown() {
         { once: true }
       );
       count--;
-    } else {
+    }
+     else {
+        if (config["timer"] == 30){
+          audioFiles["spike_beep_30"].play();
+        }
+        else if (config["timer"] == 60){
+          audioFiles["spike_beep_60"].play();
+        }
+        else if (config["timer"] == 90){
+          audioFiles["spike_beep_90"].play();
+        }
+        else {
+          audioFiles["spike_beep_120"].play();
+        }
       clearInterval(countdownInterval); // Stop the interval when count goes below 0
       countText.visibility = "hidden";
       const div = document.getElementById("time");
@@ -630,6 +629,7 @@ export function updateBar(points, accuracy, time) {
   div.textContent = accuracy + "%";
   div = document.getElementById("time");
   div.textContent = time;
+}
 
 // changes options accordingly
 function changeOpt(e) {
