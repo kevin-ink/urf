@@ -47,7 +47,7 @@ export let config = {
   difficulty: "easy",
   strafe: false,
   scatter: 1,
-  timer: 15,
+  timer: 30,
 };
 
 // options available to player
@@ -55,7 +55,7 @@ const options = {
   difficulty: ["easy", "medium", "hard"],
   strafe: [false, true],
   scatter: [1, 3, 5],
-  timer: [15, 30, 60, 90, 120, 5],
+  timer: [30, 60, 90, 120],
 };
 
 // for options
@@ -247,20 +247,20 @@ export function endGame() {
         const h4 = document.querySelector("h4");
         if (
           stats["accuracy"] >= 90 &&
-          stats["points"] >= config["timer"] * 3000
+          stats["points"] >= config["timer"] * 5500
         ) {
           h4.textContent = "YOUR A PRO!";
         } else if (
-          stats["accuracy"] >= 70 &&
-          stats["points"] >= config["timer"] * 2000
+          stats["accuracy"] >= 80 &&
+          stats["points"] >= config["timer"] * 4000
         ) {
           h4.textContent = "NICE AIM!";
         } else if (
-          stats["accuracy"] >= 50 &&
-          stats["points"] >= config["timer"] * 1000
+          stats["accuracy"] >= 60 &&
+          stats["points"] >= config["timer"] * 3000
         ) {
           h4.textContent = "GOOD ROUND!";
-        } else if (stats["accuracy"] > 0 && stats["points"] > 0) {
+        } else if (stats["accuracy"] >= 30 && stats["points"] >= config["timer"] * 1000) {
           h4.textContent = "KEEP AT IT!";
         } else {
           h4.textContent = "ACTUALLY TRY?";

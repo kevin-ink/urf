@@ -349,7 +349,7 @@ export class Project extends Scene {
         color: hex_color("#212121"),
       }),
       sky: new Material(new defs.Phong_Shader(), {
-        color: hex_color("#87CEFA"),
+        color: hex_color("#8CBDD6"),
         ambient: 0.5,
         diffusivity: 0.5,
         specularity: 0.5,
@@ -401,6 +401,11 @@ export class Project extends Scene {
       }),
       big_grass: new Material(new defs.Phong_Shader(), {
         color: hex_color("#244a2b"),
+        ambient: 1,
+        diffusivity: 1,
+      }),
+      dying_grass: new Material(new defs.Phong_Shader(), {
+        color: hex_color("#785d32"),
         ambient: 1,
         diffusivity: 1,
       }),
@@ -461,6 +466,22 @@ export class Project extends Scene {
         specularity: 0.5,
         color: hex_color("#000000"),
         texture: new Texture("assets/background/wooden.jpeg", "LINEAR"),
+      }),
+
+      concrete: new Material(new defs.Textured_Phong(), {
+        ambient: 0.7,
+        diffusivity: 0.3,
+        specularity: 0.1,
+        color: hex_color("#000000"),
+        texture: new Texture("assets/background/pillar_concrete.jpg", "LINEAR"),
+      }),
+
+      steel_beam: new Material(new defs.Textured_Phong(), {
+        ambient: 0.4,
+        diffusivity: 0.1,
+        specularity: 0.1,
+        color: hex_color("#000000"),
+        texture: new Texture("assets/background/steel_beam.jpg", "LINEAR"),
       }),
     };
 
@@ -675,7 +696,7 @@ export class Project extends Scene {
 
   draw_pillars(context, program_state) {
     let leftPillar_trans = Mat4.identity().times(
-      Mat4.translation(-12, 0, -17.5).times(Mat4.scale(0.75, 10, 0.5))
+      Mat4.translation(-10.5, 0, -17.5).times(Mat4.scale(0.75, 10, 0.5))
     );
     this.shapes.cube.draw(
       context,
@@ -683,11 +704,30 @@ export class Project extends Scene {
       leftPillar_trans,
       this.materials.wooden
     );
+    let leftPillar_base_trans = leftPillar_trans
+      .times(Mat4.translation(0,-0.4,1))
+      .times(Mat4.scale(1.4,0.15,1.2));
+    this.shapes.cube.draw(
+      context, 
+      program_state,
+      leftPillar_base_trans, 
+      this.materials.concrete,
+    )
+    let leftPillar_base_2_trans = leftPillar_trans
+      .times(Mat4.translation(0,-0.5,1))
+      .times(Mat4.scale(1.6,0.08,1.3));
+    this.shapes.cube.draw(
+      context, 
+      program_state,
+      leftPillar_base_2_trans, 
+      this.materials.concrete,
+    )
+
     // angled block
     let leftPillar_2_trans = Mat4.identity()
-      .times(Mat4.translation(-12, 5, -17))
+      .times(Mat4.translation(-10.5, 5, -17))
       .times(Mat4.rotation(Math.PI / 3, 1, 0, 0))
-      .times(Mat4.scale(0.75, 8.5, 0.75));
+      .times(Mat4.scale(0.5, 8.5, 0.5));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -696,7 +736,7 @@ export class Project extends Scene {
     );
     // long into camera block
     let leftPillar_3_trans = Mat4.identity()
-      .times(Mat4.translation(-12, 9.25, -17))
+      .times(Mat4.translation(-10.5, 9.25, -17))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(0.75, 18, 0.75));
     this.shapes.cube.draw(
@@ -706,7 +746,7 @@ export class Project extends Scene {
       this.materials.wooden
     );
     let rightPillar_trans = Mat4.identity()
-      .times(Mat4.translation(12, 0, -17.5))
+      .times(Mat4.translation(10.5, 0, -17.5))
       .times(Mat4.scale(0.75, 10, 0.5));
     this.shapes.cube.draw(
       context,
@@ -714,11 +754,31 @@ export class Project extends Scene {
       rightPillar_trans,
       this.materials.wooden
     );
+
+    let rightPillar_base_trans = rightPillar_trans
+      .times(Mat4.translation(0,-0.4,1))
+      .times(Mat4.scale(1.4,0.15,1.2));
+    this.shapes.cube.draw(
+      context, 
+      program_state,
+      rightPillar_base_trans, 
+      this.materials.concrete,
+    )
+    let rightPillar_base_2_trans = rightPillar_trans
+      .times(Mat4.translation(0,-0.5,1))
+      .times(Mat4.scale(1.6,0.08,1.3));
+    this.shapes.cube.draw(
+      context, 
+      program_state,
+      rightPillar_base_2_trans, 
+      this.materials.concrete,
+    )
+
     // angled block
     let rightPillar_2_trans = Mat4.identity()
-      .times(Mat4.translation(12, 5, -17))
+      .times(Mat4.translation(10.5, 5, -17))
       .times(Mat4.rotation(Math.PI / 3, 1, 0, 0))
-      .times(Mat4.scale(0.75, 8.5, 0.75));
+      .times(Mat4.scale(0.5, 8.5, 0.5));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -727,7 +787,7 @@ export class Project extends Scene {
     );
     // long into camera block
     let rightPillar_3_trans = Mat4.identity()
-      .times(Mat4.translation(12, 9.25, -17))
+      .times(Mat4.translation(10.5, 9.25, -17))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(0.75, 18, 0.75));
     this.shapes.cube.draw(
@@ -736,20 +796,129 @@ export class Project extends Scene {
       rightPillar_3_trans,
       this.materials.wooden
     );
+
     // horizontal block
     let horizPillar_trans = Mat4.identity()
-      .times(Mat4.translation(0, 9.25, -6))
+      .times(Mat4.translation(0, 9.55, -17))
       .times(Mat4.rotation(Math.PI / 2, 0, 0, 1))
-      .times(Mat4.scale(0.75, 12, 0.75));
+      .times(Mat4.scale(0.75, 20, 0.75));
     this.shapes.cube.draw(
       context,
       program_state,
       horizPillar_trans,
       this.materials.wooden
     );
+
+    let horizPillar_2_trans = Mat4.identity()
+    .times(Mat4.translation(0, 9.55, -6))
+    .times(Mat4.rotation(Math.PI / 2, 0, 0, 1))
+    .times(Mat4.scale(0.75, 20, 0.75));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    horizPillar_2_trans,
+    this.materials.wooden
+  );
+
+  // steel beams
+  let Beam_left_trans = Mat4.identity()
+    .times(Mat4.translation(-18.2, 10.55, -17))
+    .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    .times(Mat4.scale(0.4, 18, 0.4));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    Beam_left_trans,
+    this.materials.steel_beam
+  );
+
+  let Beam_right_trans =Mat4.identity()
+    .times(Mat4.translation(18.2, 10.55, -17))
+    .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    .times(Mat4.scale(0.4, 18, 0.4));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    Beam_right_trans,
+    this.materials.steel_beam
+  );
+
+  let horizBeam_trans =Mat4.identity()
+    .times(Mat4.translation(0, 10.55, -18))
+    .times(Mat4.rotation(Math.PI / 2, 0, 0,1))
+    .times(Mat4.scale(0.4, 18, 0.4));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    horizBeam_trans,
+    this.materials.steel_beam
+  );
+
+  let horizBeam_left_trans =Mat4.identity()
+    .times(Mat4.translation(-18.25, 9.5, -17.2))
+    .times(Mat4.scale(0.7, 1, 1));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    horizBeam_left_trans,
+    this.materials.steel_beam
+  );
+
+  let horizBeam_left_2_trans =Mat4.identity()
+    .times(Mat4.translation(-18.25, 9.5, -6))
+    .times(Mat4.scale(0.7, 1, 1));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    horizBeam_left_2_trans,
+    this.materials.steel_beam
+  );
+
+  let horizBeam_right_trans =Mat4.identity()
+    .times(Mat4.translation(18.25, 9.5, -17.2))
+    .times(Mat4.scale(0.7, 1, 1));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    horizBeam_right_trans,
+    this.materials.steel_beam
+  );
+
+  let horizBeam_right_2_trans =Mat4.identity()
+    .times(Mat4.translation(18.25, 9.5, -6))
+    .times(Mat4.scale(0.7, 1, 1));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    horizBeam_right_2_trans,
+    this.materials.steel_beam
+  );
+
+  // tilted pillars
+    let left_support_pillar_trans = Mat4.translation(-8,8,-17.5)
+      .times(Mat4.rotation(-Math.PI/4, 0,0,1))
+      .times(Mat4.scale(0.3,3,0.3));
+      this.shapes.cube.draw(
+        context,
+        program_state,
+        left_support_pillar_trans,
+        this.materials.wooden
+      );
+
+      let right_support_pillar_trans = Mat4.translation(8,8,-17.5)
+      .times(Mat4.rotation(Math.PI/4, 0,0,1))
+      .times(Mat4.scale(0.3,3,0.3));
+      this.shapes.cube.draw(
+        context,
+        program_state,
+        right_support_pillar_trans,
+        this.materials.wooden
+      );
+
+
   }
 
-  draw_props(context, program_state) {
+  draw_props(context, program_state, t) {
     // Roof
     // let roof_trans = Mat4.identity();
     // roof_trans = roof_trans
@@ -1041,6 +1210,64 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
+    // random planks on left side
+    let plank_random_transform = Mat4.translation(-16.2,-3,0)
+      .times(Mat4.rotation(Math.PI/20, 0,0,1))
+      .times(Mat4.rotation(Math.PI/2, 0,1,0))
+      .times(Mat4.scale(1,1.8,0.05));
+      this.shapes.cube.draw(
+        context,
+        program_state,
+        plank_random_transform,
+        this.materials.wooden
+      );
+
+
+    let plank_random_2_transform = Mat4.translation(-16.5,-4.4,0.5)
+    .times(Mat4.rotation(Math.PI/40, 0,0,1))
+    .times(Mat4.rotation(Math.PI/2, 0,1,0))
+    .times(Mat4.scale(2.4,0.4,0.05));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      plank_random_2_transform,
+      this.materials.wood_plank
+    );
+
+    // let plank_random_3_transform = Mat4.translation(-16.2,-3,1.6)
+    //   .times(Mat4.rotation(-Math.PI/40, 1,0,0))
+    //   .times(Mat4.rotation(Math.PI/24, 0,0,1))
+    //   .times(Mat4.rotation(Math.PI/4, 0,1,0))
+    //   .times(Mat4.scale(0.25,3,0.05));
+    //   this.shapes.cube.draw(
+    //     context,
+    //     program_state,
+    //     plank_random_3_transform,
+    //     this.materials.wooden
+    //   );
+
+    // middle planks
+    let plank_random_4_transform = Mat4.translation(-8.6,-3,-16.5)
+      .times(Mat4.rotation(Math.PI/20, 0,0,1))
+      .times(Mat4.rotation(Math.PI/2.2, 0,1,0))
+      .times(Mat4.scale(0.8,3.5,0.05));
+      this.shapes.cube.draw(
+        context,
+        program_state,
+        plank_random_4_transform,
+        this.materials.wood_plank
+      );
+
+    let plank_random_5_transform = Mat4.translation(-7.7,-3.5,-16.5)
+      .times(Mat4.rotation(Math.PI/18, 1,0,0))
+      .times(Mat4.scale(0.4,1.8,0.05));
+      this.shapes.cube.draw(
+        context,
+        program_state,
+        plank_random_5_transform,
+        this.materials.wood_plank
+      );
+
     // Wooden planks over window
     let plank_1_transform = Mat4.identity();
     plank_1_transform = plank_1_transform
@@ -1199,7 +1426,8 @@ export class Project extends Scene {
     
     let spider_transform = Mat4.identity();
     spider_transform = spider_transform
-      .times(Mat4.translation(-16, 8, -17))
+      .times(Mat4.translation(-16+t/60, 8-6*Math.sqrt(t/90), -17.5))
+      .times(Mat4.rotation(Math.sqrt(t/90), 0, 0, 1))
       .times(Mat4.scale(0.15, 0.15, 0.15));
     this.shapes.spider.draw(
       context, 
@@ -1240,29 +1468,74 @@ export class Project extends Scene {
       this.materials.big_grass
     );
 
-    let grass_4_trans = Mat4.identity();
-    grass_4_trans = grass_4_trans
-      .times(Mat4.translation(-5, -4, -17.5))
-      .times(Mat4.scale(1, 1.5, 1));
-    this.shapes.square.draw(
+    let grass_4_transform = Mat4.translation(-4, -4.5, -17.5)
+      .times(Mat4.scale(0.8,0.8,1));
+    this.shapes.grass.draw(
       context,
       program_state,
-      grass_4_trans,
-      this.materials.small_grass
+      grass_4_transform,
+      this.materials.big_grass
     );
 
-    let grass_5_trans = Mat4.identity();
-    grass_5_trans = grass_5_trans
-      .times(Mat4.translation(17.5, -4, -6))
-      .times(Mat4.rotation(Math.PI/180 * 7, 0, 0, 1))
-      .times(Mat4.rotation(Math.PI/180 * 5, 1, 0, 0))
-      .times(Mat4.scale(1, 1.5, 1));
-    this.shapes.square.draw(
+    let grass_5_transform = Mat4.translation(17.5, -4.5, -8)
+      .times(Mat4.scale(0.3,0.4,0.65));
+    this.shapes.grass.draw(
       context,
       program_state,
-      grass_5_trans,
-      this.materials.small_grass
+      grass_5_transform,
+      this.materials.big_grass
     );
+
+    let grass_6_transform = Mat4.translation(-12.8, -4, -9)
+      .times(Mat4.scale(0.3,0.4,0.65));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_6_transform,
+      this.materials.dying_grass
+    );
+
+    let grass_7_transform = Mat4.translation(-14, -4, -9.3)
+      .times(Mat4.scale(0.8,0.4,0.4));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_7_transform,
+      this.materials.dying_grass
+    );
+
+    let grass_8_transform = Mat4.translation(-16.5, -4.2, -6.9)
+      .times(Mat4.scale(0.3,0.6,0.3));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_8_transform,
+      this.materials.dying_grass
+    );
+
+    // let grass_4_trans = Mat4.identity();
+    // grass_4_trans = grass_4_trans
+    //   .times(Mat4.translation(-5, -4, -17.5))
+    //   .times(Mat4.scale(1, 1, 1));
+    // this.shapes.square.draw(
+    //   context,
+    //   program_state,
+    //   grass_4_trans,
+    //   this.materials.small_grass
+    // );
+
+    // let grass_5_trans = Mat4.identity();
+    // grass_5_trans = grass_5_trans
+    //   .times(Mat4.translation(17.5, -4, -6))
+    //   .times(Mat4.rotation(Math.PI/180 * 7, 0, 0, 1))
+    //   .times(Mat4.rotation(Math.PI/180 * 5, 1, 0, 0))
+    //   .times(Mat4.scale(1, 1.5, 1));
+    // this.shapes.square.draw(
+    //   context,
+    //   program_state,
+    //   grass_5_trans,
+    //   this.materials.small_grass
+    // );
   }
 
   draw_sky(context, program_state) {
@@ -2827,7 +3100,7 @@ export class Project extends Scene {
     this.draw_sky(context, program_state);
     this.draw_floor(context, program_state);
     this.draw_walls(context, program_state);
-    this.draw_props(context, program_state);
+    this.draw_props(context, program_state, t);
     this.draw_pillars(context, program_state);
 
     // game interactives
