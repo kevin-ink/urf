@@ -1,4 +1,5 @@
 import { defs, tiny } from "./examples/common.js";
+import { Shape_From_File } from "./examples/obj-file-demo.js";
 import {
   config,
   updateBar,
@@ -265,6 +266,12 @@ export class Project extends Scene {
         [0.34, 0.66],
         [0, 1],
       ]),
+      spider: new Shape_From_File("assets/background/spider.obj"
+      ),
+      grass: new Shape_From_File("assets/background/grass.obj"
+      ),
+      flower: new Shape_From_File("assets/background/flower.obj"
+      ),
 
       // spike shapes
       spike: new Spike(),
@@ -392,6 +399,17 @@ export class Project extends Scene {
         ambient: 1,
         texture: new Texture("assets/background/warning-sign.png"),
       }),
+      big_grass: new Material(new defs.Phong_Shader(), {
+        color: hex_color("#244a2b"),
+        ambient: 1,
+        diffusivity: 1,
+      }),
+      small_grass: new Material(new defs.Textured_Phong(), {
+        color: hex_color("000000"),
+        ambient: 0.3,
+        texture: new Texture("assets/background/grass-image.png"),
+      }),
+      
 
       // spike materials
       spike: new Material(new defs.Phong_Shader(), {
@@ -1037,7 +1055,8 @@ export class Project extends Scene {
     );
 
     let plank_2_transform = plank_1_transform;
-    plank_2_transform = plank_2_transform.times(Mat4.translation(0, 5.5, 0));
+    plank_2_transform = plank_2_transform
+      .times(Mat4.translation(0, 5.5, 0));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -1046,7 +1065,8 @@ export class Project extends Scene {
     );
 
     let plank_3_transform = plank_1_transform;
-    plank_3_transform = plank_3_transform.times(Mat4.translation(0, 8, 0));
+    plank_3_transform = plank_3_transform
+      .times(Mat4.translation(0, 8, 0));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -1067,7 +1087,8 @@ export class Project extends Scene {
     );
 
     let bolt_2_transform = bolt_1_transform;
-    bolt_2_transform = bolt_2_transform.times(Mat4.translation(0, 10, 0));
+    bolt_2_transform = bolt_2_transform
+      .times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1087,7 +1108,8 @@ export class Project extends Scene {
     );
 
     let bolt_4_transform = bolt_3_transform;
-    bolt_4_transform = bolt_4_transform.times(Mat4.translation(0, 10, 0));
+    bolt_4_transform = bolt_4_transform
+      .times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1096,7 +1118,8 @@ export class Project extends Scene {
     );
 
     let bolt_5_transform = bolt_1_transform;
-    bolt_5_transform = bolt_5_transform.times(Mat4.translation(0, 53, 0));
+    bolt_5_transform = bolt_5_transform
+      .times(Mat4.translation(0, 53, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1105,7 +1128,8 @@ export class Project extends Scene {
     );
 
     let bolt_6_transform = bolt_1_transform;
-    bolt_6_transform = bolt_6_transform.times(Mat4.translation(0, 64, 0));
+    bolt_6_transform = bolt_6_transform
+      .times(Mat4.translation(0, 64, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1114,7 +1138,8 @@ export class Project extends Scene {
     );
 
     let bolt_7_transform = bolt_3_transform;
-    bolt_7_transform = bolt_7_transform.times(Mat4.translation(0, 53, 0));
+    bolt_7_transform = bolt_7_transform
+      .times(Mat4.translation(0, 53, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1123,7 +1148,8 @@ export class Project extends Scene {
     );
 
     let bolt_8_transform = bolt_7_transform;
-    bolt_8_transform = bolt_8_transform.times(Mat4.translation(0, 11, 0));
+    bolt_8_transform = bolt_8_transform
+      .times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1132,7 +1158,8 @@ export class Project extends Scene {
     );
 
     let bolt_9_transform = bolt_6_transform;
-    bolt_9_transform = bolt_9_transform.times(Mat4.translation(0, 14, 0));
+    bolt_9_transform = bolt_9_transform
+      .times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1141,7 +1168,8 @@ export class Project extends Scene {
     );
 
     let bolt_10_transform = bolt_9_transform;
-    bolt_10_transform = bolt_10_transform.times(Mat4.translation(0, 11, 0));
+    bolt_10_transform = bolt_10_transform
+      .times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1150,7 +1178,8 @@ export class Project extends Scene {
     );
 
     let bolt_11_transform = bolt_8_transform;
-    bolt_11_transform = bolt_11_transform.times(Mat4.translation(0, 14, 0));
+    bolt_11_transform = bolt_11_transform
+      .times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1159,12 +1188,80 @@ export class Project extends Scene {
     );
 
     let bolt_12_transform = bolt_11_transform;
-    bolt_12_transform = bolt_12_transform.times(Mat4.translation(0, 11, 0));
+    bolt_12_transform = bolt_12_transform
+      .times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
       bolt_12_transform,
       this.materials.bullet
+    );
+    
+    let spider_transform = Mat4.identity();
+    spider_transform = spider_transform
+      .times(Mat4.translation(-16, 8, -17))
+      .times(Mat4.scale(0.15, 0.15, 0.15));
+    this.shapes.spider.draw(
+      context, 
+      program_state, 
+      spider_transform, 
+      this.materials.bullet
+    );
+
+    let grass_1_trans = Mat4.identity();
+    grass_1_trans = grass_1_trans
+      .times(Mat4.translation(-17.5, -4.5, -5))
+      .times(Mat4.scale(0.5, 0.5, 0.5));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_1_trans,
+      this.materials.big_grass
+    );
+
+    let grass_2_trans = Mat4.identity();
+    grass_2_trans = grass_2_trans
+      .times(Mat4.translation(6, -4.5, -17.5))
+      .times(Mat4.scale(0.5, 0.5, 0.5));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_2_trans,
+      this.materials.big_grass
+    );
+
+    let grass_3_trans = grass_2_trans;
+    grass_3_trans = grass_3_trans
+      .times(Mat4.translation(-25, -1, 0));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_3_trans,
+      this.materials.big_grass
+    );
+
+    let grass_4_trans = Mat4.identity();
+    grass_4_trans = grass_4_trans
+      .times(Mat4.translation(-5, -4, -17.5))
+      .times(Mat4.scale(1, 1.5, 1));
+    this.shapes.square.draw(
+      context,
+      program_state,
+      grass_4_trans,
+      this.materials.small_grass
+    );
+
+    let grass_5_trans = Mat4.identity();
+    grass_5_trans = grass_5_trans
+      .times(Mat4.translation(17.5, -4, -6))
+      .times(Mat4.rotation(Math.PI/180 * 7, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI/180 * 5, 1, 0, 0))
+      .times(Mat4.scale(1, 1.5, 1));
+    this.shapes.square.draw(
+      context,
+      program_state,
+      grass_5_trans,
+      this.materials.small_grass
     );
   }
 
