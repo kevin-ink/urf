@@ -772,12 +772,109 @@ export class Project extends Scene {
       bolt_trans.times(Mat4.translation(55, -23, 0)),
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
+    // this.shapes.rounded_capped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   bolt_trans.times(Mat4.translation(2, -26, 0)),
+    //   this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    // );
+
+    let bolt_size = Mat4.scale(0.08,0.08,0.05);
+
+    let bolt_11_transform = Mat4.translation(-2,-0.34,-16.1)
+      .times(window_translation)
+      .times(bolt_size);
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
-      bolt_trans.times(Mat4.translation(2, -26, 0)),
+      bolt_11_transform,
       this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
     );
+
+    let bolt_12_transform = Mat4.translation(-2,0.27,-16.1)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_12_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let bolt_13_transform = Mat4.translation(2,-0.26,-16.1)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_13_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let bolt_14_transform = Mat4.translation(2,0.35,-16)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_14_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let bolt_15_transform = Mat4.translation(2,5,-16.1)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_15_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let bolt_16_transform = Mat4.translation(-2,5.1,-16.1)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_16_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let bolt_17_transform = Mat4.translation(-2,4.6,-16.1)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_17_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let bolt_18_transform = Mat4.translation(-2,1.4,-16)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_18_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let bolt_19_transform = Mat4.translation(-2.1,0.9,-16)
+      .times(window_translation)
+      .times(bolt_size);
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_19_transform,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    
+    
+
+
 
     let windowPlanks = window_translation
       .times(Mat4.translation(0, 5.4, -16.3))
