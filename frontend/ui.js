@@ -204,6 +204,29 @@ export function endGame() {
     canvas.addEventListener(
       "animationend",
       () => {
+        // rewrite popup text based on accuracy
+        const h4 = document.querySelector("h4");
+        if (
+          stats["accuracy"] >= 90 &&
+          stats["points"] >= config["timer"] * 3000
+        ) {
+          h4.textContent = "YOUR A PRO!";
+        } else if (
+          stats["accuracy"] >= 70 &&
+          stats["points"] >= config["timer"] * 2000
+        ) {
+          h4.textContent = "NICE AIM!";
+        } else if (
+          stats["accuracy"] >= 50 &&
+          stats["points"] >= config["timer"] * 1000
+        ) {
+          h4.textContent = "GOOD ROUND!";
+        } else if (stats["accuracy"] > 0 && stats["points"] > 0) {
+          h4.textContent = "KEEP AT IT!";
+        } else {
+          h4.textContent = "ACTUALLY TRY?";
+        }
+
         // rewrite current settings ahead of time (before display)
         const settingsElement = document.getElementById("settingsText");
         const timer = config["timer"];
@@ -211,7 +234,7 @@ export function endGame() {
         const difficulty = config["difficulty"];
         const strafe = config["strafe"] == true ? "on" : "off";
         settingsElement.textContent = `Settings for this round: ${timer} seconds,
-        strafe ${strafe}, ${difficulty} difficulty, scatter ${scatter}.`;
+        strafe ${strafe}, ${difficulty} difficulty, scatter ${scatter}`;
 
         // fade out header
         h1.classList.add("animate__fadeOutUp", "animate__animated");
@@ -277,12 +300,12 @@ function showStats() {
       audioFiles["calculateSound"].play();
       scoreInterval = setInterval(() => {
         if (scoreAccumulate < finalScore) {
-          if (scoreAccumulate <= finalScore + 200) {
-            scoreAccumulate += 200;
+          if (scoreAccumulate + finalScore / 200 <= finalScore) {
+            scoreAccumulate += finalScore / 200;
           } else {
             scoreAccumulate += finalScore - scoreAccumulate;
           }
-          stat.textContent = scoreAccumulate;
+          stat.textContent = Math.trunc(scoreAccumulate);
         } else {
           clearInterval(scoreInterval); // Stop the interval when score reached
           audioFiles["calculateSound"].pause();
@@ -354,12 +377,16 @@ function closeStats(e) {
       });
 
       main.classList.remove("darken");
-      h1.style.visibility = "visible";
       h1.classList.remove("animate__fadeOutUp");
       h1.classList.add("animate__fadeInDown");
+      h1.classList.add("animate__animated");
+      h1.style.visibility = "visible";
       h1.addEventListener(
         "animationend",
-        () => h1.classList.add("animated", "fadeInDown"),
+        () => {
+          h1.classList.remove("animate__fadeInDown", "animate__animated");
+          h1.classList.add("animated");
+        },
         { once: true }
       );
     },
@@ -512,10 +539,16 @@ function rearrange(e) {
         // change background color and get back headers
         h1.style.visibility = "visible";
         h1.classList.remove("animate__fadeOutUp");
+        h1.classList.add("animate__animated");
         h1.classList.add("animate__fadeInDown");
         h1.addEventListener(
           "animationend",
-          () => h1.classList.add("animated", "fadeInDown"),
+          () =>
+            h1.classList.remove(
+              "animated",
+              "animate__fadeInDown",
+              "animate__animated"
+            ),
           { once: true }
         );
         main.classList.remove("darken");
