@@ -69,6 +69,7 @@ body {
 h1 {
     font-size: 4rem;
     width: 50vw;
+    cursor: default;
     justify-content: center;
     margin-left: 12vw;
     font-family: "Roboto", sans-serif;
@@ -181,7 +182,7 @@ button#start-btn:hover {
 
 button.close-btn {
     width: 3rem;
-    height: 6rem;
+    height: 3.5rem;
     margin-left: 90%;
     font-size: 3rem;
     margin-bottom: 0;
@@ -243,6 +244,7 @@ button.close-btn:hover {
     font-weight: bold;
     filter: drop-shadow(0 0 0.2rem #000000);
     font-size: 2rem;
+    cursor: default;
 }
 
 #time {
@@ -259,7 +261,6 @@ button.close-btn:hover {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    
 }
 
 #points > p {
@@ -295,6 +296,31 @@ button.close-btn:hover {
     line-height: 200px;
     margin-top: -100px;
     text-align: center;
+    cursor: default;
+}
+
+.hide {
+    position: absolute;
+	left: -9999px;
+}
+
+#stats-popup > h4
+{
+    font-size: 3rem;
+    margin: 0;
+    text-align: center;
+    background: linear-gradient(var(--angle), #0575e6, #021b79);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 0.2rem #021b79);
+}
+
+#stats-popup > div
+{
+    margin: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 /*

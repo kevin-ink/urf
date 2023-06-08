@@ -6,6 +6,7 @@ import {
   gameStarted,
   preloadAudio,
   audioFiles,
+  endGame,
 } from "./frontend/ui.js";
 
 const {
@@ -267,6 +268,10 @@ export class Project extends Scene {
       ]),
       spider: new Shape_From_File("assets/background/spider.obj"
       ),
+      grass: new Shape_From_File("assets/background/grass.obj"
+      ),
+      flower: new Shape_From_File("assets/background/flower.obj"
+      ),
 
       // spike shapes
       spike: new Spike(),
@@ -394,6 +399,17 @@ export class Project extends Scene {
         ambient: 1,
         texture: new Texture("assets/background/warning-sign.png"),
       }),
+      big_grass: new Material(new defs.Phong_Shader(), {
+        color: hex_color("#244a2b"),
+        ambient: 1,
+        diffusivity: 1,
+      }),
+      small_grass: new Material(new defs.Textured_Phong(), {
+        color: hex_color("000000"),
+        ambient: 0.3,
+        texture: new Texture("assets/background/grass-image.png"),
+      }),
+      
 
       // spike materials
       spike: new Material(new defs.Phong_Shader(), {
@@ -431,7 +447,7 @@ export class Project extends Scene {
         texture: new Texture("assets/background/target_gray.jpg"),
       }),
 
-      // Currently use untextured shape 
+      // Currently use untextured shape
       untextured_gray: new Material(new defs.Phong_Shader(), {
         ambient: 0.2,
         diffusivity: 0.8,
@@ -450,19 +466,16 @@ export class Project extends Scene {
 
     // Sound effects
     this.gun_with_ammo = new Audio("assets/sounds/gun_with_ammo.mp3");
-    this.shot_odd = new Audio("assets/sounds/gun.mp3");
-    this.shot_even = new Audio("assets/sounds/gun.mp3");
     this.laser = new Audio("assets/sounds/laser.mp3");
     this.water_drop = new Audio("assets/sounds/bloop.mp3");
     this.quite_shot = new Audio("assets/sounds/quite_gun.mp3");
     this.shatter = new Audio("assets/sounds/shatter.mp3");
-    this.first_hit = new Audio("assets/sounds/first_kill.mp3");
-    this.second_hit = new Audio("assets/sounds/second_kill.mp3");
-    this.third_hit = new Audio("assets/sounds/third_kill.mp3");
-    this.fourth_hit = new Audio("assets/sounds/fourth_kill.mp3");
-    this.fifth_hit = new Audio("assets/sounds/fifth_kill.mp3");
+    // this.first_hit = new Audio("assets/sounds/first_kill.mp3");
+    // this.second_hit = new Audio("assets/sounds/second_kill.mp3");
+    // this.third_hit = new Audio("assets/sounds/third_kill.mp3");
+    // this.fourth_hit = new Audio("assets/sounds/fourth_kill.mp3");
+    // this.fifth_hit = new Audio("assets/sounds/fifth_kill.mp3");
     this.spectrum = new Audio("assets/sounds/spectrum_valorant.mp3");
-    this.terrible = new Audio("assets/sounds/terrible_voiceline.mp3");
 
     // Used for difficulty
     // Set the radius size of targets
@@ -502,6 +515,7 @@ export class Project extends Scene {
 
     // How many hits in a row to coordinate sound effect
     this.cont_hits = 0;
+    this.cont_hits_2 = 0;
     this.cont_misses = 0;
 
     // Point system
@@ -519,7 +533,7 @@ export class Project extends Scene {
     this.timer = config["timer"];
     // this.timer = 5;
     this.time = 0;
-  
+
     // Use a constant offset value to solve start time issue (very useful apparently!)
     this.iter = 0;
 
@@ -528,7 +542,6 @@ export class Project extends Scene {
 
     // pregame time offset in number of frames (3 seconds * 60 frames)
     this.frames_offset = 3 * 60;
-
 
     // determine whether we should render certain models
     this.game_end = false;
@@ -994,8 +1007,7 @@ export class Project extends Scene {
     shooting_guide_trans = shooting_guide_trans
       .times(Mat4.translation(17.5, 1, -10))
       .times(Mat4.rotation(1.55, 0, 1, 0))
-      .times(Mat4.scale(2.5, 2.5, 1))
-      ;
+      .times(Mat4.scale(2.5, 2.5, 1));
     this.shapes.square.draw(
       context,
       program_state,
@@ -1086,7 +1098,7 @@ export class Project extends Scene {
 
     let bolt_3_transform = bolt_1_transform;
     bolt_3_transform = bolt_3_transform
-      .times(Mat4.rotation(Math.PI/180 * -100, 0, 1, 0))
+      .times(Mat4.rotation((Math.PI / 180) * -100, 0, 1, 0))
       .times(Mat4.translation(0, 0, -105));
     this.shapes.rounded_capped_cylinder.draw(
       context,
@@ -1188,7 +1200,7 @@ export class Project extends Scene {
     let spider_transform = Mat4.identity();
     spider_transform = spider_transform
       .times(Mat4.translation(-16, 8, -17))
-      .times(Mat4.scale(0.2, 0.2, 0.2));
+      .times(Mat4.scale(0.15, 0.15, 0.15));
     this.shapes.spider.draw(
       context, 
       program_state, 
@@ -1196,6 +1208,61 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
+    let grass_1_trans = Mat4.identity();
+    grass_1_trans = grass_1_trans
+      .times(Mat4.translation(-17.5, -4.5, -5))
+      .times(Mat4.scale(0.5, 0.5, 0.5));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_1_trans,
+      this.materials.big_grass
+    );
+
+    let grass_2_trans = Mat4.identity();
+    grass_2_trans = grass_2_trans
+      .times(Mat4.translation(6, -4.5, -17.5))
+      .times(Mat4.scale(0.5, 0.5, 0.5));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_2_trans,
+      this.materials.big_grass
+    );
+
+    let grass_3_trans = grass_2_trans;
+    grass_3_trans = grass_3_trans
+      .times(Mat4.translation(-25, -1, 0));
+    this.shapes.grass.draw(
+      context,
+      program_state,
+      grass_3_trans,
+      this.materials.big_grass
+    );
+
+    let grass_4_trans = Mat4.identity();
+    grass_4_trans = grass_4_trans
+      .times(Mat4.translation(-5, -4, -17.5))
+      .times(Mat4.scale(1, 1.5, 1));
+    this.shapes.square.draw(
+      context,
+      program_state,
+      grass_4_trans,
+      this.materials.small_grass
+    );
+
+    let grass_5_trans = Mat4.identity();
+    grass_5_trans = grass_5_trans
+      .times(Mat4.translation(17.5, -4, -6))
+      .times(Mat4.rotation(Math.PI/180 * 7, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI/180 * 5, 1, 0, 0))
+      .times(Mat4.scale(1, 1.5, 1));
+    this.shapes.square.draw(
+      context,
+      program_state,
+      grass_5_trans,
+      this.materials.small_grass
+    );
   }
 
   draw_sky(context, program_state) {
@@ -1257,7 +1324,9 @@ export class Project extends Scene {
       yMax = 6 - size_factor - this.move_factor;
 
     // Generate random coordinates
-    let ranX, ranY, ranZ = Math.random() * (10-size_factor) + (-8+size_factor);
+    let ranX,
+      ranY,
+      ranZ = Math.random() * (10 - size_factor) + (-8 + size_factor);
     do {
       ranX = Math.random() * (xMax - xMin) + xMin;
       ranY = Math.random() * (yMax - yMin) + yMin;
@@ -1699,7 +1768,7 @@ export class Project extends Scene {
     // console.log(t_x);
     if (d <= this.target_r) {
       // If the mouse click is within radius length of target
-      if (d <= this.target_r/4){
+      if (d <= this.target_r / 4) {
         this.points += 2000;
       }
       return true;
@@ -1725,7 +1794,7 @@ export class Project extends Scene {
     //   return;
     // }
 
-    if (gameStarted == false){
+    if (gameStarted == false) {
       return;
     }
 
@@ -1753,11 +1822,19 @@ export class Project extends Scene {
     // quite_shot.play();
     // laser.play();
     // Two of the same sounds to allow overlap
-    if (this.hits % 2 == 1) {
-      this.shot_odd.play();
-    } else {
-      this.shot_even.play();
-    }
+    // if (this.total_shots % 3 == 0) {
+    //   audioFiles["gunSound1"].play();
+    //   console.log("one");
+    // } else if (this.total_shots % 3 == 1) {
+    //   audioFiles["gunSound2"].play();
+    //   console.log("two");
+    // }
+    // else {
+    //   audioFiles["gunSound3"].play();
+    //   console.log("three");
+    // }
+    audioFiles["gunSound1"].currentTime = 0;
+    audioFiles["gunSound1"].play();
 
     this.total_shots++;
     for (const coord of this.target_locations) {
@@ -1773,59 +1850,80 @@ export class Project extends Scene {
       if (this.hit_target(coord, world_coord, t)) {
         missed = false;
         this.cont_hits++;
+        this.cont_hits_2++;
         this.cont_misses = 0;
         // console.log(this.cont_hits);
         // Valorant kill sounds with different sound for more hits
-        switch (this.cont_hits) {
+        switch (this.cont_hits_2) {
           case 1:
-            this.first_hit.play();
-            console.log("first");
-            // console.log(this.cont_hits);
+            if (this.hits % 2 == 1){
+              audioFiles["killSound1"].play();
+            }
+            else {
+              audioFiles["killSound1.1"].play();
+            }
+            // this.first_hit.play();
+            // console.log("first");
             break;
           case 2:
-            this.second_hit.play();
-            this.points += 200;
+            audioFiles["killSound2"].play();
+            // this.second_hit.play();
             // console.log("second");
             break;
           case 3:
-            this.third_hit.play();
-            this.points += 500;
+            audioFiles["killSound3"].play();
+            // this.third_hit.play();
             // console.log("third");
+            this.cont_hits_2 = 0;
+            break;
+          // default:
+          //   audioFiles["killSound4"].play();
+          //   // this.fifth_hit.play();
+          //   // console.log("fourth");
+          //   this.cont_hits_2 = 0; 
+          //   break;
+        }
+        switch (this.cont_hits) { // for points
+          case 1:
+            break;
+          case 2:
+            this.points += 200;
+            break;
+          case 3:
+            this.points += 500;
             break;
           case 4:
-            this.fourth_hit.play();
             this.points += 1000;
-            // console.log("fourth");
             break;
           default:
-            this.fifth_hit.play();
             this.points += 1800;
-            // console.log("ace");
-            // this.cont_hits = 0; // use this to repeat the ace sound
             break;
         }
+
+
         this.points += 1000;
         this.hits++;
         this.target_locations.delete(coord);
         this.target_locations.add(this.generate_location());
-
         break;
       }
     }
     if (missed) {
-      if (this.points >= 500){ // cannot get negative points
+      if (this.points >= 500) {
+        // cannot get negative points
         this.points -= 500;
       }
       this.cont_hits = 0;
+      this.cont_hits_2 = 0;
       this.cont_misses++;
       // easter egg :)
       if (this.cont_misses == 4) {
-        this.terrible.play();
+        audioFiles["terrible"].play();
       }
     }
     this.accuracy = this.hits / this.total_shots;
     this.accuracy = Math.round(this.accuracy * 10000) / 100;
-    if (this.accuracy != 100){
+    if (this.accuracy != 100) {
       this.accuracy = this.accuracy.toFixed(2);
     }
     this.shot = true;
@@ -2294,16 +2392,15 @@ export class Project extends Scene {
     );
 
     let spike_up;
-    
-    if (gameStarted == false){
+
+    if (gameStarted == false) {
       spike_up = -0.2;
+    } else {
+      spike_up =
+        0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
     }
 
-    else {
-      spike_up = 0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
-    }
 
-    
     let r_spike = 0.2 * Math.sin((Math.PI * (t - this.t_diff)) / 2) + 0.47;
     let g_spike = 1;
     let b_spike = 1;
@@ -2315,16 +2412,16 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false || this.iter <= 3*60 + 20){ // added some padding so there is no time mismatch that causes NaN
+    if (gameStarted == false || this.iter <= 3*60 + 15){ // added some padding so there is no time mismatch that causes NaN
       spike_t = 0;
-    }
-    else if (t-this.diff > 120*60){
+    } else if (t - this.diff > 120 * 60) {
       spike_t = 0;
+    } else {
+      spike_t =
+        10 *
+        ((config["timer"] - this.timer) / config["timer"]) *
+        (t - this.t_diff);
     }
-    else {
-      spike_t = 10*((config["timer"] - this.timer)/(config["timer"])) * (t - this.t_diff);
-    } 
-    
 
     let spike_cylinder_base_transform = spike_loc_transform
       .times(Mat4.translation(0, spike_up, 1 / 3))
@@ -2759,7 +2856,11 @@ export class Project extends Scene {
 
     updateBar(this.points, this.accuracy, this.display_timer);
 
+    if (!this.game_end && this.timer <= 1 && this.timer > 0){
+        audioFiles["spike_explode"].play();
+    }
     if (this.timer <= 0 && this.timer > -2) {
+      endGame();
       this.game_end = true;
       this.time += dt;
       this.R_explode = 40 * Math.sin(this.time);
