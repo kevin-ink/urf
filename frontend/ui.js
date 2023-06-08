@@ -15,7 +15,7 @@ export const audioFiles = {};
 export var gameStarted = false;
 // this prevents endGame() from being called too many times
 // alternatively Leo can call endGame() only once
-let end = false;
+let end = false; // decided to keep this cause canvas DOES NOT RESET!!!
 // game end stats "points" and "accuracy"
 let stats = {};
 let scoreInterval;
@@ -694,7 +694,16 @@ export function updateBar(points, accuracy, time) {
 
 // changes options accordingly
 function changeOpt(e) {
-  audioFiles["changeOptSound"].play(); // doesn't work too well if clicking fast
+  // plays audio, ensures that it plays multiple times correctly if clicking
+  // really fast
+  if (audioFiles["changeOptSound"].paused) {
+    audioFiles["changeOptSound"].currentTime = 0;
+    audioFiles["changeOptSound"].play();
+  } else {
+    audioFiles["changeOptSound"].pause();
+    audioFiles["changeOptSound"].currentTime = 0;
+    audioFiles["changeOptSound"].play();
+  }
   const opt = e.target.parentNode.parentNode.querySelector("h3").id;
   const p = e.target.parentNode.querySelector("p");
   let it = indexes[opt];
