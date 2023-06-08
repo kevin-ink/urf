@@ -18,7 +18,6 @@ export var gameStarted = false;
 let end = false;
 // game end stats "points" and "accuracy"
 let stats = {};
-//
 let scoreInterval;
 
 // get all important elements
@@ -326,6 +325,7 @@ export function endGame() {
   }
 }
 
+// shows the correct stats in stats menu
 function showStats() {
   audioFiles["statsScreenSound"].play();
   const statElements = document.querySelectorAll("h5");
@@ -347,6 +347,10 @@ function showStats() {
           stat.textContent = Math.trunc(scoreAccumulate);
         } else {
           clearInterval(scoreInterval); // Stop the interval when score reached
+          setTimeout(() => {
+            audioFiles["statsScreenSound"].pause();
+            audioFiles["statsScreenSound"].currentTime = 0;
+          }, 5250);
           audioFiles["calculateSound"].pause();
           audioFiles["calculateSound"].currentTime = 0;
           accuracyStat.classList.add("puff-in-center");
@@ -423,6 +427,7 @@ function closeStats(e) {
       h1.addEventListener(
         "animationend",
         () => {
+          location.reload(); // TEMPORARY FIX
           h1.classList.remove("animate__fadeInDown", "animate__animated");
           h1.classList.add("animated");
         },
