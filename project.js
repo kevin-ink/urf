@@ -266,12 +266,9 @@ export class Project extends Scene {
         [0.34, 0.66],
         [0, 1],
       ]),
-      spider: new Shape_From_File("assets/background/spider.obj"
-      ),
-      grass: new Shape_From_File("assets/background/grass.obj"
-      ),
-      flower: new Shape_From_File("assets/background/flower.obj"
-      ),
+      spider: new Shape_From_File("assets/background/spider.obj"),
+      grass: new Shape_From_File("assets/background/grass.obj"),
+      // flower: new Shape_From_File("assets/background/flower.obj"),
 
       // spike shapes
       spike: new Spike(),
@@ -348,12 +345,12 @@ export class Project extends Scene {
         specularity: 1,
         color: hex_color("#212121"),
       }),
-      sky: new Material(new defs.Phong_Shader(), {
+      sky: new Material(new Texture_Scroll_X(), {
         color: hex_color("#8CBDD6"),
         ambient: 0.5,
         diffusivity: 0.5,
         specularity: 0.5,
-        // texture: new Texture("assets/background/sky.jpg")
+        texture: new Texture("assets/background/sky.jpg", "LINEAR"),
       }),
       wall_texture: new Material(new defs.Textured_Phong(), {
         color: hex_color("#000000"),
@@ -385,19 +382,19 @@ export class Project extends Scene {
         texture: new Texture("assets/background/locked-box.png", "LINEAR"),
       }),
       shooting_guide: new Material(new defs.Textured_Phong(), {
-        color: hex_color("000000"),
+        color: hex_color("#000000"),
         ambient: 1,
         texture: new Texture("assets/background/shooting.png", "LINEAR"),
       }),
       wood_plank: new Material(new defs.Textured_Phong(), {
-        color: hex_color("000000"),
-        ambient: 0.6,
+        color: hex_color("#000000"),
+        ambient: 1,
         texture: new Texture("assets/background/wood-plank.jpg"),
       }),
       warning_sign: new Material(new defs.Textured_Phong(), {
-        color: hex_color("000000"),
+        color: hex_color("#000000"),
         ambient: 1,
-        texture: new Texture("assets/background/warning-sign.png"),
+        texture: new Texture("assets/background/warning-sign.png", "LINEAR"),
       }),
       big_grass: new Material(new defs.Phong_Shader(), {
         color: hex_color("#244a2b"),
@@ -410,11 +407,10 @@ export class Project extends Scene {
         diffusivity: 1,
       }),
       small_grass: new Material(new defs.Textured_Phong(), {
-        color: hex_color("000000"),
+        color: hex_color("#000000"),
         ambient: 0.3,
-        texture: new Texture("assets/background/grass-image.png"),
+        texture: new Texture("assets/background/grass-image.png", "LINEAR"),
       }),
-      
 
       // spike materials
       spike: new Material(new defs.Phong_Shader(), {
@@ -442,14 +438,17 @@ export class Project extends Scene {
         diffusivity: 0.8,
         specularity: 0.4,
         color: hex_color("#4a4b4d"),
-        texture: new Texture("assets/background/target_dark_gray.jpg"),
+        texture: new Texture(
+          "assets/background/target_dark_gray.jpg",
+          "LINEAR"
+        ),
       }),
       gray: new Material(new defs.Textured_Phong(), {
         ambient: 0.2,
         diffusivity: 0.8,
         specularity: 0.4,
         color: hex_color("#989a9c"),
-        texture: new Texture("assets/background/target_gray.jpg"),
+        texture: new Texture("assets/background/target_gray.jpg", "LINEAR"),
       }),
 
       // Currently use untextured shape
@@ -482,6 +481,14 @@ export class Project extends Scene {
         specularity: 0.1,
         color: hex_color("#000000"),
         texture: new Texture("assets/background/steel_beam.jpg", "LINEAR"),
+      }),
+
+      wood_board: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 0.8,
+        diffusivity: 0.5,
+        specularity: 0.5,
+        texture: new Texture("assets/background/woodBoardTex.jpeg"),
       }),
     };
 
@@ -694,6 +701,117 @@ export class Project extends Scene {
     );
   }
 
+  draw_backWindow(context, program_state) {
+    let windowTop_trans = Mat4.identity()
+      .times(Mat4.translation(0, 4, -17.5))
+      .times(Mat4.scale(2.5, 3, 1));
+    this.shapes.circle.draw(
+      context,
+      program_state,
+      windowTop_trans,
+      this.materials.bullet
+    );
+    let windowSquare_trans = Mat4.identity()
+      .times(Mat4.translation(0, 2, -17.5))
+      .times(Mat4.scale(2.41, 3, 1));
+    this.shapes.square.draw(
+      context,
+      program_state,
+      windowSquare_trans,
+      this.materials.bullet
+    );
+    let windowTop_sky = Mat4.identity()
+      .times(Mat4.translation(0, 4, -16.5))
+      .times(Mat4.scale(2, 2.5, 1));
+    this.shapes.circle.draw(
+      context,
+      program_state,
+      windowTop_sky,
+      this.materials.sky
+    );
+    let windowSquare_sky = Mat4.identity()
+      .times(Mat4.translation(0, 2, -16.5))
+      .times(Mat4.scale(2, 2.5, 1));
+    this.shapes.square.draw(
+      context,
+      program_state,
+      windowSquare_sky,
+      this.materials.sky
+    );
+
+    let windowBigBoard = Mat4.identity()
+      .times(Mat4.translation(0, 3, -16.4))
+      .times(Mat4.rotation(-Math.PI / 2.1, 0, 0, 1))
+      .times(Mat4.scale(1.75, 3, 0.2));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      windowBigBoard,
+      this.materials.wood_board
+    );
+
+    let bolt_trans = Mat4.identity()
+      .times(Mat4.translation(-2.8, 4, -16.1))
+      .times(Mat4.scale(0.1, 0.1, 0.05));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_trans,
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_trans.times(Mat4.translation(53, 5, 0)),
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_trans.times(Mat4.translation(55, -23, 0)),
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      bolt_trans.times(Mat4.translation(2, -26, 0)),
+      this.materials.bullet.override({ ambient: 0.1, diffusivity: 0.2 })
+    );
+
+    let windowPlanks = Mat4.identity()
+      .times(Mat4.translation(0, 5.4, -16.3))
+      .times(Mat4.rotation(Math.PI / 2.02, 0, 0, 1))
+      .times(Mat4.scale(0.5, 2.5, 0.2));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      windowPlanks,
+      this.materials.wood_plank.override({ ambient: 0.7 })
+    );
+
+    let windowPlanks2 = Mat4.identity()
+      .times(Mat4.translation(0, 0, -16.3))
+      .times(Mat4.rotation(-Math.PI / 2.02, 0, 0, 1))
+      .times(Mat4.scale(0.5, 2.5, 0.2));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      windowPlanks2,
+      this.materials.wood_plank.override({ ambient: 0.7 })
+    );
+
+    let windowPlanks3 = Mat4.identity()
+      .times(Mat4.translation(0, 1, -16.2))
+      .times(Mat4.rotation(Math.PI / 2.2, 0, 0, 1))
+      .times(Mat4.scale(0.5, 2.5, 0.2));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      windowPlanks3,
+      this.materials.wood_plank.override({ ambient: 0.55 })
+    );
+  }
+
   draw_pillars(context, program_state) {
     let leftPillar_trans = Mat4.identity().times(
       Mat4.translation(-10.5, 0, -17.5).times(Mat4.scale(0.75, 10, 0.5))
@@ -705,23 +823,23 @@ export class Project extends Scene {
       this.materials.wooden
     );
     let leftPillar_base_trans = leftPillar_trans
-      .times(Mat4.translation(0,-0.4,1))
-      .times(Mat4.scale(1.4,0.15,1.2));
+      .times(Mat4.translation(0, -0.4, 1))
+      .times(Mat4.scale(1.4, 0.15, 1.2));
     this.shapes.cube.draw(
-      context, 
+      context,
       program_state,
-      leftPillar_base_trans, 
-      this.materials.concrete,
-    )
+      leftPillar_base_trans,
+      this.materials.concrete
+    );
     let leftPillar_base_2_trans = leftPillar_trans
-      .times(Mat4.translation(0,-0.5,1))
-      .times(Mat4.scale(1.6,0.08,1.3));
+      .times(Mat4.translation(0, -0.5, 1))
+      .times(Mat4.scale(1.6, 0.08, 1.3));
     this.shapes.cube.draw(
-      context, 
+      context,
       program_state,
-      leftPillar_base_2_trans, 
-      this.materials.concrete,
-    )
+      leftPillar_base_2_trans,
+      this.materials.concrete
+    );
 
     // angled block
     let leftPillar_2_trans = Mat4.identity()
@@ -756,23 +874,23 @@ export class Project extends Scene {
     );
 
     let rightPillar_base_trans = rightPillar_trans
-      .times(Mat4.translation(0,-0.4,1))
-      .times(Mat4.scale(1.4,0.15,1.2));
+      .times(Mat4.translation(0, -0.4, 1))
+      .times(Mat4.scale(1.4, 0.15, 1.2));
     this.shapes.cube.draw(
-      context, 
+      context,
       program_state,
-      rightPillar_base_trans, 
-      this.materials.concrete,
-    )
+      rightPillar_base_trans,
+      this.materials.concrete
+    );
     let rightPillar_base_2_trans = rightPillar_trans
-      .times(Mat4.translation(0,-0.5,1))
-      .times(Mat4.scale(1.6,0.08,1.3));
+      .times(Mat4.translation(0, -0.5, 1))
+      .times(Mat4.scale(1.6, 0.08, 1.3));
     this.shapes.cube.draw(
-      context, 
+      context,
       program_state,
-      rightPillar_base_2_trans, 
-      this.materials.concrete,
-    )
+      rightPillar_base_2_trans,
+      this.materials.concrete
+    );
 
     // angled block
     let rightPillar_2_trans = Mat4.identity()
@@ -810,112 +928,110 @@ export class Project extends Scene {
     );
 
     let horizPillar_2_trans = Mat4.identity()
-    .times(Mat4.translation(0, 9.55, -6))
-    .times(Mat4.rotation(Math.PI / 2, 0, 0, 1))
-    .times(Mat4.scale(0.75, 20, 0.75));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    horizPillar_2_trans,
-    this.materials.wooden
-  );
+      .times(Mat4.translation(0, 9.55, -6))
+      .times(Mat4.rotation(Math.PI / 2, 0, 0, 1))
+      .times(Mat4.scale(0.75, 20, 0.75));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      horizPillar_2_trans,
+      this.materials.wooden
+    );
 
-  // steel beams
-  let Beam_left_trans = Mat4.identity()
-    .times(Mat4.translation(-18.2, 10.55, -17))
-    .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-    .times(Mat4.scale(0.4, 18, 0.4));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    Beam_left_trans,
-    this.materials.steel_beam
-  );
+    // steel beams
+    let Beam_left_trans = Mat4.identity()
+      .times(Mat4.translation(-18.2, 10.55, -17))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(0.4, 18, 0.4));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      Beam_left_trans,
+      this.materials.steel_beam
+    );
 
-  let Beam_right_trans =Mat4.identity()
-    .times(Mat4.translation(18.2, 10.55, -17))
-    .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-    .times(Mat4.scale(0.4, 18, 0.4));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    Beam_right_trans,
-    this.materials.steel_beam
-  );
+    let Beam_right_trans = Mat4.identity()
+      .times(Mat4.translation(18.2, 10.55, -17))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(0.4, 18, 0.4));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      Beam_right_trans,
+      this.materials.steel_beam
+    );
 
-  let horizBeam_trans =Mat4.identity()
-    .times(Mat4.translation(0, 10.55, -18))
-    .times(Mat4.rotation(Math.PI / 2, 0, 0,1))
-    .times(Mat4.scale(0.4, 18, 0.4));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    horizBeam_trans,
-    this.materials.steel_beam
-  );
+    let horizBeam_trans = Mat4.identity()
+      .times(Mat4.translation(0, 10.55, -18))
+      .times(Mat4.rotation(Math.PI / 2, 0, 0, 1))
+      .times(Mat4.scale(0.4, 18, 0.4));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      horizBeam_trans,
+      this.materials.steel_beam
+    );
 
-  let horizBeam_left_trans =Mat4.identity()
-    .times(Mat4.translation(-18.25, 9.5, -17.2))
-    .times(Mat4.scale(0.7, 1, 1));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    horizBeam_left_trans,
-    this.materials.steel_beam
-  );
+    let horizBeam_left_trans = Mat4.identity()
+      .times(Mat4.translation(-18.25, 9.5, -17.2))
+      .times(Mat4.scale(0.7, 1, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      horizBeam_left_trans,
+      this.materials.steel_beam
+    );
 
-  let horizBeam_left_2_trans =Mat4.identity()
-    .times(Mat4.translation(-18.25, 9.5, -6))
-    .times(Mat4.scale(0.7, 1, 1));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    horizBeam_left_2_trans,
-    this.materials.steel_beam
-  );
+    let horizBeam_left_2_trans = Mat4.identity()
+      .times(Mat4.translation(-18.25, 9.5, -6))
+      .times(Mat4.scale(0.7, 1, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      horizBeam_left_2_trans,
+      this.materials.steel_beam
+    );
 
-  let horizBeam_right_trans =Mat4.identity()
-    .times(Mat4.translation(18.25, 9.5, -17.2))
-    .times(Mat4.scale(0.7, 1, 1));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    horizBeam_right_trans,
-    this.materials.steel_beam
-  );
+    let horizBeam_right_trans = Mat4.identity()
+      .times(Mat4.translation(18.25, 9.5, -17.2))
+      .times(Mat4.scale(0.7, 1, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      horizBeam_right_trans,
+      this.materials.steel_beam
+    );
 
-  let horizBeam_right_2_trans =Mat4.identity()
-    .times(Mat4.translation(18.25, 9.5, -6))
-    .times(Mat4.scale(0.7, 1, 1));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    horizBeam_right_2_trans,
-    this.materials.steel_beam
-  );
+    let horizBeam_right_2_trans = Mat4.identity()
+      .times(Mat4.translation(18.25, 9.5, -6))
+      .times(Mat4.scale(0.7, 1, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      horizBeam_right_2_trans,
+      this.materials.steel_beam
+    );
 
-  // tilted pillars
-    let left_support_pillar_trans = Mat4.translation(-8,8,-17.5)
-      .times(Mat4.rotation(-Math.PI/4, 0,0,1))
-      .times(Mat4.scale(0.3,3,0.3));
-      this.shapes.cube.draw(
-        context,
-        program_state,
-        left_support_pillar_trans,
-        this.materials.wooden
-      );
+    // tilted pillars
+    let left_support_pillar_trans = Mat4.translation(-8, 8, -17.5)
+      .times(Mat4.rotation(-Math.PI / 4, 0, 0, 1))
+      .times(Mat4.scale(0.3, 3, 0.3));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      left_support_pillar_trans,
+      this.materials.wooden
+    );
 
-      let right_support_pillar_trans = Mat4.translation(8,8,-17.5)
-      .times(Mat4.rotation(Math.PI/4, 0,0,1))
-      .times(Mat4.scale(0.3,3,0.3));
-      this.shapes.cube.draw(
-        context,
-        program_state,
-        right_support_pillar_trans,
-        this.materials.wooden
-      );
-
-
+    let right_support_pillar_trans = Mat4.translation(8, 8, -17.5)
+      .times(Mat4.rotation(Math.PI / 4, 0, 0, 1))
+      .times(Mat4.scale(0.3, 3, 0.3));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      right_support_pillar_trans,
+      this.materials.wooden
+    );
   }
 
   draw_props(context, program_state, t) {
@@ -1199,7 +1315,7 @@ export class Project extends Scene {
     let window_transform = Mat4.identity();
     window_transform = window_transform
       .times(Mat4.translation(-18, 2.5, -9.5))
-      .times(Mat4.scale(1, 4.9, 3.1))
+      .times(Mat4.scale(0.5, 4.9, 3.1))
       .times(Mat4.rotation((Math.PI / 180) * 90, 0, 1, 0))
       .times(Mat4.rotation((Math.PI / 180) * 45, 0, 0, 1))
       .times(Mat4.rotation((Math.PI / 180) * 1, 1, 0, 0));
@@ -1211,22 +1327,21 @@ export class Project extends Scene {
     );
 
     // random planks on left side
-    let plank_random_transform = Mat4.translation(-16.2,-3,0)
-      .times(Mat4.rotation(Math.PI/20, 0,0,1))
-      .times(Mat4.rotation(Math.PI/2, 0,1,0))
-      .times(Mat4.scale(1,1.8,0.05));
-      this.shapes.cube.draw(
-        context,
-        program_state,
-        plank_random_transform,
-        this.materials.wooden
-      );
+    let plank_random_transform = Mat4.translation(-16.2, -3, 0)
+      .times(Mat4.rotation(Math.PI / 20, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0))
+      .times(Mat4.scale(1, 1.8, 0.05));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      plank_random_transform,
+      this.materials.wooden.override({ ambient: 0.6, specularity: 1 })
+    );
 
-
-    let plank_random_2_transform = Mat4.translation(-16.5,-4.4,0.5)
-    .times(Mat4.rotation(Math.PI/40, 0,0,1))
-    .times(Mat4.rotation(Math.PI/2, 0,1,0))
-    .times(Mat4.scale(2.4,0.4,0.05));
+    let plank_random_2_transform = Mat4.translation(-16.5, -4.4, 0.5)
+      .times(Mat4.rotation(Math.PI / 40, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0))
+      .times(Mat4.scale(2.4, 0.4, 0.05));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -1247,32 +1362,32 @@ export class Project extends Scene {
     //   );
 
     // middle planks
-    let plank_random_4_transform = Mat4.translation(-8.6,-3,-16.5)
-      .times(Mat4.rotation(Math.PI/20, 0,0,1))
-      .times(Mat4.rotation(Math.PI/2.2, 0,1,0))
-      .times(Mat4.scale(0.8,3.5,0.05));
-      this.shapes.cube.draw(
-        context,
-        program_state,
-        plank_random_4_transform,
-        this.materials.wood_plank
-      );
+    let plank_random_4_transform = Mat4.translation(-8.6, -3, -16.5)
+      .times(Mat4.rotation(Math.PI / 20, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI / 2.2, 0, 1, 0))
+      .times(Mat4.scale(0.8, 3.5, 0.05));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      plank_random_4_transform,
+      this.materials.wood_plank
+    );
 
-    let plank_random_5_transform = Mat4.translation(-7.7,-3.5,-16.5)
-      .times(Mat4.rotation(Math.PI/18, 1,0,0))
-      .times(Mat4.scale(0.4,1.8,0.05));
-      this.shapes.cube.draw(
-        context,
-        program_state,
-        plank_random_5_transform,
-        this.materials.wood_plank
-      );
+    let plank_random_5_transform = Mat4.translation(-7.7, -3.5, -16.5)
+      .times(Mat4.rotation(Math.PI / 18, 1, 0, 0))
+      .times(Mat4.scale(0.4, 1.8, 0.05));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      plank_random_5_transform,
+      this.materials.wood_plank
+    );
 
     // Wooden planks over window
     let plank_1_transform = Mat4.identity();
     plank_1_transform = plank_1_transform
-      .times(Mat4.translation(-17, 0.5, -8.5))
-      .times(Mat4.scale(0.1, 0.5, 3))
+      .times(Mat4.translation(-17.5, 0.5, -9))
+      .times(Mat4.scale(0.1, 0.5, 2.5))
       .times(Mat4.rotation(-1.5, 0, 1, 0));
     this.shapes.cube.draw(
       context,
@@ -1282,8 +1397,7 @@ export class Project extends Scene {
     );
 
     let plank_2_transform = plank_1_transform;
-    plank_2_transform = plank_2_transform
-      .times(Mat4.translation(0, 5.5, 0));
+    plank_2_transform = plank_2_transform.times(Mat4.translation(0, 5.5, 0));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -1292,8 +1406,7 @@ export class Project extends Scene {
     );
 
     let plank_3_transform = plank_1_transform;
-    plank_3_transform = plank_3_transform
-      .times(Mat4.translation(0, 8, 0));
+    plank_3_transform = plank_3_transform.times(Mat4.translation(0, 8, 0));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -1314,8 +1427,7 @@ export class Project extends Scene {
     );
 
     let bolt_2_transform = bolt_1_transform;
-    bolt_2_transform = bolt_2_transform
-      .times(Mat4.translation(0, 10, 0));
+    bolt_2_transform = bolt_2_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1326,7 +1438,7 @@ export class Project extends Scene {
     let bolt_3_transform = bolt_1_transform;
     bolt_3_transform = bolt_3_transform
       .times(Mat4.rotation((Math.PI / 180) * -100, 0, 1, 0))
-      .times(Mat4.translation(0, 0, -105));
+      .times(Mat4.translation(0, 0, -90));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1335,8 +1447,7 @@ export class Project extends Scene {
     );
 
     let bolt_4_transform = bolt_3_transform;
-    bolt_4_transform = bolt_4_transform
-      .times(Mat4.translation(0, 10, 0));
+    bolt_4_transform = bolt_4_transform.times(Mat4.translation(0, 10, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1345,8 +1456,7 @@ export class Project extends Scene {
     );
 
     let bolt_5_transform = bolt_1_transform;
-    bolt_5_transform = bolt_5_transform
-      .times(Mat4.translation(0, 53, 0));
+    bolt_5_transform = bolt_5_transform.times(Mat4.translation(0, 53, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1355,8 +1465,7 @@ export class Project extends Scene {
     );
 
     let bolt_6_transform = bolt_1_transform;
-    bolt_6_transform = bolt_6_transform
-      .times(Mat4.translation(0, 64, 0));
+    bolt_6_transform = bolt_6_transform.times(Mat4.translation(0, 64, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1365,8 +1474,7 @@ export class Project extends Scene {
     );
 
     let bolt_7_transform = bolt_3_transform;
-    bolt_7_transform = bolt_7_transform
-      .times(Mat4.translation(0, 53, 0));
+    bolt_7_transform = bolt_7_transform.times(Mat4.translation(0, 53, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1375,8 +1483,7 @@ export class Project extends Scene {
     );
 
     let bolt_8_transform = bolt_7_transform;
-    bolt_8_transform = bolt_8_transform
-      .times(Mat4.translation(0, 11, 0));
+    bolt_8_transform = bolt_8_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1385,8 +1492,7 @@ export class Project extends Scene {
     );
 
     let bolt_9_transform = bolt_6_transform;
-    bolt_9_transform = bolt_9_transform
-      .times(Mat4.translation(0, 14, 0));
+    bolt_9_transform = bolt_9_transform.times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1395,8 +1501,7 @@ export class Project extends Scene {
     );
 
     let bolt_10_transform = bolt_9_transform;
-    bolt_10_transform = bolt_10_transform
-      .times(Mat4.translation(0, 11, 0));
+    bolt_10_transform = bolt_10_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1405,8 +1510,7 @@ export class Project extends Scene {
     );
 
     let bolt_11_transform = bolt_8_transform;
-    bolt_11_transform = bolt_11_transform
-      .times(Mat4.translation(0, 14, 0));
+    bolt_11_transform = bolt_11_transform.times(Mat4.translation(0, 14, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
@@ -1415,24 +1519,23 @@ export class Project extends Scene {
     );
 
     let bolt_12_transform = bolt_11_transform;
-    bolt_12_transform = bolt_12_transform
-      .times(Mat4.translation(0, 11, 0));
+    bolt_12_transform = bolt_12_transform.times(Mat4.translation(0, 11, 0));
     this.shapes.rounded_capped_cylinder.draw(
       context,
       program_state,
       bolt_12_transform,
       this.materials.bullet
     );
-    
+
     let spider_transform = Mat4.identity();
     spider_transform = spider_transform
-      .times(Mat4.translation(-16+t/60, 8-6*Math.sqrt(t/90), -17.5))
-      .times(Mat4.rotation(Math.sqrt(t/90), 0, 0, 1))
+      .times(Mat4.translation(-16 + t / 60, 8 - 6 * Math.sqrt(t / 90), -17.5))
+      .times(Mat4.rotation(Math.sqrt(t / 90), 0, 0, 1))
       .times(Mat4.scale(0.15, 0.15, 0.15));
     this.shapes.spider.draw(
-      context, 
-      program_state, 
-      spider_transform, 
+      context,
+      program_state,
+      spider_transform,
       this.materials.bullet
     );
 
@@ -1459,8 +1562,7 @@ export class Project extends Scene {
     );
 
     let grass_3_trans = grass_2_trans;
-    grass_3_trans = grass_3_trans
-      .times(Mat4.translation(-25, -1, 0));
+    grass_3_trans = grass_3_trans.times(Mat4.translation(-25, -1, 0));
     this.shapes.grass.draw(
       context,
       program_state,
@@ -1468,8 +1570,9 @@ export class Project extends Scene {
       this.materials.big_grass
     );
 
-    let grass_4_transform = Mat4.translation(-4, -4.5, -17.5)
-      .times(Mat4.scale(0.8,0.8,1));
+    let grass_4_transform = Mat4.translation(-4, -4.5, -17.5).times(
+      Mat4.scale(0.8, 0.8, 1)
+    );
     this.shapes.grass.draw(
       context,
       program_state,
@@ -1477,8 +1580,9 @@ export class Project extends Scene {
       this.materials.big_grass
     );
 
-    let grass_5_transform = Mat4.translation(17.5, -4.5, -8)
-      .times(Mat4.scale(0.3,0.4,0.65));
+    let grass_5_transform = Mat4.translation(17.5, -4.5, -8).times(
+      Mat4.scale(0.3, 0.4, 0.65)
+    );
     this.shapes.grass.draw(
       context,
       program_state,
@@ -1486,8 +1590,9 @@ export class Project extends Scene {
       this.materials.big_grass
     );
 
-    let grass_6_transform = Mat4.translation(-12.8, -4, -9)
-      .times(Mat4.scale(0.3,0.4,0.65));
+    let grass_6_transform = Mat4.translation(-12.8, -4, -9).times(
+      Mat4.scale(0.3, 0.4, 0.65)
+    );
     this.shapes.grass.draw(
       context,
       program_state,
@@ -1495,8 +1600,9 @@ export class Project extends Scene {
       this.materials.dying_grass
     );
 
-    let grass_7_transform = Mat4.translation(-14, -4, -9.3)
-      .times(Mat4.scale(0.8,0.4,0.4));
+    let grass_7_transform = Mat4.translation(-14, -4, -9.3).times(
+      Mat4.scale(0.8, 0.4, 0.4)
+    );
     this.shapes.grass.draw(
       context,
       program_state,
@@ -1504,8 +1610,9 @@ export class Project extends Scene {
       this.materials.dying_grass
     );
 
-    let grass_8_transform = Mat4.translation(-16.5, -4.2, -6.9)
-      .times(Mat4.scale(0.3,0.6,0.3));
+    let grass_8_transform = Mat4.translation(-16.5, -4.2, -6.9).times(
+      Mat4.scale(0.3, 0.6, 0.3)
+    );
     this.shapes.grass.draw(
       context,
       program_state,
@@ -2129,10 +2236,9 @@ export class Project extends Scene {
         // Valorant kill sounds with different sound for more hits
         switch (this.cont_hits_2) {
           case 1:
-            if (this.hits % 2 == 1){
+            if (this.hits % 2 == 1) {
               audioFiles["killSound1"].play();
-            }
-            else {
+            } else {
               audioFiles["killSound1.1"].play();
             }
             // this.first_hit.play();
@@ -2153,10 +2259,12 @@ export class Project extends Scene {
           //   audioFiles["killSound4"].play();
           //   // this.fifth_hit.play();
           //   // console.log("fourth");
-          //   this.cont_hits_2 = 0; 
+          //   this.cont_hits_2 = 0;
           //   break;
         }
-        switch (this.cont_hits) { // for points
+        switch (
+          this.cont_hits // for points
+        ) {
           case 1:
             break;
           case 2:
@@ -2172,7 +2280,6 @@ export class Project extends Scene {
             this.points += 1800;
             break;
         }
-
 
         this.points += 1000;
         this.hits++;
@@ -2684,7 +2791,8 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false || this.iter <= 3*60 + 15){ // added some padding so there is no time mismatch that causes NaN
+    if (gameStarted == false || this.iter <= 3 * 60 + 15) {
+      // added some padding so there is no time mismatch that causes NaN
       spike_t = 0;
     } else if (t - this.diff > 120 * 60) {
       spike_t = 0;
@@ -3102,6 +3210,7 @@ export class Project extends Scene {
     this.draw_walls(context, program_state);
     this.draw_props(context, program_state, t);
     this.draw_pillars(context, program_state);
+    this.draw_backWindow(context, program_state);
 
     // game interactives
 
@@ -3128,8 +3237,8 @@ export class Project extends Scene {
 
     updateBar(this.points, this.accuracy, this.display_timer);
 
-    if (!this.game_end && this.timer <= 1 && this.timer > 0){
-        audioFiles["spike_explode"].play();
+    if (!this.game_end && this.timer <= 1 && this.timer > 0) {
+      audioFiles["spike_explode"].play();
     }
     if (this.timer <= 0 && this.timer > -2) {
       endGame();

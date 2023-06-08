@@ -3,7 +3,7 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-var DEBUG = false;
+var DEBUG = true;
 
 //
 // DECLARATIONS
@@ -169,7 +169,7 @@ function getDebug() {
     gameStarted = true;
     const div = document.getElementById("time");
     div.style.visibility = "visible";
-    config.timer = 5; // adjust as necessary
+    config.timer = 100000; // adjust as necessary
     const element_to_replace = document.querySelector("#main-canvas");
     const scenes = [Main_Scene].map((scene) => new scene());
     canvas_widget = new Canvas_Widget(element_to_replace, scenes);
@@ -260,7 +260,10 @@ export function endGame() {
           stats["points"] >= config["timer"] * 3000
         ) {
           h4.textContent = "GOOD ROUND!";
-        } else if (stats["accuracy"] >= 30 && stats["points"] >= config["timer"] * 1000) {
+        } else if (
+          stats["accuracy"] >= 30 &&
+          stats["points"] >= config["timer"] * 1000
+        ) {
           h4.textContent = "KEEP AT IT!";
         } else {
           h4.textContent = "ACTUALLY TRY?";
