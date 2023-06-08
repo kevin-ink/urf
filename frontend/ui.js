@@ -277,7 +277,11 @@ function showStats() {
       audioFiles["calculateSound"].play();
       scoreInterval = setInterval(() => {
         if (scoreAccumulate < finalScore) {
-          scoreAccumulate += 100;
+          if (scoreAccumulate <= finalScore + 200) {
+            scoreAccumulate += 200;
+          } else {
+            scoreAccumulate += finalScore - scoreAccumulate;
+          }
           stat.textContent = scoreAccumulate;
         } else {
           clearInterval(scoreInterval); // Stop the interval when score reached
