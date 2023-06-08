@@ -2400,7 +2400,6 @@ export class Project extends Scene {
         0.3 * (t - this.t_diff) < 1.2 ? 0.3 * (t - this.t_diff) - 0.2 : 1;
     }
 
-
     let r_spike = 0.2 * Math.sin((Math.PI * (t - this.t_diff)) / 2) + 0.47;
     let g_spike = 1;
     let b_spike = 1;

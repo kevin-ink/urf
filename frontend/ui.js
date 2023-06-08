@@ -18,7 +18,6 @@ export var gameStarted = false;
 let end = false;
 // game end stats "points" and "accuracy"
 let stats = {};
-//
 let scoreInterval;
 
 // get all important elements
@@ -41,7 +40,6 @@ const canvas_element = document.querySelector("#main-canvas");
 
 let canvas_widget; // Canvas_Widget
 let origTransform; // stores the previous transformation so to revert
-
 
 // export this for use in game canvas
 export let config = {
@@ -114,46 +112,46 @@ function preloadAudioFiles() {
 function setup() {
   // ticking "_" for ULTRA RAPID FIRE_
   // may be memory intensive?
-if (h1) {
+  if (h1) {
     setInterval(() => {
-    h1.textContent =
-      h1.textContent == "ULTRA RAPID FIRE_"
-        ? "ULTRA RAPID FIRE "
-        : "ULTRA RAPID FIRE_";
-  }, 500);
-}
+      h1.textContent =
+        h1.textContent == "ULTRA RAPID FIRE_"
+          ? "ULTRA RAPID FIRE "
+          : "ULTRA RAPID FIRE_";
+    }, 500);
+  }
   opts.forEach((opt) => {
     indexes[opt.id] = 0;
   });
 
-// hide topBar and start animating (gradient) of header and main
-main.classList.add("animated");
-h1.classList.add("animated");
+  // hide topBar and start animating (gradient) of header and main
+  main.classList.add("animated");
+  h1.classList.add("animated");
 
-// for countdown
+  // for countdown
   countText.style.visibility = "hidden";
-document.body.appendChild(countText);
+  document.body.appendChild(countText);
   countText.classList.add("countdown");
 
-// get all buttons and make them clickable
-const btns = document.querySelectorAll("button");
-if (btns.length !== 0) {
-  btns.forEach((btn) => {
-    btn.classList.add("animate__animated");
-    btn.classList.add("cue");
-    // btn.addEventListener("click", playSound);
-    if (btn.id === "start-btn") {
-      btn.addEventListener("click", startGame);
-    } else if (btn.classList.contains("arrow")) {
-      btn.addEventListener("click", changeOpt);
-      btn.classList.remove("animate__animated");
+  // get all buttons and make them clickable
+  const btns = document.querySelectorAll("button");
+  if (btns.length !== 0) {
+    btns.forEach((btn) => {
+      btn.classList.add("animate__animated");
+      btn.classList.add("cue");
+      // btn.addEventListener("click", playSound);
+      if (btn.id === "start-btn") {
+        btn.addEventListener("click", startGame);
+      } else if (btn.classList.contains("arrow")) {
+        btn.addEventListener("click", changeOpt);
+        btn.classList.remove("animate__animated");
       } else if (btn.id === "close-stats") {
         btn.addEventListener("click", closeStats);
-    } else {
-      btn.addEventListener("click", rearrange);
-    }
-  });
-}
+      } else {
+        btn.addEventListener("click", rearrange);
+      }
+    });
+  }
 
   // for resizing
   window.addEventListener("resize", () => {
@@ -165,18 +163,18 @@ if (btns.length !== 0) {
 
 // start game as debug if debug is on
 function getDebug() {
-if (DEBUG) {
-  canvas.style.display = "block";
+  if (DEBUG) {
+    canvas.style.display = "block";
     main.classList.add("hide");
-  gameStarted = true;
+    gameStarted = true;
     const div = document.getElementById("time");
     div.style.visibility = "visible";
     config.timer = 5; // adjust as necessary
-  const element_to_replace = document.querySelector("#main-canvas");
+    const element_to_replace = document.querySelector("#main-canvas");
     const scenes = [Main_Scene].map((scene) => new scene());
-  canvas_widget = new Canvas_Widget(element_to_replace, scenes);
-  topBar.style.display = "block";
-}
+    canvas_widget = new Canvas_Widget(element_to_replace, scenes);
+    topBar.style.display = "block";
+  }
 }
 
 //
@@ -224,12 +222,50 @@ function startGame() {
 // performs game ended functions
 export function endGame() {
   if (!end) {
+    // stop sounds
+    if (config["timer"] == 30) {
+      audioFiles["spike_beep_30"].pause();
+      audioFiles["spike_beep_30"].currentTime = 0;
+    } else if (config["timer"] == 60) {
+      audioFiles["spike_beep_60"].pause();
+      audioFiles["spike_beep_60"].currentTime = 0;
+    } else if (config["timer"] == 90) {
+      audioFiles["spike_beep_90"].pause();
+      audioFiles["spike_beep_90"].currentTime = 0;
+    } else {
+      audioFiles["spike_beep_120"].pause();
+      audioFiles["spike_beep_120"].currentTime = 0;
+    }
     end = true;
+    gameStarted = false;
     topBar.style.display = "none";
     canvas.classList.add("animate__animated", "animate__fadeOut");
     canvas.addEventListener(
       "animationend",
       () => {
+        // rewrite popup text based on accuracy
+        const h4 = document.querySelector("h4");
+        if (
+          stats["accuracy"] >= 90 &&
+          stats["points"] >= config["timer"] * 3000
+        ) {
+          h4.textContent = "YOUR A PRO!";
+        } else if (
+          stats["accuracy"] >= 70 &&
+          stats["points"] >= config["timer"] * 2000
+        ) {
+          h4.textContent = "NICE AIM!";
+        } else if (
+          stats["accuracy"] >= 50 &&
+          stats["points"] >= config["timer"] * 1000
+        ) {
+          h4.textContent = "GOOD ROUND!";
+        } else if (stats["accuracy"] > 0 && stats["points"] > 0) {
+          h4.textContent = "KEEP AT IT!";
+        } else {
+          h4.textContent = "ACTUALLY TRY?";
+        }
+
         // rewrite current settings ahead of time (before display)
         const settingsElement = document.getElementById("settingsText");
         const timer = config["timer"];
@@ -237,7 +273,7 @@ export function endGame() {
         const difficulty = config["difficulty"];
         const strafe = config["strafe"] == true ? "on" : "off";
         settingsElement.textContent = `Settings for this round: ${timer} seconds,
-        strafe ${strafe}, ${difficulty} difficulty, scatter ${scatter}.`;
+        strafe ${strafe}, ${difficulty} difficulty, scatter ${scatter}`;
 
         // fade out header
         h1.classList.add("animate__fadeOutUp", "animate__animated");
@@ -283,13 +319,13 @@ export function endGame() {
         canvas.style.display = "none";
         canvas.classList.remove("animate__animated", "animate__fadeOut");
         canvas_element.innerHTML = "";
-        gameStarted = false;
       },
       { once: true }
     );
   }
 }
 
+// shows the correct stats in stats menu
 function showStats() {
   audioFiles["statsScreenSound"].play();
   const statElements = document.querySelectorAll("h5");
@@ -303,14 +339,18 @@ function showStats() {
       audioFiles["calculateSound"].play();
       scoreInterval = setInterval(() => {
         if (scoreAccumulate < finalScore) {
-          if (scoreAccumulate <= finalScore + 200) {
-            scoreAccumulate += 200;
+          if (scoreAccumulate + finalScore / 200 <= finalScore) {
+            scoreAccumulate += finalScore / 200;
           } else {
             scoreAccumulate += finalScore - scoreAccumulate;
-  }
-          stat.textContent = scoreAccumulate;
+          }
+          stat.textContent = Math.trunc(scoreAccumulate);
         } else {
           clearInterval(scoreInterval); // Stop the interval when score reached
+          setTimeout(() => {
+            audioFiles["statsScreenSound"].pause();
+            audioFiles["statsScreenSound"].currentTime = 0;
+          }, 5250);
           audioFiles["calculateSound"].pause();
           audioFiles["calculateSound"].currentTime = 0;
           accuracyStat.classList.add("puff-in-center");
@@ -380,12 +420,17 @@ function closeStats(e) {
       });
 
       main.classList.remove("darken");
-      h1.style.visibility = "visible";
       h1.classList.remove("animate__fadeOutUp");
       h1.classList.add("animate__fadeInDown");
+      h1.classList.add("animate__animated");
+      h1.style.visibility = "visible";
       h1.addEventListener(
         "animationend",
-        () => h1.classList.add("animated", "fadeInDown"),
+        () => {
+          location.reload(); // TEMPORARY FIX
+          h1.classList.remove("animate__fadeInDown", "animate__animated");
+          h1.classList.add("animated");
+        },
         { once: true }
       );
     },
@@ -414,17 +459,17 @@ function expand(id = "gameOver") {
     "animationend",
     () => {
       popup.classList.remove("scale-in-ver-top");
-    const p = popup.querySelectorAll("p");
-    const d = popup.querySelectorAll("div");
-    p.forEach((text) => {
-      text.style.visibility = "visible";
-    });
+      const p = popup.querySelectorAll("p");
+      const d = popup.querySelectorAll("div");
+      p.forEach((text) => {
+        text.style.visibility = "visible";
+      });
       d.forEach((div) => {
         div.style.visibility = "visible";
       });
-      if (id == "gameOver") {
+      if (id === "gameOver") {
         showStats();
-    }
+      }
     },
     { once: true }
   );
@@ -487,9 +532,9 @@ function rearrange(e) {
     p.forEach((text) => {
       text.style.visibility = "hidden";
     });
-      d.forEach((div) => {
-        div.style.visibility = "hidden";
-      });
+    d.forEach((div) => {
+      div.style.visibility = "hidden";
+    });
     popup.classList.add("scale-out-ver-top");
     popup.addEventListener(
       "animationend",
@@ -538,10 +583,16 @@ function rearrange(e) {
         // change background color and get back headers
         h1.style.visibility = "visible";
         h1.classList.remove("animate__fadeOutUp");
+        h1.classList.add("animate__animated");
         h1.classList.add("animate__fadeInDown");
         h1.addEventListener(
           "animationend",
-          () => h1.classList.add("animated", "fadeInDown"),
+          () =>
+            h1.classList.remove(
+              "animated",
+              "animate__fadeInDown",
+              "animate__animated"
+            ),
           { once: true }
         );
         main.classList.remove("darken");
@@ -562,9 +613,13 @@ function countdown() {
     }
     countText.textContent = count.toString();
     countText.style.display = "block";
-    countText.addEventListener("animationend", () => {
-      countText.style.display = "none";
-    });
+    countText.addEventListener(
+      "animationend",
+      () => {
+        countText.style.display = "none";
+      },
+      { once: true }
+    );
     if (count > 0) {
       countText.textContent = count.toString();
       countText.classList.add("scale-in-center");
@@ -577,21 +632,17 @@ function countdown() {
         },
         { once: true }
       );
-    count--;
-    }
-     else {
-        if (config["timer"] == 30){
-          audioFiles["spike_beep_30"].play();
-        }
-        else if (config["timer"] == 60){
-          audioFiles["spike_beep_60"].play();
-        }
-        else if (config["timer"] == 90){
-          audioFiles["spike_beep_90"].play();
-        }
-        else {
-          audioFiles["spike_beep_120"].play();
-        }
+      count--;
+    } else {
+      if (config["timer"] == 30) {
+        audioFiles["spike_beep_30"].play();
+      } else if (config["timer"] == 60) {
+        audioFiles["spike_beep_60"].play();
+      } else if (config["timer"] == 90) {
+        audioFiles["spike_beep_90"].play();
+      } else {
+        audioFiles["spike_beep_120"].play();
+      }
       clearInterval(countdownInterval); // Stop the interval when count goes below 0
       countText.visibility = "hidden";
       const div = document.getElementById("time");
@@ -629,7 +680,7 @@ export function updateBar(points, accuracy, time) {
   div.textContent = accuracy + "%";
   div = document.getElementById("time");
   div.textContent = time;
-  }
+}
 
 // changes options accordingly
 function changeOpt(e) {
