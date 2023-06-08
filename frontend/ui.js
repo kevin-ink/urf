@@ -80,7 +80,11 @@ function preloadAudioFiles() {
   preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
   preloadAudio("assets/sounds/click-button-140881.mp3", "changeOptSound", 1);
   preloadAudio("assets/sounds/soft-click.mp3", "cancelSound", 1);
-  preloadAudio("assets/sounds/computer-calculating.mp3", "calculateSound", 0.5);
+  preloadAudio(
+    "assets/sounds/computer-calculating.mp3",
+    "calculateSound",
+    0.25
+  );
   preloadAudio("assets/sounds/valorantLobby.mp3", "statsScreenSound", 0.5);
   preloadAudio("assets/sounds/mariostart_2.mp3", "countdownSound", 0.1);
 
@@ -271,8 +275,6 @@ export function endGame() {
           h4.textContent = "ACTUALLY TRY?";
         }
 
-        // bring back mr urf
-        img.classList.remove("hide");
         // rewrite current settings ahead of time (before display)
         const settingsElement = document.getElementById("settingsText");
         const timer = config["timer"];
@@ -318,6 +320,9 @@ export function endGame() {
         main.addEventListener(
           "animationend",
           () => {
+            // bring back mr urf
+            img.classList.remove("hide");
+
             main.classList.remove("puff-in-center");
             expand();
           },
