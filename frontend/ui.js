@@ -47,7 +47,7 @@ export let config = {
   difficulty: "easy",
   strafe: false,
   scatter: 1,
-  timer: 15,
+  timer: 30,
 };
 
 // options available to player
@@ -55,7 +55,7 @@ const options = {
   difficulty: ["easy", "medium", "hard"],
   strafe: [false, true],
   scatter: [1, 3, 5],
-  timer: [15, 30, 60, 90, 120, 5],
+  timer: [30, 60, 90, 120],
 };
 
 // for options
