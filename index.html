@@ -33,7 +33,7 @@
           <h3 id="difficulty">DIFFICULTY</h3>
           <div>
             <button class="arrow left">«</button>
-            <p>EASY</p>
+            <p id="difficultyText">EASY</p>
             <button class="arrow right">»</button>
           </div>
         </div>
@@ -41,7 +41,7 @@
           <h3 id="strafe">STRAFE</h3>
           <div>
             <button class="arrow left">«</button>
-            <p>OFF</p>
+            <p id="strafeText">OFF</p>
             <button class="arrow right">»</button>
           </div>
         </div>
@@ -49,7 +49,7 @@
           <h3 id="scatter">SCATTER</h3>
           <div>
             <button class="arrow left">«</button>
-            <p>1</p>
+            <p id="scatterText">1</p>
             <button class="arrow right">»</button>
           </div>
         </div>
@@ -57,7 +57,7 @@
           <h3 id="timer">TIMER</h3>
           <div>
             <button class="arrow left">«</button>
-            <p>30</p>
+            <p id="timerText">30</p>
             <button class="arrow right">»</button>
           </div>
         </div>
@@ -89,7 +89,14 @@
             <h5 class="accuracy" style="font-size: 3rem; margin:0; font-weight: bold; visibility: hidden;">100%</h5>
           </div>
         </div>
-        <p id="settingsText" style="font-size: 1rem; margin-top: 2rem;">SETTINGS FOR THIS ROUND: </p>
+        <p id="settingsText" style="font-size: 1rem; margin-top: 2rem; margin-bottom: 2rem;">settings: </p>
+        <div style="position: relative; margin: 0; display: flex; flex-direction: row; justify-content: center;">
+          <p style="margin: 0; position: absolute; left:25%; top: 85%; font-size: 0.75rem; color:black">(current settings)</p>
+           <p id="bestScoreText" style="font-size: 1.5rem; margin:0; color:gray">All Time Best:</p>
+           <h6 id="bestScore" style="font-size: 2rem; text-align: center; width: 20%; margin: 0; margin-left:2%; visibility: hidden;">0</h6>
+           <p id="NEW" style="visibility: hidden; margin: 0; margin-left:2%; font-size: 2rem;">NEW!</p>
+      </div>
+      <!--<p style="font-size: 0.75rem; margin-top: 3rem; margin-bottom: 0; color:blue;">Note: Clearing the browser cache will clear your best score.</p>-->
       </div>
       <h1 id="title" style="cursor: default">ULTRA RAPID FIRE</h1>
       <div id="menu">

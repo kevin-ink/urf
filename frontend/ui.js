@@ -3,7 +3,7 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-var DEBUG = false;
+let DEBUG = false;
 
 //
 // DECLARATIONS
@@ -12,7 +12,7 @@ var DEBUG = false;
 // export this to be used to play audio files
 export const audioFiles = {};
 // export this to tell canvas game has started
-export var gameStarted = false;
+export let gameStarted = false;
 // this prevents endGame() from being called too many times
 // alternatively Leo can call endGame() only once
 let end = false; // decided to keep this cause canvas DOES NOT RESET!!!
@@ -62,6 +62,60 @@ const options = {
 // for options
 const indexes = {};
 const opts = document.querySelectorAll("h3");
+
+//
+// LOCAL STORAGE
+//
+
+let localDataExists = false;
+// load config options from local storage
+window.addEventListener("load", function () {
+  if (!DEBUG) {
+    let data = localStorage.getItem("difficulty");
+    if (data) {
+      localDataExists = true;
+      config["difficulty"] = data.toLowerCase();
+      this.document.getElementById("difficultyText").textContent =
+        config["difficulty"].toUpperCase();
+      indexes["difficulty"] = options["difficulty"].indexOf(
+        config["difficulty"]
+      );
+      console.log(indexes["difficulty"]);
+    }
+    data = localStorage.getItem("strafe");
+    if (data) {
+      localDataExists = true;
+      config["strafe"] = data === "OFF" ? false : true;
+      this.document.getElementById("strafeText").textContent =
+        config["strafe"] === false ? "OFF" : "ON";
+      indexes["strafe"] = options["strafe"].indexOf(config["strafe"]);
+    }
+    data = localStorage.getItem("scatter");
+    if (data) {
+      localDataExists = true;
+      config["scatter"] = parseInt(data);
+      this.document.getElementById("scatterText").textContent =
+        config["scatter"];
+      indexes["scatter"] = options["scatter"].indexOf(config["scatter"]);
+    }
+    data = localStorage.getItem("timer");
+    if (data) {
+      localDataExists = true;
+      config["timer"] = parseInt(data);
+      this.document.getElementById("timerText").textContent = config["timer"];
+      indexes["timer"] = options["timer"].indexOf(config["timer"]);
+    }
+    if (!localDataExists) {
+      if (typeof Storage !== "undefined") {
+        localStorage.setItem("difficulty", config["difficulty"]);
+        localStorage.setItem("strafe", config["strafe"]);
+        localStorage.setItem("scatter", config["scatter"]);
+        localStorage.setItem("timer", config["timer"]);
+      }
+    }
+    console.log(config);
+  }
+});
 
 //
 //  MAIN FUNCTION CALL
@@ -162,9 +216,9 @@ function getDebug() {
     main.classList.add("hide");
     img.classList.add("hide");
     gameStarted = true;
+    config.timer = 10; // adjust as necessary
     const div = document.getElementById("time");
     div.style.visibility = "visible";
-    config.timer = 100000; // adjust as necessary
     const element_to_replace = document.querySelector("#main-canvas");
     const scenes = [Main_Scene].map((scene) => new scene());
     canvas_widget = new Canvas_Widget(element_to_replace, scenes);
@@ -245,7 +299,7 @@ export function endGame() {
           stats["accuracy"] >= 90 &&
           stats["points"] >= config["timer"] * 5500
         ) {
-          h4.textContent = "YOUR A PRO!";
+          h4.textContent = "YOU'RE A PRO!";
         } else if (
           stats["accuracy"] >= 80 &&
           stats["points"] >= config["timer"] * 4000
@@ -271,7 +325,7 @@ export function endGame() {
         const scatter = config["scatter"];
         const difficulty = config["difficulty"];
         const strafe = config["strafe"] == true ? "on" : "off";
-        settingsElement.textContent = `Settings for this round: ${timer} seconds,
+        settingsElement.textContent = `Settings: ${timer} seconds,
         strafe ${strafe}, ${difficulty} difficulty, scatter ${scatter}`;
 
         // fade out header
@@ -360,6 +414,52 @@ function showStats() {
             "animationend",
             () => {
               accuracyStat.classList.remove("puff-in-center");
+              let betterScore = false;
+              const h6 = document.getElementById("bestScore");
+              const key = String(
+                config["difficulty"] +
+                  config["scatter"] +
+                  config["strafe"] +
+                  config["timer"]
+              );
+              console.log(key);
+              let data = localStorage.getItem(key);
+              if (data) {
+                betterScore = parseInt(data) > finalScore ? false : true;
+                if (!betterScore) {
+                  h6.textContent = data;
+                } else {
+                  localStorage.setItem(key, finalScore);
+                  h6.textContent = finalScore;
+                }
+              } else {
+                h6.textContent = finalScore;
+                if (finalScore > 0) {
+                  betterScore = true;
+                  localStorage.setItem(key, finalScore);
+                }
+              }
+              h6.classList.add("puff-in-center");
+              h6.style.visibility = "visible";
+              h6.addEventListener(
+                "animationend",
+                () => {
+                  h6.classList.remove("puff-in-center");
+                  if (betterScore) {
+                    const newTag = document.getElementById("NEW");
+                    newTag.classList.add("puff-in-center");
+                    newTag.style.visibility = "visible";
+                    newTag.addEventListener(
+                      "animationend",
+                      () => {
+                        newTag.classList.remove("puff-in-center");
+                      },
+                      { once: true }
+                    );
+                  }
+                },
+                { once: true }
+              );
             },
             {
               once: true,
@@ -461,7 +561,9 @@ function expand(id = "gameOver") {
       const p = popup.querySelectorAll("p");
       const d = popup.querySelectorAll("div");
       p.forEach((text) => {
-        text.style.visibility = "visible";
+        if (text.id !== "NEW") {
+          text.style.visibility = "visible";
+        }
       });
       d.forEach((div) => {
         div.style.visibility = "visible";
@@ -709,6 +811,11 @@ function changeOpt(e) {
     newOpt = newOpt === false ? "OFF" : "ON";
   }
   p.textContent = newOpt;
+
+  // update local storage if supported
+  if (typeof Storage !== "undefined") {
+    localStorage.setItem(opt, newOpt);
+  }
 }
 
 // for resizing
