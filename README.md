@@ -5,4 +5,5 @@ A simple aim trainer visually inspired by Valorant and LoL, created as final pro
 Made with Tiny Graphics (https://github.com/encyclopedia-of-code/tiny-graphics-js). Created solely for educational purposes.
 
 Check it out at
-https://kevin-ink.github.io/urf/.
+https://kevin-ink.github.io/urf/ \
+(currently does not work well in Safari, please use Edge or Chrome)
