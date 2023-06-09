@@ -349,8 +349,8 @@ function showStats() {
       audioFiles["calculateSound"].play();
       scoreInterval = setInterval(() => {
         if (scoreAccumulate < finalScore) {
-          if (scoreAccumulate + finalScore / 200 <= finalScore) {
-            scoreAccumulate += finalScore / 200;
+          if (scoreAccumulate + finalScore / 100 <= finalScore) {
+            scoreAccumulate += finalScore / 100;
           } else {
             scoreAccumulate += finalScore - scoreAccumulate;
           }
