@@ -1587,7 +1587,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.125, 0.03125, 0.03125))
       .times(Mat4.translation(-27, -60, 470))
       .times(Mat4.rotation(-1.55, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1610,7 +1610,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(-25, -60, 135))
       .times(Mat4.rotation(2, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1633,7 +1633,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(-8, -58, 80))
       .times(Mat4.rotation(1, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1656,7 +1656,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(40, -58, 60))
       .times(Mat4.rotation(1.8, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1679,7 +1679,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(20, -58, 100))
       .times(Mat4.rotation(-2, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1702,7 +1702,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(32, -60, 160))
       .times(Mat4.rotation(-2.3, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1723,9 +1723,9 @@ export class Project extends Scene {
     let bullet_body7_trans = Mat4.identity();
     bullet_body7_trans = bullet_body7_trans
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
-      .times(Mat4.translation(5, -60, 120))
+      .times(Mat4.translation(5, -60, 120)) 
       .times(Mat4.rotation(1.3, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1740,6 +1740,71 @@ export class Project extends Scene {
       context,
       program_state,
       bullet_head7_trans,
+      this.materials.bullet
+    );
+
+    let bullet_body8_trans = Mat4.translation(3,0,0);
+    bullet_body8_trans = bullet_body8_trans
+      .times(Mat4.scale(0.125, 0.03125, 0.03125))
+      .times(Mat4.translation(-27, -60, 470))
+      .times(Mat4.rotation(-1.55, 0, 1, 0))
+      .times(Mat4.scale(0.6, 0.6, 0.6));
+    this.shapes.bullet_capped_cylinder.draw(
+      context,
+      program_state,
+      bullet_body8_trans,
+      this.materials.bullet
+    );
+    let bullet_head8_trans = bullet_body8_trans;
+    bullet_head8_trans = bullet_head8_trans
+      .times(Mat4.scale(1, 1, 1))
+      .times(Mat4.translation(0, 0, -0.5));
+    this.shapes.sphere.draw(
+      context,
+      program_state,
+      bullet_head8_trans,
+      this.materials.bullet
+    );
+
+    let bullet_body9_trans = Mat4.translation(5,0,0)
+      .times(Mat4.scale(0.125, 0.03125, 0.03125))
+      .times(Mat4.translation(-27, -60, 470))
+      .times(Mat4.rotation(-1.55, 0, 1, 0))
+      .times(Mat4.scale(0.6, 0.6, 0.6));
+    this.shapes.bullet_capped_cylinder.draw(
+      context,
+      program_state,
+      bullet_body8_trans,
+      this.materials.bullet
+    );
+    let bullet_head9_trans = bullet_body9_trans
+      .times(Mat4.scale(1, 1, 1))
+      .times(Mat4.translation(0, 0, -0.5));
+    this.shapes.sphere.draw(
+      context,
+      program_state,
+      bullet_head9_trans,
+      this.materials.bullet
+    );
+
+    let bullet_body10_trans = Mat4.translation(3.3,0,-1.5)
+      .times(Mat4.scale(0.125, 0.03125, 0.03125))
+      .times(Mat4.translation(-27, -60, 470))
+      .times(Mat4.rotation(-1.55, 0, 1, 0))
+      .times(Mat4.scale(0.6, 0.6, 0.6));
+    this.shapes.bullet_capped_cylinder.draw(
+      context,
+      program_state,
+      bullet_body8_trans,
+      this.materials.bullet
+    );
+    let bullet_head10_trans = bullet_body10_trans
+      .times(Mat4.scale(1, 1, 1))
+      .times(Mat4.translation(0, 0, -0.5));
+    this.shapes.sphere.draw(
+      context,
+      program_state,
+      bullet_head10_trans,
       this.materials.bullet
     );
 
@@ -2769,10 +2834,12 @@ export class Project extends Scene {
 
   draw_guns_ground(context, program_state) {
     let gun_move_transform = Mat4.identity()
-      .times(Mat4.translation(2, -4.5, 0))
+      .times(Mat4.translation(-14, -2.2, 1))
+      .times(Mat4.rotation(Math.PI/30, 0, 0, 1))
+      .times(Mat4.rotation(-Math.PI/2, 0, 0, 1))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.rotation(Math.PI / 4, 0, 0, 1))
-      .times(Mat4.scale(0.3, 0.3, 0.3));
+      .times(Mat4.rotation(0, 0, 0, 1))
+      .times(Mat4.scale(0.26, 0.26, 0.26));
 
     let gun_base_transform = gun_move_transform
       .times(Mat4.translation(0.2, 0, 0))
