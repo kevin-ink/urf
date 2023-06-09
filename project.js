@@ -2832,7 +2832,7 @@ export class Project extends Scene {
 
   draw_guns_ground(context, program_state) {
     let gun_move_transform = Mat4.identity()
-      .times(Mat4.translation(-14, -2.2, 1))
+      .times(Mat4.translation(-15, -2.2, 0))
       .times(Mat4.rotation(Math.PI/30, 0, 0, 1))
       .times(Mat4.rotation(-Math.PI/2, 0, 0, 1))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
