@@ -329,7 +329,7 @@ export class Project extends Scene {
       }),
 
       gun: new Material(new defs.Textured_Phong(), {
-        ambient: 0.5,
+        ambient: 0.7,
         diffusivity: 1,
         specularity: 1,
         color: hex_color("#222222"),
@@ -342,7 +342,7 @@ export class Project extends Scene {
         color: hex_color("#f55a00"),
       }),
       gun3: new Material(new defs.Phong_Shader(), {
-        ambient: 0.5,
+        ambient: 0.7,
         diffusivity: 0.9,
         specularity: 0.2,
         color: hex_color("#333333"),
@@ -535,22 +535,28 @@ export class Project extends Scene {
         texture: new Texture("assets/background/boom_spray.png", "LINEAR"),
       }),
 
+      duck_spray: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 1,
+        texture: new Texture("assets/background/duck_spray.png", "LINEAR"),
+      }),
+
     };
 
 
 
     // Sound effects
-    this.gun_with_ammo = new Audio("assets/sounds/gun_with_ammo.mp3");
-    this.laser = new Audio("assets/sounds/laser.mp3");
-    this.water_drop = new Audio("assets/sounds/bloop.mp3");
-    this.quite_shot = new Audio("assets/sounds/quite_gun.mp3");
-    this.shatter = new Audio("assets/sounds/shatter.mp3");
+    // this.gun_with_ammo = new Audio("assets/sounds/gun_with_ammo.mp3");
+    // this.laser = new Audio("assets/sounds/laser.mp3");
+    // this.water_drop = new Audio("assets/sounds/bloop.mp3");
+    // this.quite_shot = new Audio("assets/sounds/quite_gun.mp3");
+    // this.shatter = new Audio("assets/sounds/shatter.mp3");
     // this.first_hit = new Audio("assets/sounds/first_kill.mp3");
     // this.second_hit = new Audio("assets/sounds/second_kill.mp3");
     // this.third_hit = new Audio("assets/sounds/third_kill.mp3");
     // this.fourth_hit = new Audio("assets/sounds/fourth_kill.mp3");
     // this.fifth_hit = new Audio("assets/sounds/fifth_kill.mp3");
-    this.spectrum = new Audio("assets/sounds/spectrum_valorant.mp3");
+    // this.spectrum = new Audio("assets/sounds/spectrum_valorant.mp3");
 
     // Used for difficulty
     // Set the radius size of targets
@@ -3804,6 +3810,18 @@ export class Project extends Scene {
       gun_trigger_transform,
       this.materials.gun
     );
+
+    // duck spray
+    let duck_spray_transform = gun_move_transform
+      .times(Mat4.translation(4.2,0,0.5))
+      .times(Mat4.rotation(Math.PI/24, 0,0,1))
+      .times(Mat4.scale(0.45,0.45,1));
+    this.shapes.square.draw(
+      context, 
+      program_state, 
+      duck_spray_transform, 
+      this.materials.duck_spray.override({ambient: 0.85})
+    )
   }
   // Spike model
   draw_spike(context, program_state, t) {
