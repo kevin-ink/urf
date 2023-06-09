@@ -631,6 +631,9 @@ export class Project extends Scene {
     this.plank_shot = false;
     this.plank_init = false;
 
+    // bullet tracers
+    this.bullet_tracer_queue = [];
+
     this.view_dist = 20;
 
     this.initial_camera_location = Mat4.look_at(
@@ -2881,6 +2884,15 @@ export class Project extends Scene {
       if (this.cont_misses == 4) {
         audioFiles["terrible"].play();
       }
+
+      // bullet tracers
+      let z = -17.5, z1 = pos_world_near[2], z2 = pos_world_far[2];
+      let t_2 = (z - z1) / (z2 - z1);
+      let x = (1 - t_2) * pos_world_near[0] + t_2 * pos_world_far[0];
+      let y = (1 - t_2) * pos_world_near[1] + t_2 * pos_world_far[1];
+      let world_coord = vec4(x, y, z, 1.0);
+      this.bullet_tracer_queue.push([world_coord, 3*60]);
+
     }
     this.accuracy = this.hits / this.total_shots;
     this.accuracy = Math.round(this.accuracy * 10000) / 100;
@@ -2888,7 +2900,6 @@ export class Project extends Scene {
       this.accuracy = this.accuracy.toFixed(2);
     }
     this.shot = true;
-
 
     // check if plank is shot
 
@@ -2907,7 +2918,6 @@ export class Project extends Scene {
         this.plank_init = true;
       }
     }
-
 
   }
 
@@ -4249,6 +4259,26 @@ export class Project extends Scene {
       }
   }
 
+  draw_bullet_tracers(context, program_state){
+    for (let i = 0; i < this.bullet_tracer_queue.length; i++){
+      let life = --this.bullet_tracer_queue[i][1];
+      if (life == 0){
+        this.bullet_tracer_queue.shift();
+        i--;
+        continue;
+      }
+      let coord = this.bullet_tracer_queue[i][0];
+      let tracer_transform = Mat4.translation(coord[0], coord[1], -17.5)
+        .times(Mat4.scale(0.09,0.09,0.05));
+      this.shapes.capped_cylinder.draw(
+        context, 
+        program_state, 
+        tracer_transform, 
+        this.materials.bullet
+      )
+    }
+  }
+
 
   display(context, program_state) {
     const t = program_state.animation_time / 1000,
@@ -4342,6 +4372,7 @@ export class Project extends Scene {
       this.draw_targets(context, program_state, t);
       this.draw_gun(context, program_state, t, this.shot);
       this.draw_spike(context, program_state, t);
+      this.draw_bullet_tracers(context, program_state);
     }
 
     // force timer on first frame
