@@ -80,11 +80,7 @@ function preloadAudioFiles() {
   preloadAudio("assets/sounds/spike-planting.mp3", "startBtnSound", 1);
   preloadAudio("assets/sounds/click-button-140881.mp3", "changeOptSound", 1);
   preloadAudio("assets/sounds/soft-click.mp3", "cancelSound", 1);
-  preloadAudio(
-    "assets/sounds/computer-calculating.mp3",
-    "calculateSound",
-    0.2
-  );
+  preloadAudio("assets/sounds/computer-calculating.mp3", "calculateSound", 0.2);
   preloadAudio("assets/sounds/valorantLobby.mp3", "statsScreenSound", 0.3);
   preloadAudio("assets/sounds/mariostart_2.mp3", "countdownSound", 0.1);
 
@@ -157,13 +153,6 @@ function setup() {
       }
     });
   }
-
-  // for resizing
-  window.addEventListener("resize", () => {
-    if (canvas_element.style.display == "block") {
-      canvas_widget.webgl_manager.set_size();
-    }
-  });
 }
 
 // start game as debug if debug is on
@@ -721,3 +710,10 @@ function changeOpt(e) {
   }
   p.textContent = newOpt;
 }
+
+// for resizing
+window.addEventListener("resize", () => {
+  if (canvas_element.style.display == "block") {
+    canvas_widget.webgl_manager.set_size();
+  }
+});
