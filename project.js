@@ -2292,7 +2292,7 @@ export class Project extends Scene {
     // Generate random coordinates
     let ranX,
       ranY,
-      ranZ = Math.random() * (10 - size_factor) + (-8 + size_factor);
+      ranZ = Math.random() * (8 - size_factor) + (-6 + size_factor);
     do {
       ranX = Math.random() * (xMax - xMin) + xMin;
       ranY = Math.random() * (yMax - yMin) + yMin;
