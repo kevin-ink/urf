@@ -1918,9 +1918,7 @@ export class Project extends Scene {
     );
 
     let plank_2_transform = plank_1_transform;
-    plank_2_transform = plank_2_transform
-      .times(Mat4.translation(0, 5.5, 0))
-      .times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
+    plank_2_transform = plank_2_transform.times(Mat4.translation(0, 5.5, 0));
     this.shapes.cube.draw(
       context,
       program_state,
