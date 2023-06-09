@@ -335,6 +335,14 @@ img {
     z-index: -1;
 }
 
+#NEW {
+    background: linear-gradient(var(--angle), #aa4b6b, #ffffff,#3b8d99);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 0.2rem #000000);
+}
+
 /*
 // Animista classes
 */
