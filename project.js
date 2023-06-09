@@ -626,56 +626,56 @@ export class Project extends Scene {
 
   // Background functions
   draw_props2(context, program_state) {
-    let barrel_trans = Mat4.identity()
-      .times(Mat4.translation(-10, -3.5, -5))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1, 1, 3));
-    this.shapes.rounded_uncapped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans,
-      this.materials.barrel
-    );
-    let barrel_trans2 = Mat4.identity()
-      .times(Mat4.translation(-10, -4.8, -5))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1.05, 1.05, 0.15));
-    this.shapes.rounded_uncapped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans2,
-      this.materials.dark_gray
-    );
-    let barrel_trans3 = Mat4.identity()
-      .times(Mat4.translation(-10, -2.02, -5))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1.01, 1.01, 0.08));
-    this.shapes.rounded_uncapped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans3,
-      this.materials.gray
-    );
-    let barrel_trans4 = Mat4.identity()
-      .times(Mat4.translation(-10.5, -1.9, -5))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(0.1, 0.1, 0.1));
-    this.shapes.rounded_capped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans4,
-      this.materials.dark_gray.override({ ambient: 0.7 })
-    );
-    let barrel_trans5 = Mat4.identity()
-      .times(Mat4.translation(-10, -2, -5))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1.0, 1.0, 0.05));
-    this.shapes.rounded_capped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans5,
-      this.materials.barrel
-    );
+    // let barrel_trans = Mat4.identity()
+    //   .times(Mat4.translation(-10, -3.5, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1, 1, 3));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans,
+    //   this.materials.barrel
+    // );
+    // let barrel_trans2 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -4.8, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.05, 1.05, 0.15));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans2,
+    //   this.materials.dark_gray
+    // );
+    // let barrel_trans3 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -2.02, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.01, 1.01, 0.08));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans3,
+    //   this.materials.gray
+    // );
+    // let barrel_trans4 = Mat4.identity()
+    //   .times(Mat4.translation(-10.5, -1.9, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(0.1, 0.1, 0.1));
+    // this.shapes.rounded_capped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans4,
+    //   this.materials.dark_gray.override({ ambient: 0.7 })
+    // );
+    // let barrel_trans5 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -2, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.0, 1.0, 0.05));
+    // this.shapes.rounded_capped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans5,
+    //   this.materials.barrel
+    // );
 
     // second barrel
     let barrel2_trans = Mat4.identity()
