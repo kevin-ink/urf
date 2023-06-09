@@ -336,11 +336,10 @@ img {
 }
 
 #NEW {
-    background: linear-gradient(var(--angle), #aa4b6b, #ffffff,#3b8d99);
+    background: linear-gradient(var(--angle), #fc4a1a, #f7b733);;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 0.2rem #000000);
 }
 
 /*

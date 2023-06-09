@@ -207,13 +207,6 @@ function setup() {
       }
     });
   }
-
-  // for resizing
-  window.addEventListener("resize", () => {
-    if (canvas_element.style.display == "block") {
-      canvas_widget.webgl_manager.set_size();
-    }
-  });
 }
 
 // start game as debug if debug is on
@@ -824,3 +817,10 @@ function changeOpt(e) {
     localStorage.setItem(opt, newOpt);
   }
 }
+
+// for resizing
+window.addEventListener("resize", () => {
+  if (canvas_element.style.display == "block") {
+    canvas_widget.webgl_manager.set_size();
+  }
+});
