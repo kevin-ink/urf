@@ -83,9 +83,9 @@ function preloadAudioFiles() {
   preloadAudio(
     "assets/sounds/computer-calculating.mp3",
     "calculateSound",
-    0.25
+    0.2
   );
-  preloadAudio("assets/sounds/valorantLobby.mp3", "statsScreenSound", 0.5);
+  preloadAudio("assets/sounds/valorantLobby.mp3", "statsScreenSound", 0.3);
   preloadAudio("assets/sounds/mariostart_2.mp3", "countdownSound", 0.1);
 
   // gun shot
