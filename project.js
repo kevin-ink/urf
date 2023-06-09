@@ -754,9 +754,9 @@ export class Project extends Scene {
       barrel2_trans5,
       this.materials.barrel
     );
-    
+
     // second barrel
-    let barrel_loc = Mat4.translation(5,0,7.3);
+    let barrel_loc = Mat4.translation(5, 0, 7.3);
     let barrel3_trans = barrel_loc
       .times(Mat4.translation(11, -3.5, -7))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
@@ -809,15 +809,15 @@ export class Project extends Scene {
     );
 
     let plank_random_transform = Mat4.translation(15.4, -3, 2.6)
-    .times(Mat4.rotation(Math.PI/24, 0, 0, 1))
-    .times(Mat4.rotation(-Math.PI/24, 1, 0, 0))
-    .times(Mat4.scale(0.3, 2, 0.05));
-  this.shapes.cube.draw(
-    context,
-    program_state,
-    plank_random_transform,
-    this.materials.wood_board.override({ ambient: 0.6, specularity: 1 })
-  );
+      .times(Mat4.rotation(Math.PI / 24, 0, 0, 1))
+      .times(Mat4.rotation(-Math.PI / 24, 1, 0, 0))
+      .times(Mat4.scale(0.3, 2, 0.05));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      plank_random_transform,
+      this.materials.wood_board.override({ ambient: 0.6, specularity: 1 })
+    );
   }
 
   draw_floor(context, program_state) {
@@ -1569,9 +1569,9 @@ export class Project extends Scene {
     );
 
     let crate5_trans = Mat4.identity()
-      .times(Mat4.translation(15, -3.5, -3))
+      .times(Mat4.translation(15.5, -3.5, -3))
       .times(Mat4.scale(1.4, 1.4, 1))
-      .times(Mat4.rotation(-0.2, 0, 1, 0));
+      .times(Mat4.rotation(-0.3, 0, 1, 0));
     this.shapes.cube.draw(
       context,
       program_state,
@@ -1749,7 +1749,7 @@ export class Project extends Scene {
     let bullet_body7_trans = Mat4.identity();
     bullet_body7_trans = bullet_body7_trans
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
-      .times(Mat4.translation(5, -60, 120)) 
+      .times(Mat4.translation(5, -60, 120))
       .times(Mat4.rotation(1.3, 0, 1, 0))
       .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
@@ -1769,7 +1769,7 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bullet_body8_trans = Mat4.translation(3,0,0);
+    let bullet_body8_trans = Mat4.translation(3, 0, 0);
     bullet_body8_trans = bullet_body8_trans
       .times(Mat4.scale(0.125, 0.03125, 0.03125))
       .times(Mat4.translation(-27, -60, 470))
@@ -1792,7 +1792,7 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bullet_body9_trans = Mat4.translation(5,0,0)
+    let bullet_body9_trans = Mat4.translation(5, 0, 0)
       .times(Mat4.scale(0.125, 0.03125, 0.03125))
       .times(Mat4.translation(-27, -60, 470))
       .times(Mat4.rotation(-1.55, 0, 1, 0))
@@ -1813,7 +1813,7 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let bullet_body10_trans = Mat4.translation(3.3,0,-1.5)
+    let bullet_body10_trans = Mat4.translation(3.3, 0, -1.5)
       .times(Mat4.scale(0.125, 0.03125, 0.03125))
       .times(Mat4.translation(-27, -60, 470))
       .times(Mat4.rotation(-1.55, 0, 1, 0))
@@ -2908,8 +2908,8 @@ export class Project extends Scene {
   draw_guns_ground(context, program_state) {
     let gun_move_transform = Mat4.identity()
       .times(Mat4.translation(-15, -2.2, 0))
-      .times(Mat4.rotation(Math.PI/30, 0, 0, 1))
-      .times(Mat4.rotation(-Math.PI/2, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI / 30, 0, 0, 1))
+      .times(Mat4.rotation(-Math.PI / 2, 0, 0, 1))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.rotation(0, 0, 0, 1))
       .times(Mat4.scale(0.26, 0.26, 0.26));
