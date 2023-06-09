@@ -2126,8 +2126,8 @@ export class Project extends Scene {
       this.materials.bullet
     );
 
-    let spider_t = t;
-    let spider_2_transform = Mat4.translation(-15 + spider_t,-4,8)
+    let spider_t = t-this.t_diff;
+    let spider_2_transform = Mat4.translation(-18 + spider_t,-4,8)
       .times(Mat4.rotation(Math.PI/2 + 10*spider_t, 0, 1, 0))
       .times(Mat4.rotation(-Math.PI/2, 1, 0, 0))
       .times(Mat4.scale(0.15, 0.15, 0.15));
