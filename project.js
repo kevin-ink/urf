@@ -316,7 +316,7 @@ export class Project extends Scene {
         ambient: 0.5,
         diffusivity: 1,
         specularity: 0,
-        texture: new Texture("assets/background/rusty.jpg", "LINEAR"),
+        texture: new Texture("assets/background/barrel.jpg", "LINEAR"),
       }),
 
       gun: new Material(new defs.Textured_Phong(), {
@@ -503,7 +503,7 @@ export class Project extends Scene {
       }),
 
       floor_strip: new Material(new defs.Phong_Shader(), {
-        color: hex_color("#D2B48C"),
+        color: hex_color("#ffffff"),
         ambient: 1,
       }),
     };
@@ -717,6 +717,70 @@ export class Project extends Scene {
       barrel2_trans5,
       this.materials.barrel
     );
+    
+    // second barrel
+    let barrel_loc = Mat4.translation(5,0,7.3);
+    let barrel3_trans = barrel_loc
+      .times(Mat4.translation(11, -3.5, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1, 1, 2.8));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans,
+      this.materials.barrel
+    );
+    let barrel3_trans2 = barrel_loc
+      .times(Mat4.translation(11, -4.8, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.01, 1.01, 0.15));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans2,
+      this.materials.dark_gray
+    );
+    let barrel3_trans3 = barrel_loc
+      .times(Mat4.translation(11, -2.02, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.01, 1.01, 0.08));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans3,
+      this.materials.gray
+    );
+    let barrel3_trans4 = barrel_loc
+      .times(Mat4.translation(10.5, -1.9, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(0.1, 0.1, 0.1));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans4,
+      this.materials.dark_gray.override({ ambient: 0.7 })
+    );
+    let barrel3_trans5 = barrel_loc
+      .times(Mat4.translation(11, -2, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.0, 1.0, 0.05));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans5,
+      this.materials.barrel
+    );
+
+    let plank_random_transform = Mat4.translation(15.4, -3, 2.6)
+    .times(Mat4.rotation(Math.PI/24, 0, 0, 1))
+    .times(Mat4.rotation(-Math.PI/24, 1, 0, 0))
+    .times(Mat4.scale(0.3, 2, 0.05));
+  this.shapes.cube.draw(
+    context,
+    program_state,
+    plank_random_transform,
+    this.materials.wood_board.override({ ambient: 0.6, specularity: 1 })
+  );
   }
 
   draw_floor(context, program_state) {
