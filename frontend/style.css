@@ -331,6 +331,10 @@ img {
     right: 12%;
 }
 
+.animate__fadeOutDown {
+    z-index: -1;
+}
+
 /*
 // Animista classes
 */
