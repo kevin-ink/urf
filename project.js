@@ -333,7 +333,7 @@ export class Project extends Scene {
         diffusivity: 1,
         specularity: 1,
         color: hex_color("#222222"),
-        texture: new Texture("assets/background/gun_texture_2.jpg"),
+        texture: new Texture("assets/background/gun_texture_2.jpg", "LINEAR"),
       }),
       gun2: new Material(new defs.Phong_Shader(), {
         ambient: 0.5,
@@ -598,6 +598,10 @@ export class Project extends Scene {
 
     // determine whether we should render certain models
     this.game_end = false;
+
+    // interative plank
+    this.plank_shot = false;
+    this.plank_init = false;
 
     this.view_dist = 20;
 
@@ -2660,16 +2664,16 @@ export class Project extends Scene {
   }
 
   // Determine if a target was hit
-  hit_target(coord, pos_world, t) {
+  hit_target(coord, pos_world, t, r) {
     let t_x = coord[0] + this.move_factor * Math.sin(coord[3] * t),
       t_y = coord[1]; // Target coodinates
     let h_x = pos_world[0],
       h_y = pos_world[1]; // Mouse click coordinates
     let d = Math.sqrt((t_x - h_x) ** 2 + (t_y - h_y) ** 2);
     // console.log(t_x);
-    if (d <= this.target_r) {
+    if (d <= r) {
       // If the mouse click is within radius length of target
-      if (d <= this.target_r / 4) {
+      if (d <= r / 4) {
         this.points += 2000;
       }
       return true;
@@ -2740,15 +2744,13 @@ export class Project extends Scene {
     this.total_shots++;
     for (const coord of this.target_locations) {
       // Interpolation for near and far to get to the t of the z-coordinate of the target
-      let z = coord[2],
-        z1 = pos_world_near[2],
-        z2 = pos_world_far[2];
+      let z = coord[2], z1 = pos_world_near[2], z2 = pos_world_far[2];
       let t_2 = (z - z1) / (z2 - z1);
       let x = (1 - t_2) * pos_world_near[0] + t_2 * pos_world_far[0];
       let y = (1 - t_2) * pos_world_near[1] + t_2 * pos_world_far[1];
       let world_coord = vec4(x, y, z, 1.0);
       console.log(world_coord); // each target has its own coordinates
-      if (this.hit_target(coord, world_coord, t)) {
+      if (this.hit_target(coord, world_coord, t, this.target_r)) {
         missed = false;
         this.cont_hits++;
         this.cont_hits_2++;
@@ -2828,6 +2830,27 @@ export class Project extends Scene {
       this.accuracy = this.accuracy.toFixed(2);
     }
     this.shot = true;
+
+
+    // check if plank is shot
+
+    if (!this.plank_init){
+      // plank coordinates 
+      // (-2,2.8,-15.9)
+      // should modularize the interpolation function 
+      let z = -15.9, z1 = pos_world_near[2], z2 = pos_world_far[2];
+      let t_2 = (z - z1) / (z2 - z1);
+      let x = (1 - t_2) * pos_world_near[0] + t_2 * pos_world_far[0];
+      let y = (1 - t_2) * pos_world_near[1] + t_2 * pos_world_far[1];
+      let world_coord = vec4(x, y, z, 1.0);
+      if (this.hit_target(vec4(-2,2.8,0,0), world_coord, t, 0.2)){
+        this.plank_shot = true;
+        this.plank_t_diff = t;
+        this.plank_init = true;
+      }
+    }
+
+
   }
 
   draw_guns_ground(context, program_state) {
@@ -3768,7 +3791,7 @@ export class Project extends Scene {
     // currently brute forced
 
     let spike_t;
-    if (gameStarted == false || this.iter <= 3 * 60 + 15) {
+    if (gameStarted == false || this.iter <= 75) {
       // added some padding so there is no time mismatch that causes NaN
       spike_t = 0;
     } else if (t - this.diff > 120 * 60) {
@@ -4107,6 +4130,56 @@ export class Project extends Scene {
     );
   }
 
+  draw_inter_plank(context, program_state, t){
+
+    // underdamped b is small 
+    let b = 0.5
+    let m = 1.2;
+    let w = Math.sqrt(4/m);
+    let damp_osc;
+    if (this.plank_shot){
+      let plank_t = t-this.plank_t_diff;
+      damp_osc = Math.E**(-b*plank_t/(2*m))*Math.cos(w*plank_t);
+    }
+    else {
+      damp_osc = 1;
+    }
+
+    let plank_transform = Mat4.translation(-5.5,3,-16)
+      .times(Mat4.translation(0,2,0))
+      .times(Mat4.rotation(damp_osc, 0,0,1)) 
+      .times(Mat4.translation(0,-2,0))
+      .times(Mat4.scale(0.5,2.5,0.05));
+    this.shapes.cube.draw(
+      context, 
+      program_state,
+      plank_transform, 
+      this.materials.wood_board.override({ ambient: 0.6})
+    );
+
+    let bolt_transform = Mat4.translation(-5.5,5,-15.9)
+      .times(Mat4.scale(0.1,0.1,0.05));
+      this.shapes.capped_cylinder.draw(
+        context,
+        program_state,
+        bolt_transform, 
+        this.materials.bullet
+      );
+
+      // disppearing bolt
+      if (!this.plank_init){
+        let bolt_2_transform = Mat4.translation(-2,2.8,-15.9)
+        .times(Mat4.scale(0.1,0.1,0.05));
+        this.shapes.capped_cylinder.draw(
+          context,
+          program_state,
+          bolt_2_transform, 
+          this.materials.bullet
+        );
+      }
+  }
+
+
   display(context, program_state) {
     const t = program_state.animation_time / 1000,
       dt = program_state.animation_delta_time / 1000;
@@ -4192,6 +4265,8 @@ export class Project extends Scene {
     this.draw_guns_ground(context, program_state);
 
     // game interactives
+    // shootable plank that becomes a dampling pendulumn
+    this.draw_inter_plank(context, program_state, t);
 
     if (!this.game_end) {
       this.draw_targets(context, program_state, t);
