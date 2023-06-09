@@ -515,7 +515,29 @@ export class Project extends Scene {
         color: hex_color("#ffffff"),
         ambient: 1,
       }),
+
+      // spray paints 
+      lobster_spray: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 1,
+        texture: new Texture("assets/background/lobster_spray.png", "LINEAR"),
+      }),
+
+      val_spray: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 1,
+        texture: new Texture("assets/background/val_spray.png", "LINEAR"),
+      }),
+
+      boom_spray: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 1,
+        texture: new Texture("assets/background/boom_spray.png", "LINEAR"),
+      }),
+
     };
+
+
 
     // Sound effects
     this.gun_with_ammo = new Audio("assets/sounds/gun_with_ammo.mp3");
@@ -1835,6 +1857,36 @@ export class Project extends Scene {
       shooting_guide2_trans,
       this.materials.shooting_guide
     );
+
+    // spray paints
+    let lobster_spray_transform = Mat4.translation(-4,0,-17.5)
+      .times(Mat4.scale(4,4,1));
+    this.shapes.square.draw(
+      context, 
+      program_state, 
+      lobster_spray_transform, 
+      this.materials.lobster_spray
+    )
+
+    let boom_spray_transform = Mat4.translation(0,-3,-17.5)
+    .times(Mat4.scale(3,3,1));
+  this.shapes.square.draw(
+    context, 
+    program_state, 
+    boom_spray_transform, 
+    this.materials.boom_spray.override({ambient: 0.7})
+  )
+
+  let val_spray_transform = Mat4.translation(14.5,7,-17.5)
+    .times(Mat4.rotation(-Math.PI/10, 0,0,1))
+    .times(Mat4.scale(1.3,1.3,1));
+  this.shapes.square.draw(
+    context, 
+    program_state, 
+    val_spray_transform, 
+    this.materials.val_spray.override({ambient: 0.6})
+  )
+    
 
     // Window
     let window_transform = Mat4.identity();
