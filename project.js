@@ -317,7 +317,7 @@ export class Project extends Scene {
         ambient: 0.5,
         diffusivity: 1,
         specularity: 0,
-        texture: new Texture("assets/background/rusty.jpg", "LINEAR"),
+        texture: new Texture("assets/background/barrel.jpg", "LINEAR"),
       }),
 
       pistol: new Material(new defs.Textured_Phong(), {
@@ -512,7 +512,7 @@ export class Project extends Scene {
       }),
 
       floor_strip: new Material(new defs.Phong_Shader(), {
-        color: hex_color("#D2B48C"),
+        color: hex_color("#ffffff"),
         ambient: 1,
       }),
     };
@@ -626,60 +626,60 @@ export class Project extends Scene {
 
   // Background functions
   draw_props2(context, program_state) {
-    let barrel_trans = Mat4.identity()
-      .times(Mat4.translation(-10.5, -3.5, -10))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1, 1, 3));
-    this.shapes.rounded_uncapped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans,
-      this.materials.barrel
-    );
-    let barrel_trans2 = Mat4.identity()
-      .times(Mat4.translation(-10.5, -4.8, -10))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1.05, 1.05, 0.15));
-    this.shapes.rounded_uncapped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans2,
-      this.materials.dark_gray
-    );
-    let barrel_trans3 = Mat4.identity()
-      .times(Mat4.translation(-10.5, -2.02, -10))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1.01, 1.01, 0.08));
-    this.shapes.rounded_uncapped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans3,
-      this.materials.gray
-    );
-    let barrel_trans4 = Mat4.identity()
-      .times(Mat4.translation(-11, -1.9, -10))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(0.1, 0.1, 0.1));
-    this.shapes.rounded_capped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans4,
-      this.materials.dark_gray.override({ ambient: 0.7 })
-    );
-    let barrel_trans5 = Mat4.identity()
-      .times(Mat4.translation(-10.5, -2, -10))
-      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.scale(1.0, 1.0, 0.05));
-    this.shapes.rounded_capped_cylinder.draw(
-      context,
-      program_state,
-      barrel_trans5,
-      this.materials.barrel
-    );
+    // let barrel_trans = Mat4.identity()
+    //   .times(Mat4.translation(-10, -3.5, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1, 1, 3));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans,
+    //   this.materials.barrel
+    // );
+    // let barrel_trans2 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -4.8, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.05, 1.05, 0.15));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans2,
+    //   this.materials.dark_gray
+    // );
+    // let barrel_trans3 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -2.02, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.01, 1.01, 0.08));
+    // this.shapes.rounded_uncapped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans3,
+    //   this.materials.gray
+    // );
+    // let barrel_trans4 = Mat4.identity()
+    //   .times(Mat4.translation(-10.5, -1.9, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(0.1, 0.1, 0.1));
+    // this.shapes.rounded_capped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans4,
+    //   this.materials.dark_gray.override({ ambient: 0.7 })
+    // );
+    // let barrel_trans5 = Mat4.identity()
+    //   .times(Mat4.translation(-10, -2, -5))
+    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+    //   .times(Mat4.scale(1.0, 1.0, 0.05));
+    // this.shapes.rounded_capped_cylinder.draw(
+    //   context,
+    //   program_state,
+    //   barrel_trans5,
+    //   this.materials.barrel
+    // );
 
     // second barrel
     let barrel2_trans = Mat4.identity()
-      .times(Mat4.translation(11, -3.5, -8.5))
+      .times(Mat4.translation(11, -3.5, -7))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(1, 1, 3));
     this.shapes.rounded_uncapped_cylinder.draw(
@@ -689,7 +689,7 @@ export class Project extends Scene {
       this.materials.barrel
     );
     let barrel2_trans2 = Mat4.identity()
-      .times(Mat4.translation(11, -4.8, -8.5))
+      .times(Mat4.translation(11, -4.8, -7))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(1.01, 1.01, 0.15));
     this.shapes.rounded_uncapped_cylinder.draw(
@@ -699,7 +699,7 @@ export class Project extends Scene {
       this.materials.dark_gray
     );
     let barrel2_trans3 = Mat4.identity()
-      .times(Mat4.translation(11, -2.02, -8.5))
+      .times(Mat4.translation(11, -2.02, -7))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(1.01, 1.01, 0.08));
     this.shapes.rounded_uncapped_cylinder.draw(
@@ -709,7 +709,7 @@ export class Project extends Scene {
       this.materials.gray
     );
     let barrel2_trans4 = Mat4.identity()
-      .times(Mat4.translation(10.5, -1.9, -8.5))
+      .times(Mat4.translation(10.5, -1.9, -7))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(0.1, 0.1, 0.1));
     this.shapes.rounded_capped_cylinder.draw(
@@ -719,7 +719,7 @@ export class Project extends Scene {
       this.materials.dark_gray.override({ ambient: 0.7 })
     );
     let barrel2_trans5 = Mat4.identity()
-      .times(Mat4.translation(11, -2, -8.5))
+      .times(Mat4.translation(11, -2, -7))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
       .times(Mat4.scale(1.0, 1.0, 0.05));
     this.shapes.rounded_capped_cylinder.draw(
@@ -727,6 +727,70 @@ export class Project extends Scene {
       program_state,
       barrel2_trans5,
       this.materials.barrel
+    );
+
+    // second barrel
+    let barrel_loc = Mat4.translation(5, 0, 7.3);
+    let barrel3_trans = barrel_loc
+      .times(Mat4.translation(11, -3.5, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1, 1, 2.8));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans,
+      this.materials.barrel
+    );
+    let barrel3_trans2 = barrel_loc
+      .times(Mat4.translation(11, -4.8, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.01, 1.01, 0.15));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans2,
+      this.materials.dark_gray
+    );
+    let barrel3_trans3 = barrel_loc
+      .times(Mat4.translation(11, -2.02, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.01, 1.01, 0.08));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans3,
+      this.materials.gray
+    );
+    let barrel3_trans4 = barrel_loc
+      .times(Mat4.translation(10.5, -1.9, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(0.1, 0.1, 0.1));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans4,
+      this.materials.dark_gray.override({ ambient: 0.7 })
+    );
+    let barrel3_trans5 = barrel_loc
+      .times(Mat4.translation(11, -2, -7))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.0, 1.0, 0.05));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel3_trans5,
+      this.materials.barrel
+    );
+
+    let plank_random_transform = Mat4.translation(15.4, -3, 2.6)
+      .times(Mat4.rotation(Math.PI / 24, 0, 0, 1))
+      .times(Mat4.rotation(-Math.PI / 24, 1, 0, 0))
+      .times(Mat4.scale(0.3, 2, 0.05));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      plank_random_transform,
+      this.materials.wood_board.override({ ambient: 0.6, specularity: 1 })
     );
   }
 
@@ -1523,7 +1587,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.125, 0.03125, 0.03125))
       .times(Mat4.translation(-27, -60, 470))
       .times(Mat4.rotation(-1.55, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1546,7 +1610,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(-25, -60, 135))
       .times(Mat4.rotation(2, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1569,7 +1633,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(-8, -58, 80))
       .times(Mat4.rotation(1, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1592,7 +1656,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(40, -58, 60))
       .times(Mat4.rotation(1.8, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1615,7 +1679,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(20, -58, 100))
       .times(Mat4.rotation(-2, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1638,7 +1702,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(32, -60, 160))
       .times(Mat4.rotation(-2.3, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1661,7 +1725,7 @@ export class Project extends Scene {
       .times(Mat4.scale(0.25, 0.0625, 0.0625))
       .times(Mat4.translation(5, -60, 120))
       .times(Mat4.rotation(1.3, 0, 1, 0))
-      .times(Mat4.scale(0.75, 0.75, 0.75));
+      .times(Mat4.scale(0.6, 0.6, 0.6));
     this.shapes.bullet_capped_cylinder.draw(
       context,
       program_state,
@@ -1676,6 +1740,71 @@ export class Project extends Scene {
       context,
       program_state,
       bullet_head7_trans,
+      this.materials.bullet
+    );
+
+    let bullet_body8_trans = Mat4.translation(3, 0, 0);
+    bullet_body8_trans = bullet_body8_trans
+      .times(Mat4.scale(0.125, 0.03125, 0.03125))
+      .times(Mat4.translation(-27, -60, 470))
+      .times(Mat4.rotation(-1.55, 0, 1, 0))
+      .times(Mat4.scale(0.6, 0.6, 0.6));
+    this.shapes.bullet_capped_cylinder.draw(
+      context,
+      program_state,
+      bullet_body8_trans,
+      this.materials.bullet
+    );
+    let bullet_head8_trans = bullet_body8_trans;
+    bullet_head8_trans = bullet_head8_trans
+      .times(Mat4.scale(1, 1, 1))
+      .times(Mat4.translation(0, 0, -0.5));
+    this.shapes.sphere.draw(
+      context,
+      program_state,
+      bullet_head8_trans,
+      this.materials.bullet
+    );
+
+    let bullet_body9_trans = Mat4.translation(5, 0, 0)
+      .times(Mat4.scale(0.125, 0.03125, 0.03125))
+      .times(Mat4.translation(-27, -60, 470))
+      .times(Mat4.rotation(-1.55, 0, 1, 0))
+      .times(Mat4.scale(0.6, 0.6, 0.6));
+    this.shapes.bullet_capped_cylinder.draw(
+      context,
+      program_state,
+      bullet_body8_trans,
+      this.materials.bullet
+    );
+    let bullet_head9_trans = bullet_body9_trans
+      .times(Mat4.scale(1, 1, 1))
+      .times(Mat4.translation(0, 0, -0.5));
+    this.shapes.sphere.draw(
+      context,
+      program_state,
+      bullet_head9_trans,
+      this.materials.bullet
+    );
+
+    let bullet_body10_trans = Mat4.translation(3.3, 0, -1.5)
+      .times(Mat4.scale(0.125, 0.03125, 0.03125))
+      .times(Mat4.translation(-27, -60, 470))
+      .times(Mat4.rotation(-1.55, 0, 1, 0))
+      .times(Mat4.scale(0.6, 0.6, 0.6));
+    this.shapes.bullet_capped_cylinder.draw(
+      context,
+      program_state,
+      bullet_body8_trans,
+      this.materials.bullet
+    );
+    let bullet_head10_trans = bullet_body10_trans
+      .times(Mat4.scale(1, 1, 1))
+      .times(Mat4.translation(0, 0, -0.5));
+    this.shapes.sphere.draw(
+      context,
+      program_state,
+      bullet_head10_trans,
       this.materials.bullet
     );
 
@@ -2703,10 +2832,12 @@ export class Project extends Scene {
 
   draw_guns_ground(context, program_state) {
     let gun_move_transform = Mat4.identity()
-      .times(Mat4.translation(2, -4.5, 0))
+      .times(Mat4.translation(-15, -2.2, 0))
+      .times(Mat4.rotation(Math.PI / 30, 0, 0, 1))
+      .times(Mat4.rotation(-Math.PI / 2, 0, 0, 1))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-      .times(Mat4.rotation(Math.PI / 4, 0, 0, 1))
-      .times(Mat4.scale(0.3, 0.3, 0.3));
+      .times(Mat4.rotation(0, 0, 0, 1))
+      .times(Mat4.scale(0.26, 0.26, 0.26));
 
     let gun_base_transform = gun_move_transform
       .times(Mat4.translation(0.2, 0, 0))

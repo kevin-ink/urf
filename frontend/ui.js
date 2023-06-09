@@ -3,7 +3,7 @@ import { Main_Scene, Additional_Scenes, Canvas_Widget } from "../main-scene.js";
 
 // set DEBUG to true to enable debugging mode (skips menu)
 // textures will appear red at first cause its loading, its normal
-var DEBUG = false;
+var DEBUG = true;
 
 //
 // DECLARATIONS
