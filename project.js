@@ -272,6 +272,7 @@ export class Project extends Scene {
       ]),
       spider: new Shape_From_File("assets/background/spider.obj"),
       grass: new Shape_From_File("assets/background/grass.obj"),
+      pistol: new Shape_From_File("assets/background/Pistol_obj.obj"),
 
       // spike shapes
       spike: new Spike(),
@@ -317,6 +318,14 @@ export class Project extends Scene {
         diffusivity: 1,
         specularity: 0,
         texture: new Texture("assets/background/rusty.jpg", "LINEAR"),
+      }),
+
+      pistol: new Material(new defs.Textured_Phong(), {
+        color: hex_color("#000000"),
+        ambient: 0.5,
+        diffusivity: 1,
+        specularity: 1,
+        texture: new Texture("assets/background/Pistol_color.jpg", "LINEAR"),
       }),
 
       gun: new Material(new defs.Textured_Phong(), {
@@ -617,56 +626,58 @@ export class Project extends Scene {
 
   // Background functions
   draw_props2(context, program_state) {
-    // let barrel_trans = Mat4.identity()
-    //   .times(Mat4.translation(-10, -3.5, -5))
-    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-    //   .times(Mat4.scale(1, 1, 3));
-    // this.shapes.rounded_uncapped_cylinder.draw(
-    //   context,
-    //   program_state,
-    //   barrel_trans,
-    //   this.materials.barrel
-    // );
-    // let barrel_trans2 = Mat4.identity()
-    //   .times(Mat4.translation(-10, -4.8, -5))
-    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-    //   .times(Mat4.scale(1.05, 1.05, 0.15));
-    // this.shapes.rounded_uncapped_cylinder.draw(
-    //   context,
-    //   program_state,
-    //   barrel_trans2,
-    //   this.materials.dark_gray
-    // );
-    // let barrel_trans3 = Mat4.identity()
-    //   .times(Mat4.translation(-10, -2.02, -5))
-    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-    //   .times(Mat4.scale(1.01, 1.01, 0.08));
-    // this.shapes.rounded_uncapped_cylinder.draw(
-    //   context,
-    //   program_state,
-    //   barrel_trans3,
-    //   this.materials.gray
-    // );
-    // let barrel_trans4 = Mat4.identity()
-    //   .times(Mat4.translation(-10.5, -1.9, -5))
-    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-    //   .times(Mat4.scale(0.1, 0.1, 0.1));
-    // this.shapes.rounded_capped_cylinder.draw(
-    //   context,
-    //   program_state,
-    //   barrel_trans4,
-    //   this.materials.dark_gray.override({ ambient: 0.7 })
-    // );
-    // let barrel_trans5 = Mat4.identity()
-    //   .times(Mat4.translation(-10, -2, -5))
-    //   .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-    //   .times(Mat4.scale(1.0, 1.0, 0.05));
-    // this.shapes.rounded_capped_cylinder.draw(
-    //   context,
-    //   program_state,
-    //   barrel_trans5,
-    //   this.materials.barrel
-    // );
+    let barrel_trans = Mat4.identity()
+      .times(Mat4.translation(-10, -3.5, -5))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1, 1, 3));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel_trans,
+      this.materials.barrel
+    );
+    let barrel_trans2 = Mat4.identity()
+      .times(Mat4.translation(-10, -4.8, -5))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.05, 1.05, 0.15));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel_trans2,
+      this.materials.dark_gray
+    );
+    let barrel_trans3 = Mat4.identity()
+      .times(Mat4.translation(-10, -2.02, -5))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.01, 1.01, 0.08));
+    this.shapes.rounded_uncapped_cylinder.draw(
+      context,
+      program_state,
+      barrel_trans3,
+      this.materials.gray
+    );
+    let barrel_trans4 = Mat4.identity()
+      .times(Mat4.translation(-10.5, -1.9, -5))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(0.1, 0.1, 0.1));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel_trans4,
+      this.materials.dark_gray.override({ ambient: 0.7 })
+    );
+    let barrel_trans5 = Mat4.identity()
+      .times(Mat4.translation(-10, -2, -5))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.scale(1.0, 1.0, 0.05));
+    this.shapes.rounded_capped_cylinder.draw(
+      context,
+      program_state,
+      barrel_trans5,
+      this.materials.barrel
+    );
+
+    // second barrel
     let barrel2_trans = Mat4.identity()
       .times(Mat4.translation(11, -3.5, -7))
       .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
@@ -2692,6 +2703,460 @@ export class Project extends Scene {
     this.shot = true;
   }
 
+  draw_guns_ground(context, program_state) {
+    let gun_move_transform = Mat4.identity()
+      .times(Mat4.translation(2, -4.5, 0))
+      .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+      .times(Mat4.rotation(Math.PI / 4, 0, 0, 1))
+      .times(Mat4.scale(0.3, 0.3, 0.3));
+
+    let gun_base_transform = gun_move_transform
+      .times(Mat4.translation(0.2, 0, 0))
+      .times(Mat4.scale(3.5, 0.75, 0.4));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_base_transform,
+      this.materials.gun
+    );
+
+    let gun_base_top_transform = gun_move_transform
+      .times(Mat4.translation(3, 0.1, 0))
+      .times(Mat4.rotation(-0.15, 0, 0, 1))
+      .times(Mat4.scale(2, 0.6, 0.4))
+      .times(Mat4.rotation(0.5, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_base_top_transform,
+      this.materials.gun
+    );
+
+    let gun_base_front_transform = gun_move_transform
+      .times(Mat4.translation(-2.3, 0.45, 0))
+      .times(Mat4.rotation(0.01, 0, 0, 1))
+      .times(Mat4.scale(2, 0.3, 0.4))
+      .times(Mat4.rotation(-0.08, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_base_front_transform,
+      this.materials.gun
+    );
+
+    let gun_clip_transform = gun_move_transform
+      .times(Mat4.translation(0.65, -1.6, 0))
+      .times(Mat4.scale(0.8, 2, 0.2))
+      .times(Mat4.rotation(0.035, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_clip_transform,
+      this.materials.gun
+    );
+
+    let gun_handle_transform = gun_move_transform
+      .times(Mat4.translation(3.83, -1.7, 0))
+      .times(Mat4.rotation(0.3, 0, 0, 1))
+      .times(Mat4.scale(0.52, 1.3, 0.2))
+      .times(Mat4.rotation(0.08, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_handle_transform,
+      this.materials.gun
+    );
+
+    let gun_stock_transform = gun_move_transform
+      .times(Mat4.translation(6, -0.5, 0))
+      .times(Mat4.scale(2, 0.55, 0.4));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_stock_transform,
+      this.materials.gun
+    );
+
+    let gun_stock_2_transform = gun_move_transform
+      .times(Mat4.translation(6.78, -0.85, 0))
+      .times(Mat4.rotation(0.3, 0, 0, 1))
+      .times(Mat4.scale(1.1, 0.6, 0.4));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_stock_2_transform,
+      this.materials.gun
+    );
+    let gun_stock_3_transform = gun_move_transform
+      .times(Mat4.translation(6.96, -1.34, 0))
+      .times(Mat4.rotation(-0.1, 0, 0, 1))
+      .times(Mat4.scale(0.97, 0.5, 0.3));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_stock_3_transform,
+      this.materials.gun
+    );
+
+    let gun_barrel_tranform = gun_move_transform
+      .times(Mat4.translation(-6.5, 0, 0))
+      .times(Mat4.scale(6, 0.45, 0.38))
+      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
+    this.shapes.cylinder.draw(
+      context,
+      program_state,
+      gun_barrel_tranform,
+      this.materials.gun
+    );
+
+    gun_barrel_tranform = gun_barrel_tranform
+      .times(Mat4.translation(0, 0, 0.18))
+      .times(Mat4.scale(1.08, 1.08, 0.04));
+    this.shapes.cylinder.draw(
+      context,
+      program_state,
+      gun_barrel_tranform,
+      this.materials.gun3
+    );
+
+    gun_barrel_tranform = gun_barrel_tranform.times(Mat4.translation(0, 0, 2));
+    this.shapes.cylinder.draw(
+      context,
+      program_state,
+      gun_barrel_tranform,
+      this.materials.gun3
+    );
+
+    let gun_barrel_front_transform = gun_move_transform
+      .times(Mat4.translation(-2, -0.24, 0))
+      .times(Mat4.rotation(-0.05, 0, 0, 1))
+      .times(Mat4.scale(2, 0.5, 0.4))
+      .times(Mat4.rotation(0.2, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_barrel_front_transform,
+      this.materials.gun
+    );
+
+    let gun_barrel_wedge_transform = gun_move_transform
+      .times(Mat4.translation(-3.415, -0.6, 0))
+      .times(Mat4.scale(0.15, 0.25, 0.4))
+      .times(Mat4.rotation(-0.4, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_barrel_wedge_transform,
+      this.materials.gun
+    );
+
+    let gun_aim_transform = gun_move_transform
+      .times(Mat4.translation(-3.6, 0.68, 0.15))
+      .times(Mat4.scale(0.4, 0.2, 0.025))
+      .times(Mat4.rotation(0.4, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_aim_transform,
+      this.materials.gun
+    );
+
+    let gun_aim_2_transform = gun_move_transform
+      .times(Mat4.translation(-3.6, 0.68, -0.15))
+      .times(Mat4.scale(0.4, 0.2, 0.025))
+      .times(Mat4.rotation(0.4, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_aim_2_transform,
+      this.materials.gun
+    );
+
+    let gun_aim_3_transform = gun_move_transform
+      .times(Mat4.translation(-3.5, 0.7, 0))
+      .times(Mat4.scale(0.2, 0.15, 0.02))
+      .times(Mat4.rotation(0.4, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_aim_3_transform,
+      this.materials.gun2
+    );
+
+    let gun_aim_base_transform = gun_move_transform
+      .times(Mat4.translation(-3.6, 0.68, 0))
+      .times(Mat4.scale(0.3, 0.125, 0.125));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_aim_base_transform,
+      this.materials.gun
+    );
+
+    let gun_mag_holder_transform = gun_move_transform
+      .times(Mat4.translation(0.63, -0.9, 0))
+      .times(Mat4.scale(1, 1.3, 1))
+      .times(Mat4.rotation(-0.3, 0, 0, 1))
+      .times(Mat4.scale(1, 0.6, 0.4))
+      .times(Mat4.rotation(0.2, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_mag_holder_transform,
+      this.materials.gun
+    );
+
+    let gun_side_1_tansform = gun_move_transform
+      .times(Mat4.translation(-1.8, -0.1, 0))
+      .times(Mat4.rotation(-0.28, 0, 0, 1))
+      .times(Mat4.scale(1.2, 0.6, 1))
+      .times(Mat4.rotation(Math.PI / 6, 0, 0, 1))
+      .times(Mat4.scale(1.2, 0.6, 0.6))
+      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_side_1_tansform,
+      this.materials.gun
+    );
+
+    let gun_side_2_tansform = gun_move_transform
+      .times(Mat4.translation(1, -0.1, 0))
+      .times(Mat4.rotation(-0.065, 0, 0, 1))
+      .times(Mat4.scale(3, 0.3, 0.9))
+      .times(Mat4.rotation(1, 0, 0, 1))
+      .times(Mat4.scale(1.2, 0.6, 0.6))
+      .times(Mat4.rotation(-0.7, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_side_2_tansform,
+      this.materials.gun
+    );
+
+    let gun_top_transform = gun_move_transform
+      .times(Mat4.translation(0.6, 0.8, 0))
+      .times(Mat4.scale(0.8, 0.09, 0.5));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_top_transform,
+      this.materials.gun
+    );
+
+    let gun_top_tri_1_transform = gun_move_transform
+      .times(Mat4.translation(1.3, 1.1, 0))
+      .times(Mat4.scale(1, 0.3, 0.6))
+      .times(Mat4.rotation(Math.PI, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI / 4, 1, 0, 0))
+      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
+    this.shapes.triangle.draw(
+      context,
+      program_state,
+      gun_top_tri_1_transform,
+      this.materials.gun
+    );
+
+    let gun_top_tri_2_transform = gun_move_transform
+      .times(Mat4.translation(1.31, 1.1, 0))
+      .times(Mat4.scale(1, 0.1, 0.1))
+      .times(Mat4.rotation(Math.PI, 0, 0, 1))
+      .times(Mat4.rotation(Math.PI / 4, 1, 0, 0))
+      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
+    this.shapes.triangle.draw(
+      context,
+      program_state,
+      gun_top_tri_2_transform,
+      this.materials.gun2
+    );
+
+    let gun_scope_base_transform = gun_move_transform
+      .times(Mat4.translation(3.1, 0.8, 0))
+      .times(Mat4.scale(0.4, 0.09, 0.3));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_scope_base_transform,
+      this.materials.gun
+    );
+
+    let gun_scope_base_2_transform = gun_move_transform
+      .times(Mat4.translation(3.2, 0.9, 0))
+      .times(Mat4.scale(0.2, 0.025, 0.2));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_scope_base_2_transform,
+      this.materials.gun
+    );
+
+    let gun_scope_base_3_transform = gun_move_transform
+      .times(Mat4.translation(3.2, 0.93, 0))
+      .times(Mat4.scale(0.08, 0.025, 0.0225));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_scope_base_3_transform,
+      this.materials.gun2
+    );
+
+    let gun_scope_side_1_transform = gun_move_transform
+      .times(Mat4.translation(3.1, 0.8, 0.2))
+      .times(Mat4.scale(0.32, 0.3, 0.026));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_scope_side_1_transform,
+      this.materials.gun
+    );
+
+    let gun_scope_side_2_transform = gun_move_transform
+      .times(Mat4.translation(3.1, 0.8, -0.2))
+      .times(Mat4.scale(0.32, 0.3, 0.026));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_scope_side_2_transform,
+      this.materials.gun
+    );
+
+    let gun_scope_dot_transform = gun_move_transform
+      .times(Mat4.translation(3.2, 1.0, 0))
+      .times(Mat4.rotation(Math.PI / 2, 0, 1, 0))
+      .times(Mat4.scale(0.08, 0.08, 0.15));
+    this.shapes.scope.draw(
+      context,
+      program_state,
+      gun_scope_dot_transform,
+      this.materials.gun
+    );
+
+    let gun_side_thing_transform = gun_move_transform
+      .times(Mat4.translation(1.6, -0.7, 0))
+      .times(Mat4.scale(0.025, 0.1, 0.5));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_side_thing_transform,
+      this.materials.gun2
+    );
+
+    gun_side_thing_transform = gun_side_thing_transform.times(
+      Mat4.scale(0.98, 2, 0.98)
+    );
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_side_thing_transform,
+      this.materials.gun
+    );
+
+    let gun_side_thing_2_transform = gun_move_transform
+      .times(Mat4.translation(1.76, -0.525, 0))
+      .times(Mat4.scale(0.2, 0.03, 0.5));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_side_thing_2_transform,
+      this.materials.gun
+    );
+
+    gun_side_thing_2_transform = gun_side_thing_2_transform.times(
+      Mat4.translation(0, -14, 0)
+    );
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_side_thing_2_transform,
+      this.materials.gun
+    );
+
+    let gun_circle_transform = gun_move_transform
+      .times(Mat4.translation(2.8, -0.65, 0))
+      .times(Mat4.scale(0.125, 0.125, 0.9));
+    this.shapes.capped_cylinder.draw(
+      context,
+      program_state,
+      gun_circle_transform,
+      this.materials.gun
+    );
+
+    let gun_circle_2_transform = gun_move_transform
+      .times(Mat4.translation(2.7, -0.56, 0))
+      .times(Mat4.scale(0.1, 0.03, 0.45));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_circle_2_transform,
+      this.materials.gun
+    );
+
+    let gun_trigger_base_transform = gun_move_transform
+      .times(Mat4.translation(2.2, -0.7, 0))
+      .times(Mat4.scale(0.9, 0.4, 0.4));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_trigger_base_transform,
+      this.materials.gun
+    );
+
+    let gun_trigger_safety_transform = gun_move_transform
+      .times(Mat4.translation(1.7, -1.8, 0))
+      .times(Mat4.rotation(-Math.PI / 16, 0, 0, 1))
+      .times(Mat4.scale(0.9, 0.03, 0.2));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_trigger_safety_transform,
+      this.materials.gun
+    );
+
+    gun_trigger_safety_transform = gun_move_transform
+      .times(Mat4.translation(3.4, -1.5, 0))
+      .times(Mat4.rotation(Math.PI / 6, 0, 0, 1))
+      .times(Mat4.scale(0.98, 0.03, 0.2));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_trigger_safety_transform,
+      this.materials.gun
+    );
+
+    let gun_trigger_transform = gun_move_transform
+      .times(Mat4.translation(2.6, -1.25, 0))
+      .times(Mat4.rotation(0.3, 0, 0, 1))
+      .times(Mat4.scale(0.05, 0.3, 0.1))
+      .times(Mat4.rotation(0.2, 0, 0, 1));
+    this.shapes.cube.draw(
+      context,
+      program_state,
+      gun_trigger_transform,
+      this.materials.gun
+    );
+
+    let pistol = Mat4.identity()
+      .times(Mat4.translation(-11, -4.5, 3))
+      .times(Mat4.rotation(-Math.PI / 2.5, 0, 1, 0))
+      .times(Mat4.scale(0.3, 0.3, 0.3));
+    this.shapes.pistol.draw(
+      context,
+      program_state,
+      pistol,
+      this.materials.pistol
+    );
+    let pistol2 = Mat4.identity()
+      .times(Mat4.translation(-9, -4.5, 3))
+      .times(Mat4.rotation(Math.PI / 3, 0, 1, 0))
+      .times(Mat4.scale(0.3, 0.3, 0.3));
+    this.shapes.pistol.draw(
+      context,
+      program_state,
+      pistol2,
+      this.materials.pistol
+    );
+  }
+
   // Gun model
   draw_gun(context, program_state, t, shot) {
     // connect mouse clicking to recoil if possible
@@ -3595,6 +4060,7 @@ export class Project extends Scene {
     this.draw_props2(context, program_state);
     this.draw_pillars(context, program_state);
     this.draw_backWindow(context, program_state);
+    this.draw_guns_ground(context, program_state);
 
     // game interactives
 
