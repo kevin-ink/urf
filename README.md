@@ -6,4 +6,4 @@ Made with Tiny Graphics (https://github.com/encyclopedia-of-code/tiny-graphics-j
 
 Check it out at
 https://kevin-ink.github.io/urf/ \
-(currently does not work well in Safari, please use Edge or Chrome)
+_currently does not work well in Safari, please use Edge or Chrome_ **_edit: there is currently a bug where sometimes the webpage will crash when attempting start the game, please refresh if it does and it should be good_**
